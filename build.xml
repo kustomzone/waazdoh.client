@@ -1,0 +1,28 @@
+<project>
+	<import file="../waazdoh.cutils/ant.xml" />
+
+		<property name="projectname" value="waazdoh.client" />
+
+	<target name="client.check.uptodate">
+		<uptodate property="client.notrequired" targetfile="target/build.trig">
+			<srcfiles dir="src/" />
+			<srcfiles dir="./target" includes="common.build.trig" />
+			<srcfiles dir="./" includes="*.xml" excludes="target" />
+		</uptodate>
+	</target>
+
+	<target name="waazdohclient_dobuild" unless="client.notrequired">
+		<echo file="target/build.trig">Done</echo>
+
+		<ant target="runmvn">
+			<property name="args" value="compile" />
+		</ant>
+
+		<exec command="wget --delete-after  -t 3 -T 1  http://localhost:17000/shutdown" failonerror="false" failifexecutionfails="false" />
+		<exec command="killgrep DownloadService" failonerror="false" failifexecutionfails="false" />
+	</target>
+
+	<target name="build" depends="client.check.uptodate, waazdohclient_dobuild">
+		<echo>Done</echo>
+	</target>
+</project>
