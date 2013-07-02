@@ -1,5 +1,5 @@
 <project>
-	<import file="../waazdoh.cutils/ant.xml" />
+	<import file="ant.xml" />
 
 		<property name="projectname" value="waazdoh.client" />
 
