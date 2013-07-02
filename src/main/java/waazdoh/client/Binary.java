@@ -329,7 +329,7 @@ public class Binary {
 		if (crc != null) {
 			crc = null;
 			//
-			log.info("resetCRC " + id);
+			log.debug("resetCRC " + id);
 		}
 		timestamp = System.currentTimeMillis();
 	}

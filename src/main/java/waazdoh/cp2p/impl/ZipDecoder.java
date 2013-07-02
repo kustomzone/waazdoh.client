@@ -45,7 +45,7 @@ public class ZipDecoder extends FrameDecoder {
 		cb.readBytes(baos, toread);
 		if (baos.size() >= expectedlength) {
 			byte[] bytes = Unzip();
-			log.info("got " + bytes.length + " bytes");
+			log.debug("got " + bytes.length + " bytes");
 			return parse(bytes);
 		} else {
 			log.info("expected " + expectedlength + " baos has:" + baos.size()
@@ -57,7 +57,7 @@ public class ZipDecoder extends FrameDecoder {
 	private byte[] Unzip() throws IOException {
 		ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(
 				baos.toByteArray()));
-		log.info("has read " + baos.size() + " bytes and encoding them");
+		log.debug("has read " + baos.size() + " bytes and encoding them");
 		baos = null;
 		zis.getNextEntry();
 		//
@@ -73,13 +73,13 @@ public class ZipDecoder extends FrameDecoder {
 	}
 
 	private List<MMessage> parse(byte[] bytes) throws IOException {
-		log.info("parsing " + bytes.length + " bytes");
+		log.debug("parsing " + bytes.length + " bytes");
 		//
 		List<MMessage> ret = new LinkedList<MMessage>();
 		DataInputStream dis = new DataInputStream(new ByteArrayInputStream(
 				bytes));
 		int messagecount = dis.readInt();
-		log.info("messagecount : " + messagecount);
+		log.debug("messagecount : " + messagecount);
 		for (int i = 0; i < messagecount; i++) {
 			MMessage m = readMessage(dis);
 			ret.add(m);
@@ -92,7 +92,7 @@ public class ZipDecoder extends FrameDecoder {
 		byte messagebytes[] = new byte[messagelength];
 		dis.read(messagebytes);
 		MMessage m = new MMessage(messagebytes);
-		log.info("channelread " + m);
+		log.debug("channelread " + m);
 		return m;
 	}
 }

@@ -45,7 +45,7 @@ public class ZipEncoder extends SimpleChannelHandler {
 			}
 			//
 			zos.close();
-			log.info("zip encoded " + totalbytes + " bytes to " + baos.size());
+			log.debug("zip encoded " + totalbytes + " bytes to " + baos.size());
 			byte[] zipbytes = baos.toByteArray();
 			baos = new ByteArrayOutputStream();
 			DataOutputStream dis = new DataOutputStream(baos);
@@ -64,7 +64,7 @@ public class ZipEncoder extends SimpleChannelHandler {
 
 	public int writeMessage(DataOutputStream zos, MMessage bean)
 			throws IOException {
-		log.info("channelwrite " + bean);
+		log.debug("channelwrite " + bean);
 		//
 		byte bs[] = bean.getAsBytes();
 		zos.writeInt(bs.length);

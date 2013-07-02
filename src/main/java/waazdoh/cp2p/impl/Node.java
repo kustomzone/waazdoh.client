@@ -59,8 +59,7 @@ public class Node {
 
 	@Override
 	public String toString() {
-		return "Node[" + tcpnode + "][" + getID() + "][msgs:"
-				+ getMessagesSize() + "]";
+		return "Node[" + tcpnode + "][" + getID() + "]";
 	}
 
 	public void addMessage(MMessage b) {

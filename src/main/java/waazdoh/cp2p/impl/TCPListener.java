@@ -128,11 +128,11 @@ public class TCPListener {
 		@Override
 		public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
 				throws Exception {
-			log.info("messageReceived " + e.getMessage() + " "
+			log.debug("messageReceived " + e.getMessage() + " "
 					+ e.getRemoteAddress());
 			List<MMessage> messages = (List<MMessage>) e.getMessage();
 			List<MMessage> response = messager.handle(messages);
-			log.info("sending back response " + response);
+			log.debug("sending back response " + response);
 			e.getChannel().write(response);
 		}
 
