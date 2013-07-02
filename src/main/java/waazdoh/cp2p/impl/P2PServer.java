@@ -611,4 +611,20 @@ public class P2PServer implements MMessager, MMessageFactory, MNodeConnection {
 		}
 		//
 	}
+
+	public boolean waitForDownloadSlot(int i) {
+		try {
+			while (!canDownload() && i > 0) {
+				synchronized (this) {
+					this.wait(100);
+					i -= 100;
+				}
+			}
+		} catch (InterruptedException e) {
+			log.error(e);
+		}
+
+		return canDownload();
+
+	}
 }

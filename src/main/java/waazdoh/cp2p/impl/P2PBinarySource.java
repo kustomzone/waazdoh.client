@@ -41,7 +41,6 @@ public class P2PBinarySource implements MBinarySource {
 
 	public P2PBinarySource(MPreferences p, boolean bind2) {
 		MLoggerMessage w = new MLoggerMessage();
-		MLogger.addObjectHandler(MMessage.class, w);
 		//
 		this.server = new P2PServer(p, bind2, new ByteArraySource() {
 			@Override
@@ -149,7 +148,7 @@ public class P2PBinarySource implements MBinarySource {
 	public synchronized Binary getOrDownload(MID fsid) {
 		Binary fs = get(fsid);
 		if (fs == null) {
-			if (server.canDownload()) {
+			if (server.waitForDownloadSlot(5000)) {
 				log.info("new Binary " + fsid);
 				fs = new Binary(fsid, service);
 				if (fs.isOK()) {
@@ -161,6 +160,7 @@ public class P2PBinarySource implements MBinarySource {
 			} else {
 				log.info("Cannot download " + fsid
 						+ ". Download queue is full ");
+
 			}
 			//
 		}
