@@ -20,8 +20,7 @@ import java.util.logging.Logger;
 public class MLogger {
 	private Logger log;
 	private Object o;
-	final private static Map<Class, LogObjectHandler> objeccthandlers = new HashMap<Class, LogObjectHandler>();
-	
+
 	public MLogger(Object o) {
 		this.o = o;
 	}
@@ -36,7 +35,7 @@ public class MLogger {
 	}
 
 	public void debug(String string) {
-		getLog().finer(getLine(string));
+		getLog().finest(getLine(string));
 	}
 
 	private String getLine(String string) {
@@ -49,7 +48,7 @@ public class MLogger {
 	private Logger getLog() {
 		if (log == null) {
 			log = Logger.getLogger("" + o);
-			//o = "" + o;
+			// o = "" + o;
 		}
 		return log;
 	}
@@ -82,27 +81,6 @@ public class MLogger {
 	public void error(Throwable cause) {
 		cause.printStackTrace();
 		getLog().severe(cause.toString());
-	}
-
-	/*
-	public void logObject(String title, Object message) {
-		if (message != null) {
-			LogObjectHandler h = getHandler(message);
-			if (h != null) {
-				h.handle(title, message, this);
-			}
-		} else {
-			getLog().info("logObject null with title " + title);
-		}
-	}
-	*/
-	
-	private LogObjectHandler getHandler(Object message) {
-		return MLogger.objeccthandlers.get(message.getClass());
-	}
-
-	public static void addObjectHandler(Class class1, LogObjectHandler w) {
-		MLogger.objeccthandlers.put(class1, w);
 	}
 
 	public void error(String string) {
