@@ -10,133 +10,151 @@
  ******************************************************************************/
 package waazdoh.cp2p.impl;
 
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.MessageList;
+import io.netty.channel.oio.OioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.oio.OioSocketChannel;
+import io.netty.handler.codec.compression.JZlibDecoder;
+import io.netty.handler.codec.compression.JZlibEncoder;
+
 import java.net.InetSocketAddress;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-
-import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
-import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 
 import waazdoh.cutils.MLogger;
 
 public class NodeConnectionFactory {
-	private ClientBootstrap bootstrap;
-	private Map<Channel, TCPNode> nodes = new HashMap<Channel, TCPNode>();
 
+	private static Bootstrap _bootstrap;
+	private Map<Channel, TCPNode> nodes = new HashMap<Channel, TCPNode>();
+	private EventLoopGroup workerGroup = new OioEventLoopGroup();
 	private MLogger log = MLogger.getLogger(this);
 
-	public synchronized ClientBootstrap getBootstrap() {
-		if (bootstrap == null) {
-			NioClientSocketChannelFactory factory = new NioClientSocketChannelFactory(
-					Executors.newCachedThreadPool(),
-					Executors.newCachedThreadPool());
-			bootstrap = new ClientBootstrap(factory);
-			bootstrap.setPipelineFactory(new NodePipelineFactory());
+	public synchronized Bootstrap getBootstrap() {
+		if (NodeConnectionFactory._bootstrap == null) {
+			NodeConnectionFactory._bootstrap = new Bootstrap(); // (1)
+			_bootstrap.group(workerGroup); // (2)
+			_bootstrap.channel(OioSocketChannel.class); // (3)
+			_bootstrap.option(ChannelOption.SO_KEEPALIVE, true); // (4)
+			_bootstrap.handler(new ChannelInitializer<SocketChannel>() {
+				@Override
+				public void initChannel(SocketChannel ch) throws Exception {
+					ChannelPipeline pipeline = ch.pipeline();
+					pipeline.addLast("zipencoder", new JZlibEncoder());
+					pipeline.addLast("zipdecoder", new JZlibDecoder());
+					pipeline.addLast("messageencoder", new MessageEncoder());
+					pipeline.addLast("messagedecoder", new MessageDecoder());
+					pipeline.addLast("channels", new NodeHandler());
+
+				}
+			});
 		}
-		return bootstrap;
+		return _bootstrap;
 	}
 
 	public Channel connect(TCPNode node, MHost host, int port) {
-		ClientBootstrap bs = getBootstrap();
+		log.info("creating connection to " + host + " port:" + port);
+		Bootstrap bs = getBootstrap();
 		ChannelFuture future = bs.connect(new InetSocketAddress(
 				host.toString(), port));
-		future.awaitUninterruptibly(200);
-		Channel c = future.getChannel();
+		future.awaitUninterruptibly(1000);
+		Channel c = future.channel();
+		node.channel(c);
 		nodes.put(c, node);
+		log.info("node " + node + " with channel " + c);
 		return c;
 	}
 
-	private class NodeHandler extends SimpleChannelHandler {
+	private class NodeHandler extends ChannelInboundHandlerAdapter {
 		@Override
-		public void channelConnected(ChannelHandlerContext ctx,
-				ChannelStateEvent e) throws Exception {
-			Channel channel = e.getChannel();
+		public void channelActive(ChannelHandlerContext ctx) throws Exception {
+			super.channelActive(ctx);
+			Channel channel = ctx.channel();
 			TCPNode node = nodes.get(channel);
 			if (node != null) {
-				node.channelConnected();
+				node.channelActive(channel);
 			} else {
-				log.error("ChannelConnected node null with channel " + channel);
+				log.error("ChannelActive node null with channel "
+						+ channel);
+			}
+		}
+		
+		@Override
+		public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+			super.channelInactive(ctx);
+			Channel channel = ctx.channel();
+			TCPNode node = nodes.get(channel);
+			if (node != null) {
+				node.channelInactive(ctx);
+			} else {
+				log.error("ChannelInactive node null with channel " + channel);
 			}
 		}
 
 		@Override
-		public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e)
+		public void channelRegistered(ChannelHandlerContext ctx)
 				throws Exception {
-			super.channelClosed(ctx, e);
-			log.info("channel closed " + e);
-			Channel channel = e.getChannel();
+			super.channelRegistered(ctx);
+			Channel channel = ctx.channel();
 			TCPNode node = nodes.get(channel);
 			if (node != null) {
-				node.channelClosed();
+				node.channelRegistered(ctx);
 			} else {
-				log.error("node null with channel " + channel);
+				log.error("ChannelRegistered node null with channel " + channel + " local:" + channel.localAddress() + " " + channel.remoteAddress());
 			}
 		}
 
 		@Override
-		public void channelDisconnected(ChannelHandlerContext ctx,
-				ChannelStateEvent e) throws Exception {
-			super.channelDisconnected(ctx, e);
-			log.info("channel disconnected " + e);
-			Channel channel = e.getChannel();
+		public void channelUnregistered(ChannelHandlerContext ctx)
+				throws Exception {
+			super.channelUnregistered(ctx);
+
+			Channel channel = ctx.channel();
 			TCPNode node = nodes.get(channel);
 			if (node != null) {
-				node.channelDisconnected();
+				node.channelUnregistered(ctx);
 			} else {
-				log.error("ChannelDisconnected node null with channel "
+				log.error("ChannelUnregistered node null with channel "
 						+ channel);
 			}
 		}
 
 		@Override
-		public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
+		public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
 				throws Exception {
-			Channel channel = e.getChannel();
+			Channel channel = ctx.channel();
 			TCPNode node = nodes.get(channel);
 			if (node != null) {
-				node.channelException(ctx, e);
+				node.channelException(ctx, cause);
 			} else {
 				log.error("ChannelDisconnected node null with channel "
-						+ channel);
+						+ channel + " " + cause);
 			}
 		}
 
 		@Override
-		public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
-				throws Exception {
-			log.info("TCPNode messageReceived " + e);
-			Channel channel = e.getChannel();
+		public void messageReceived(ChannelHandlerContext ctx,
+				MessageList<Object> msgs) throws Exception {
+			log.info("TCPNode messageReceived " + msgs);
+			Channel channel = ctx.channel();
 			TCPNode node = nodes.get(channel);
 			if (node != null) {
-				node.messageReceived(e);
+				node.messageReceived((List<MMessage>) msgs.get(0));
 			} else {
-				log.error("ChannelDisconnected node null with channel "
+				log.error("ChannelMessageReceived node null with channel "
 						+ channel);
 			}
-					}
+		}
 
 	}
-
-	private class NodePipelineFactory implements ChannelPipelineFactory {
-		@Override
-		public ChannelPipeline getPipeline() throws Exception {
-			ChannelPipeline pipeline = Channels.pipeline();
-			pipeline.addLast("zipencoder", new ZipEncoder());
-			pipeline.addLast("zipdecoder", new ZipDecoder());
-			pipeline.addLast("channels", new NodeHandler());
-			return pipeline;
-		}
-	}
-
 }

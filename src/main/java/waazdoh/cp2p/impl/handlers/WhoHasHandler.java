@@ -27,7 +27,7 @@ import waazdoh.cutils.MLogger;
 import waazdoh.cutils.xml.JBean;
 
 public class WhoHasHandler extends SimpleMessageHandler {
-	static final int MAX_PIECE_SIZE = 30000;
+	static final int MAX_PIECE_SIZE = 130000;
 	protected static final Integer RESPONSECOUNT_DOWNLOADTRIGGER = 20;
 	protected static final int MAX_RESPONSE_WAIT_TIME = 40000;
 

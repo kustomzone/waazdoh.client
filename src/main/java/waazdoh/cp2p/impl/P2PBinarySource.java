@@ -193,10 +193,10 @@ public class P2PBinarySource implements MBinarySource {
 
 	@Override
 	public void close() {
-		server.close();
 		if (storage != null) {
 			storage.close();
 		}
+		server.close();
 	}
 
 	public void setDownloadEverything(boolean b) {

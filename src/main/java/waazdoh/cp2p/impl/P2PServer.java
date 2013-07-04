@@ -10,6 +10,8 @@
  ******************************************************************************/
 package waazdoh.cp2p.impl;
 
+import io.netty.channel.Channel;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -235,40 +237,12 @@ public class P2PServer implements MMessager, MMessageFactory, MNodeConnection {
 		while (isRunning()) {
 			Node node = null;
 			Iterator<Node> iterator;
-			synchronized (nodes) {
-				if (nodes.size() == 0) {
-					addDefaultNodes();
-				}
-				iterator = new LinkedList<Node>(this.nodes).iterator();
-			}
+			iterator = getNodesIterator();
 			//
 			while (iterator.hasNext()) {
 				node = iterator.next();
 				if (node.checkPing()) {
-					node.addMessage(getMessage("ping"),
-							new MessageResponseListener() {
-								private long sent = System.currentTimeMillis();
-								private boolean done = false;
-
-								@Override
-								public void messageReceived(Node n,
-										MMessage message) {
-									log.info("PING response in "
-											+ (System.currentTimeMillis() - sent)
-											+ " ms");
-									done = true;
-								}
-
-								@Override
-								public boolean isDone() {
-									if ((System.currentTimeMillis() - sent) > 10000) {
-										log.info("PING giving up");
-										return true;
-									} else {
-										return done;
-									}
-								}
-							});
+					sendPing(node);
 				}
 				//
 				if (node.getID() != null && node.getID().equals(networkid)) {
@@ -302,6 +276,44 @@ public class P2PServer implements MMessager, MMessageFactory, MNodeConnection {
 		log.info("server thread shutting down");
 	}
 
+	private void sendPing(Node node) {
+		node.addMessage(getMessage("ping"),
+				new MessageResponseListener() {
+					private long sent = System.currentTimeMillis();
+					private boolean done = false;
+
+					@Override
+					public void messageReceived(Node n,
+							MMessage message) {
+						log.info("PING response in "
+								+ (System.currentTimeMillis() - sent)
+								+ " ms");
+						done = true;
+					}
+
+					@Override
+					public boolean isDone() {
+						if ((System.currentTimeMillis() - sent) > 10000) {
+							log.info("PING giving up");
+							return true;
+						} else {
+							return done;
+						}
+					}
+				});
+	}
+
+	private Iterator<Node> getNodesIterator() {
+		Iterator<Node> iterator;
+		synchronized (nodes) {
+			if (nodes.size() == 0) {
+				addDefaultNodes();
+			}
+			iterator = new LinkedList<Node>(this.nodes).iterator();
+		}
+		return iterator;
+	}
+
 	private void addDefaultNodes() {
 		if (tcplistener != null && dobind) {
 			tcplistener.addDefaultNodes();
@@ -312,7 +324,7 @@ public class P2PServer implements MMessager, MMessageFactory, MNodeConnection {
 			StringTokenizer st = new StringTokenizer(slist, ",");
 			while (st.hasMoreTokens()) {
 				String server = st.nextToken();
-				for (int i = 0; i < 10; i++) {
+				for (int i = 5; i < 6; i++) {
 					addNode(new MHost(server), TCPListener.DEFAULT_PORT - 5 + i);
 				}
 			}
@@ -372,6 +384,12 @@ public class P2PServer implements MMessager, MMessageFactory, MNodeConnection {
 			//
 		}
 		closed = true;
+
+		LinkedList<Node> ns = new LinkedList<Node>(nodes);
+		for (Node n : ns) {
+			n.close();
+		}
+		
 		if (tcplistener != null) {
 			tcplistener.close();
 		}

@@ -10,22 +10,23 @@
  ******************************************************************************/
 package waazdoh.cp2p.impl;
 
-import java.net.InetSocketAddress;
-import java.util.List;
-import java.util.concurrent.Executors;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.MessageList;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.compression.JZlibDecoder;
+import io.netty.handler.codec.compression.JZlibEncoder;
 
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelException;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import java.net.BindException;
+import java.util.List;
 
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MPreferences;
@@ -41,7 +42,7 @@ public class TCPListener {
 
 	private ServerBootstrap bootstrap;
 
-	private Channel bind;
+	private ChannelFuture bind;
 
 	private boolean closed;
 
@@ -55,34 +56,42 @@ public class TCPListener {
 
 	public void start() {
 		if (!closed) {
-			NioServerSocketChannelFactory factory = new NioServerSocketChannelFactory(
-					Executors.newCachedThreadPool(),
-					Executors.newCachedThreadPool());
-			bootstrap = new ServerBootstrap(factory);
-			bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
-				public ChannelPipeline getPipeline() {
-					ChannelPipeline pipe = Channels.pipeline();
-					pipe.addLast("zipencoder", new ZipEncoder());
-					pipe.addLast("zipdecoder", new ZipDecoder());
-					pipe.addLast("server", new MServerHandler());
-					return pipe;
-				}
-			});
-			bootstrap.setOption("child.tcpNoDelay", false);
-			bootstrap.setOption("child.keepAlive", false);
+			EventLoopGroup bossGroup = new NioEventLoopGroup(); // (1)
+			EventLoopGroup workerGroup = new NioEventLoopGroup();
+
+			final ServerBootstrap bootstrap = new ServerBootstrap();
+			bootstrap.group(bossGroup, workerGroup)
+					.channel(NioServerSocketChannel.class)
+					.childHandler(new ChannelInitializer<SocketChannel>() {
+						@Override
+						protected void initChannel(SocketChannel ch)
+								throws Exception {
+							log.info("initChannel " + ch);
+							ChannelPipeline pipe = ch.pipeline();
+							pipe.addLast("zipencoder", new JZlibEncoder());
+							pipe.addLast("zipdecoder", new JZlibDecoder());
+							pipe.addLast("messageencoder", new MessageEncoder());
+							pipe.addLast("messagedecoder", new MessageDecoder());
+							pipe.addLast("server", new MServerHandler());
+						}
+					}).option(ChannelOption.SO_BACKLOG, 128) // (5)
+					.childOption(ChannelOption.SO_KEEPALIVE, true); // (6);
 			//
-			port = preferences.getInteger(P2PServer.PREFERENCES_PORT, DEFAULT_PORT);
+			port = preferences.getInteger(P2PServer.PREFERENCES_PORT,
+					DEFAULT_PORT);
 			//
-			while (bind == null && port < 65000) {
-				try {
-					bind = bootstrap.bind(new InetSocketAddress(port));
-				} catch (ChannelException e) {
-					//log.error(e);
-					port++;
+			try {
+				while (bind == null && port < 65000) {
+					startListening(bootstrap);
+					if (bind == null) {
+						port++;
+					}
 				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-			log.info("listening " + port + " bound:" + bind.isBound()
-					+ " messager:" + this.messager);
+
+			log.info("listening " + port + " messager:" + this.messager);
 			//
 			MMessage b = this.messager.getMessage("newnode");
 			b.addAttribute("port", port);
@@ -91,18 +100,30 @@ public class TCPListener {
 		}
 	}
 
+	private synchronized void startListening(final ServerBootstrap bootstrap)
+			throws InterruptedException {
+		Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				bind = bootstrap.bind(port);
+			}
+		});
+		t.start();
+		while (t.isAlive() && bind == null) {
+			synchronized (t) {
+				t.wait(100);
+			}
+		}
+	}
+
 	public synchronized void close() {
 		try {
 			closed = true;
 			log.info("closing");
+			//
 			if (bind != null) {
-				bind.close();
-				while (bind.isBound()) {
-					log.info("waiting... ");
-					synchronized (bind) {
-						bind.wait(1000);
-					}
-				}
+				bind.channel().disconnect();
+				bind.channel().closeFuture().sync();
 			}
 		} catch (InterruptedException e) {
 			log.error(e);
@@ -110,37 +131,26 @@ public class TCPListener {
 		bind = null;
 	}
 
-	class MServerHandler extends SimpleChannelHandler {
+	class MServerHandler extends ChannelInboundHandlerAdapter {
 		@Override
-		public void channelConnected(ChannelHandlerContext ctx,
-				ChannelStateEvent e) throws Exception {
-			log.info("serverchannel connected " + e);
-			super.channelConnected(ctx, e);
+		public void messageReceived(ChannelHandlerContext ctx,
+				MessageList<Object> omsgs) throws Exception {
+			log.info("messageReceived " + omsgs);
+
+			for (Object omsg : omsgs) {
+				List<MMessage> ms = (List<MMessage>) omsg;
+
+				List<MMessage> response = messager.handle(ms);
+				log.debug("sending back response " + response);
+				ctx.write(response);
+			}
 		}
 
 		@Override
-		public void channelDisconnected(ChannelHandlerContext ctx,
-				ChannelStateEvent e) throws Exception {
-			log.info("serverchannel disconnected");
-			super.channelDisconnected(ctx, e);
-		}
-
-		@Override
-		public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
+		public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
 				throws Exception {
-			log.debug("messageReceived " + e.getMessage() + " "
-					+ e.getRemoteAddress());
-			List<MMessage> messages = (List<MMessage>) e.getMessage();
-			List<MMessage> response = messager.handle(messages);
-			log.debug("sending back response " + response);
-			e.getChannel().write(response);
-		}
-
-		@Override
-		public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
-				throws Exception {
-			log.info("got exception " + e);
-			//log.error(e.getCause());
+			log.info("got exception " + cause);
+			log.error(cause);
 		}
 	}
 

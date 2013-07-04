@@ -10,21 +10,20 @@
  ******************************************************************************/
 package waazdoh.cp2p.impl;
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
+
 import java.net.ConnectException;
 import java.util.List;
-
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFutureListener;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
 
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MTimedFlag;
 import waazdoh.cutils.xml.JBean;
 
 public class TCPNode {
-	private static final long MAX_GIVEUP_TIME = 3000;
+	private static final long MAX_GIVEUP_TIME = 6000;
 
 	private Channel channel;
 	private MLogger log = MLogger.getLogger(this);
@@ -41,6 +40,8 @@ public class TCPNode {
 	private long lastmessage = System.currentTimeMillis();
 
 	private boolean closed;
+
+	private boolean isactive;
 
 	public final static NodeConnectionFactory connectionfactory = new NodeConnectionFactory();
 
@@ -62,7 +63,7 @@ public class TCPNode {
 				for (MMessage mMessage : smessages) {
 					bytecount += mMessage.getByteCount();
 				}
-				log.info("messages written");
+				log.info("messages written " + bytecount);
 				return bytecount;
 			} else {
 				log.info("not writing zero messages");
@@ -76,21 +77,18 @@ public class TCPNode {
 
 	public synchronized boolean isConnected() {
 		checkConnection();
-		return channel != null && channel.isConnected();
+		return channel != null;
 	}
 
 	private synchronized void checkConnection() {
-		// if (future != null) {
-		// channel = future.getChannel();
-		// }
-		//
+		// if closed and connectionwaiter is triggered, create new connection
 		if (!closed && !offline && channel == null
 				&& (connectionwaiter == null || connectionwaiter.isTriggered())) {
 			log.debug("creating connection " + this + " trigger "
 					+ connectionwaiter);
-			channel = TCPNode.connectionfactory.connect(this, host, port);
-
+			TCPNode.connectionfactory.connect(this, host, port);
 			connectionwaiter = new MTimedFlag(10000);
+			touch();
 		}
 	}
 
@@ -105,13 +103,9 @@ public class TCPNode {
 	}
 
 	public synchronized void close() {
+		log.info("closing " + this);
 		closed = true;
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				closeChannel();
-			}
-		}, "Node closing").start();
+		closeChannel();
 	}
 
 	public boolean shouldGiveUp() {
@@ -122,11 +116,10 @@ public class TCPNode {
 	public void logChannel() {
 		if (channel != null) {
 			log.info("channel " + host + ":" + port + " channel " + channel
-					+ " connected:" + channel.isConnected() + " writable:"
-					+ channel.isWritable() + " readable:"
-					+ channel.isReadable() + " open:" + channel.isOpen()
-					+ " local:" + channel.getLocalAddress() + " remote:"
-					+ channel.getRemoteAddress());
+					+ " connected:" + channel.isOpen() + " writable:"
+					+ channel.isWritable() + " open:" + channel.isOpen()
+					+ " local:" + channel.localAddress() + " remote:"
+					+ channel.remoteAddress());
 		} else {
 			log.info("channel is null");
 		}
@@ -165,15 +158,16 @@ public class TCPNode {
 		}
 	}
 
-	public void channelDisconnected() {
+	public synchronized void channelDisconnected() {
 		channel = null;
 		trigger();
 	}
 
-	public synchronized void channelException(ChannelHandlerContext ctx, ExceptionEvent e) {
+	public synchronized void channelException(ChannelHandlerContext ctx,
+			Throwable e) {
 		if (!(e.getCause() instanceof ConnectException)) {
 			log.info("Exception with " + host + ":" + port + " e:" + e);
-			//log.error(e.getCause());
+			log.error(e.getCause());
 		} else {
 			log.debug("Connection failed " + ctx);
 		}
@@ -182,23 +176,51 @@ public class TCPNode {
 		trigger();
 	}
 
-	public void messageReceived(MessageEvent e) {
+	public void messageReceived(List<MMessage> messages) {
+		log.info("got " + messages.size() + " messages");
 		touch();
-		//
-		List<MMessage> messages = (List<MMessage>) e.getMessage();
 		List<MMessage> response = node.incomingMessages(messages);
 		sendMessages(response);
 
 	}
 
-	private synchronized void closeChannel() {
+	private void closeChannel() {
 		if (channel != null) {
-			log.info("closing channel " + channel);
-			channel.close();
-			channel = null;
-			if (connectionwaiter != null) {
-				connectionwaiter.trigger();
+			synchronized (this) {
+				log.info("closing channel " + channel);
+				channel.disconnect();
+				channel.close();
+				channel = null;
+				if (connectionwaiter != null) {
+					connectionwaiter.trigger();
+				}
 			}
 		}
+	}
+
+	public void channelActive(Channel c) {
+		lastmessage = System.currentTimeMillis();
+		isactive = true;
+		touch();
+		channel = c;
+	}
+
+	public void channelRegistered(ChannelHandlerContext ctx) {
+		if (ctx.channel() != null) {
+			channel = ctx.channel();
+		}
+		touch();
+	}
+
+	public synchronized void channelUnregistered(ChannelHandlerContext ctx) {
+		channel = null;
+	}
+
+	public void channelInactive(ChannelHandlerContext ctx) {
+		isactive = false;
+	}
+
+	public void channel(Channel c) {
+		this.channel = c;
 	}
 }

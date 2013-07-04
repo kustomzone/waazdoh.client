@@ -348,6 +348,19 @@ public class Binary {
 		}
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Binary) {
+			Binary bin = (Binary) obj;
+			if (!bin.getID().equals(getID()))
+				return false;
+			if (!getCRC().equals(bin.getCRC()))
+				return false;
+			return true;
+		}
+		return false;
+	}
+
 	public void setReady() {
 		used();
 

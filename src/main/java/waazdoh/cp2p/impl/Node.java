@@ -10,6 +10,8 @@
  ******************************************************************************/
 package waazdoh.cp2p.impl;
 
+import io.netty.channel.Channel;
+
 import java.util.LinkedList;
 import java.util.List;
 
