@@ -29,9 +29,13 @@ public class MessageDecoder extends ByteToMessageDecoder {
 	@Override
 	protected void decode(ChannelHandlerContext arg0, ByteBuf cb,
 			MessageList<Object> msgs) throws Exception {
-
+		// if (cb.readableBytes() >= 4) {
 		log.info("decoding messages " + cb.capacity());
 		msgs.add(parse(cb));
+		// cb.clear();
+		// } else {
+		// return;
+		// }
 	}
 
 	private List<MMessage> parse(ByteBuf bb) throws IOException {

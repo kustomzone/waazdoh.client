@@ -57,8 +57,7 @@ public class TCPNode {
 				log.info("writing messages");
 
 				channel.write(smessages).addListener(
-						ChannelFutureListener.CLOSE_ON_FAILURE);
-				//
+						ChannelFutureListener.CLOSE_ON_FAILURE); //
 				int bytecount = 0;
 				for (MMessage mMessage : smessages) {
 					bytecount += mMessage.getByteCount();
@@ -77,7 +76,7 @@ public class TCPNode {
 
 	public synchronized boolean isConnected() {
 		checkConnection();
-		return channel != null;
+		return channel != null && channel.isOpen();
 	}
 
 	private synchronized void checkConnection() {
