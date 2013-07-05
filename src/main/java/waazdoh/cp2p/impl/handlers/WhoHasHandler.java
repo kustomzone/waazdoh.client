@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import waazdoh.client.WaazdohInfo;
 import waazdoh.cp2p.impl.Download;
 import waazdoh.cp2p.impl.MMessage;
 import waazdoh.cp2p.impl.MNodeConnection;
@@ -27,11 +28,7 @@ import waazdoh.cutils.MLogger;
 import waazdoh.cutils.xml.JBean;
 
 public class WhoHasHandler extends SimpleMessageHandler {
-	static final int MAX_PIECE_SIZE = 130000;
-	protected static final Integer RESPONSECOUNT_DOWNLOADTRIGGER = 20;
-	protected static final int MAX_RESPONSE_WAIT_TIME = 40000;
-
-	private int maxResponseWaitTime = MAX_RESPONSE_WAIT_TIME;
+	private int maxResponseWaitTime = WaazdohInfo.MAX_RESPONSE_WAIT_TIME;
 	//
 	private MLogger log = MLogger.getLogger(this);
 	/**
@@ -61,7 +58,7 @@ public class WhoHasHandler extends SimpleMessageHandler {
 			JBean needed = childb.get("needed");
 			List<JBean> neededpieces = needed.getChildren();
 			int bytes = 0;
-			while (bytes < MAX_PIECE_SIZE && neededpieces.size() > 0) {
+			while (bytes < WaazdohInfo.WHOHAS_RESPONSE_MAX_PIECE_SIZE && neededpieces.size() > 0) {
 				log.info("processing pieces wanted " + neededpieces);
 				
 				int pieceindex = (int) (Math.random() * neededpieces.size());
@@ -73,12 +70,12 @@ public class WhoHasHandler extends SimpleMessageHandler {
 
 				int start = neededpiece.getAttributeInt("start");
 				int end = neededpiece.getAttributeInt("end");
-				if (end - start > MAX_PIECE_SIZE) {
+				if (end - start > WaazdohInfo.WHOHAS_RESPONSE_MAX_PIECE_SIZE) {
 					start += (int) ((end - start) * Math.random());
-					while (start + MAX_PIECE_SIZE > end) {
+					while (start + WaazdohInfo.WHOHAS_RESPONSE_MAX_PIECE_SIZE > end) {
 						start--;
 					}
-					end = start + MAX_PIECE_SIZE;
+					end = start + WaazdohInfo.WHOHAS_RESPONSE_MAX_PIECE_SIZE;
 				}
 				//
 				byte allbytes[] = source.get(streamid);
@@ -118,7 +115,7 @@ public class WhoHasHandler extends SimpleMessageHandler {
 					responsecount.put(streamid, count);
 
 					if (downloadeverything
-							|| count > RESPONSECOUNT_DOWNLOADTRIGGER) {
+							|| count > WaazdohInfo.RESPONSECOUNT_DOWNLOADTRIGGER) {
 						Download download = nodeconnection
 								.getDownload(streamid);
 						download.messageReceived(n, message);

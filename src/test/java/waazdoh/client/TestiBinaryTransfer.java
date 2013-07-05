@@ -11,23 +11,31 @@ import waazdoh.cutils.MPreferences;
 
 public class TestiBinaryTransfer extends TestCase {
 
-	public void testTransferShort() {
+	public void testTransfer10k() {
 		testTransfer(10000);
 	}
 
-	public void testTransferShortish() {
+	public void testTransfer30k() {
 		testTransfer(30000);
 	}
 
-	public void testTransferMed() {
+	public void testTransfer75k() {
+		testTransfer(75000);
+	}
+
+	public void testTransfer100k() {
 		testTransfer(100000);
 	}
 
-	public void testTransferLong() {
+	public void testTransfer300k() {
+		testTransfer(300000);
+	}
+
+	public void testTransfer1M() {
 		testTransfer(1000000);
 	}
 
-	public void testTransferExtraLong() {
+	public void testTransfer4M() {
 		testTransfer(4000000);
 	}
 

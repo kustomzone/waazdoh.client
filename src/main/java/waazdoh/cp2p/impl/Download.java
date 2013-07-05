@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Map;
 
 import waazdoh.client.Binary;
+import waazdoh.client.WaazdohInfo;
 import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MTimedFlag;
@@ -23,7 +24,6 @@ import waazdoh.cutils.xml.JBean;
 
 public class Download implements Runnable, MessageResponseListener,
 		SourceListener {
-	private static final int MAX_BINLENGTH = 50000;
 	private Binary bin;
 	private MNodeConnection source;
 	private MLogger log;
@@ -236,8 +236,8 @@ public class Download implements Runnable, MessageResponseListener,
 			return false;
 		} else {
 			int getlength = bin.length() - start;
-			if (getlength > MAX_BINLENGTH) {
-				getlength = MAX_BINLENGTH;
+			if (getlength > WaazdohInfo.DOWNLOADER_MAX_REQUESTED_PIECELENGTH) {
+				getlength = WaazdohInfo.DOWNLOADER_MAX_REQUESTED_PIECELENGTH;
 			}
 			//
 			Byte[] bytes = bin.getByteBuffer();
