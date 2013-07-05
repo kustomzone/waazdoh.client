@@ -10,8 +10,6 @@
  ******************************************************************************/
 package waazdoh.cp2p.impl;
 
-import io.netty.channel.Channel;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -30,6 +28,7 @@ public class Node {
 	private P2PServer source;
 	private long touch;
 	private int warning;
+	private int pingcount = 0;
 
 	private TCPNode tcpnode;
 	private int outputbytecount;
@@ -151,14 +150,25 @@ public class Node {
 	}
 
 	public synchronized boolean checkPing() {
-		if (System.currentTimeMillis() - lastping > MAX_PINGDELAY
+		long maxpingdelay = getPingDelay();
+		if (System.currentTimeMillis() - lastping > maxpingdelay
 				&& tcpnode != null) {
-			log.info("should ping");
+			log.info("should ping " + (System.currentTimeMillis() - lastping));
 			lastping = System.currentTimeMillis();
+			pingcount++;
 			return true;
 		} else {
 			return false;
 		}
+	}
+
+	private long getPingDelay() {
+		int pingspeedup = 10 - pingcount;
+		if (pingspeedup < 1) {
+			pingspeedup = 1;
+		}
+		long maxpingdelay = MAX_PINGDELAY / pingspeedup;
+		return maxpingdelay;
 	}
 
 	public void touch() {

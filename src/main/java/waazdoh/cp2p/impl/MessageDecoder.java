@@ -31,21 +31,18 @@ public class MessageDecoder extends ByteToMessageDecoder {
 	@Override
 	protected void decode(ChannelHandlerContext arg0, ByteBuf cb,
 			MessageList<Object> msgs) throws Exception {
-		log.info("decoding messages " + cb.capacity());
 		if (cb.readableBytes() < 8)
 			return;
 		int length = cb.getInt(0);
-		log.info("decoding messages " + cb.capacity() + " length:" + length);
+
 		if (cb.readableBytes() < length + 8)
 			return;
 		int size = cb.readInt();
 		byte[] bs = new byte[size];
 		cb.readBytes(bs);
-		log.info("bytes size " + size);
+
 		DataInputStream dis = new DataInputStream(new ByteArrayInputStream(bs));
-		//
 		msgs.add(parse(dis));
-		// cb.clear();
 	}
 
 	private List<MMessage> parse(DataInputStream dis) throws IOException {
@@ -66,7 +63,7 @@ public class MessageDecoder extends ByteToMessageDecoder {
 		byte messagebytes[] = new byte[messagelength];
 		dis.read(messagebytes, 0, messagelength);
 		MMessage m = new MMessage(messagebytes);
-		log.debug("channelread " + m);
+		log.info("decoded " + m);
 		return m;
 	}
 }

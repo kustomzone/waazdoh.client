@@ -46,6 +46,8 @@ public class NodeConnectionFactory {
 			_bootstrap.group(workerGroup); // (2)
 			_bootstrap.channel(OioSocketChannel.class); // (3)
 			_bootstrap.option(ChannelOption.SO_KEEPALIVE, true); // (4)
+			_bootstrap.option(ChannelOption.TCP_NODELAY, true); // (4)
+
 			_bootstrap.handler(new ChannelInitializer<SocketChannel>() {
 				@Override
 				public void initChannel(SocketChannel ch) throws Exception {
@@ -67,94 +69,59 @@ public class NodeConnectionFactory {
 		Bootstrap bs = getBootstrap();
 		ChannelFuture future = bs.connect(new InetSocketAddress(
 				host.toString(), port));
-		future.awaitUninterruptibly(1000);
+		future.awaitUninterruptibly(100);
+		nodes.put(future.channel(), node);
 		Channel c = future.channel();
-		node.channel(c);
-		nodes.put(c, node);
+		node.channelActive(c);
 		log.info("node " + node + " with channel " + c);
 		return c;
+	}
+
+	private TCPNode getNode(ChannelHandlerContext ctx) {
+		return nodes.get(ctx.channel());
 	}
 
 	private class NodeHandler extends ChannelInboundHandlerAdapter {
 		@Override
 		public void channelActive(ChannelHandlerContext ctx) throws Exception {
 			super.channelActive(ctx);
-			Channel channel = ctx.channel();
-			TCPNode node = nodes.get(channel);
-			if (node != null) {
-				node.channelActive(channel);
-			} else {
-				log.error("ChannelActive node null with channel "
-						+ channel);
-			}
+			// getNode(ctx).nodeChannelActive(ctx.channel());
 		}
-		
+
 		@Override
 		public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 			super.channelInactive(ctx);
-			Channel channel = ctx.channel();
-			TCPNode node = nodes.get(channel);
-			if (node != null) {
-				node.channelInactive(ctx);
-			} else {
-				log.error("ChannelInactive node null with channel " + channel);
-			}
+			getNode(ctx).channelInactive(ctx.channel());
 		}
 
 		@Override
 		public void channelRegistered(ChannelHandlerContext ctx)
 				throws Exception {
 			super.channelRegistered(ctx);
-			Channel channel = ctx.channel();
-			TCPNode node = nodes.get(channel);
-			if (node != null) {
-				node.channelRegistered(ctx);
-			} else {
-				log.error("ChannelRegistered node null with channel " + channel + " local:" + channel.localAddress() + " " + channel.remoteAddress());
-			}
+			// getNode(ctx).nodeChannelRegistered(ctx.channel());
 		}
 
 		@Override
 		public void channelUnregistered(ChannelHandlerContext ctx)
 				throws Exception {
 			super.channelUnregistered(ctx);
-
-			Channel channel = ctx.channel();
-			TCPNode node = nodes.get(channel);
-			if (node != null) {
-				node.channelUnregistered(ctx);
-			} else {
-				log.error("ChannelUnregistered node null with channel "
-						+ channel);
-			}
+			getNode(ctx).channelUnregistered(ctx.channel());
 		}
 
 		@Override
 		public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
 				throws Exception {
-			Channel channel = ctx.channel();
-			TCPNode node = nodes.get(channel);
-			if (node != null) {
-				node.channelException(ctx, cause);
-			} else {
-				log.error("ChannelDisconnected node null with channel "
-						+ channel + " " + cause);
-			}
+			getNode(ctx).channelException(ctx, cause);
 		}
 
 		@Override
 		public void messageReceived(ChannelHandlerContext ctx,
 				MessageList<Object> msgs) throws Exception {
-			log.info("TCPNode messageReceived " + msgs);
-			Channel channel = ctx.channel();
-			TCPNode node = nodes.get(channel);
-			if (node != null) {
-				node.messageReceived((List<MMessage>) msgs.get(0));
-			} else {
-				log.error("ChannelMessageReceived node null with channel "
-						+ channel);
+			for (int i = 0; i < msgs.size(); i++) {
+				getNode(ctx).messageReceived((List<MMessage>) msgs.get(i));
 			}
 		}
 
 	}
+
 }

@@ -11,9 +11,11 @@
 package waazdoh.cp2p.impl;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.MessageList;
 
 import java.net.ConnectException;
 import java.util.List;
@@ -54,7 +56,7 @@ public class TCPNode {
 	public int sendMessages(List<MMessage> smessages) {
 		if (isConnected()) {
 			if (smessages.size() > 0) {
-				log.info("writing messages");
+				log.info("writing messages " + smessages);
 
 				channel.write(smessages).addListener(
 						ChannelFutureListener.CLOSE_ON_FAILURE); //
@@ -76,7 +78,7 @@ public class TCPNode {
 
 	public synchronized boolean isConnected() {
 		checkConnection();
-		return channel != null && channel.isOpen();
+		return channel != null && isactive;
 	}
 
 	private synchronized void checkConnection() {
@@ -175,7 +177,7 @@ public class TCPNode {
 		trigger();
 	}
 
-	public void messageReceived(List<MMessage> messages) {
+	void messageReceived(List<MMessage> messages) {
 		log.info("got " + messages.size() + " messages");
 		touch();
 		List<MMessage> response = node.incomingMessages(messages);
@@ -197,29 +199,23 @@ public class TCPNode {
 		}
 	}
 
-	public void channelActive(Channel c) {
+	void channelActive(Channel c) {
 		lastmessage = System.currentTimeMillis();
 		isactive = true;
 		touch();
 		channel = c;
 	}
 
-	public void channelRegistered(ChannelHandlerContext ctx) {
-		if (ctx.channel() != null) {
-			channel = ctx.channel();
-		}
-		touch();
+	void channelUnregistered(Channel c) {
+		//
 	}
 
-	public synchronized void channelUnregistered(ChannelHandlerContext ctx) {
-		channel = null;
+	void cannelRegistered(Channel c) {
+		channelActive(c);
 	}
 
-	public void channelInactive(ChannelHandlerContext ctx) {
+	void channelInactive(Channel ctx) {
 		isactive = false;
 	}
 
-	public void channel(Channel c) {
-		this.channel = c;
-	}
 }

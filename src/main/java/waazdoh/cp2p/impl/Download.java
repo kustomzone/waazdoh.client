@@ -168,7 +168,7 @@ public class Download implements Runnable, MessageResponseListener,
 		if (b.getName().equals("stream") && !isReady()) {
 			MID sid = b.getIDAttribute("streamid");
 			if (sid != null && sid.equals(getID())) {
-				log.debug("response " + b);
+				log.info("response " + b);
 
 				flag.reset();
 				giveupflag.reset();

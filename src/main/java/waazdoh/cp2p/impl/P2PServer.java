@@ -34,7 +34,7 @@ import waazdoh.cutils.xml.JBean;
 import waazdoh.service.ReportingService;
 
 public class P2PServer implements MMessager, MMessageFactory, MNodeConnection {
-	static final int MESSAGESENDLOOP_COUNT = 3;
+	static final int MESSAGESENDLOOP_COUNT = 10;
 	private static final int MAX_SENTCOUNT = 2;
 	private static final long REBOOT_DELAY = 120000;
 	//
@@ -324,7 +324,7 @@ public class P2PServer implements MMessager, MMessageFactory, MNodeConnection {
 			StringTokenizer st = new StringTokenizer(slist, ",");
 			while (st.hasMoreTokens()) {
 				String server = st.nextToken();
-				for (int i = 5; i < 6; i++) {
+				for (int i = 0; i < 6; i++) {
 					addNode(new MHost(server), TCPListener.DEFAULT_PORT - 5 + i);
 				}
 			}
