@@ -59,11 +59,11 @@ public class MessageDecoder extends ByteToMessageDecoder {
 
 	private MMessage readMessage(DataInputStream dis) throws IOException {
 		int messagelength = dis.readInt();
-		log.info("decoder reading " + messagelength);
+		log.debug("decoder reading " + messagelength);
 		byte messagebytes[] = new byte[messagelength];
 		dis.read(messagebytes, 0, messagelength);
 		MMessage m = new MMessage(messagebytes);
-		log.info("decoded " + m);
+		log.debug("decoded " + m);
 		return m;
 	}
 }

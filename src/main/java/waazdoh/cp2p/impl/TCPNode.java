@@ -56,7 +56,7 @@ public class TCPNode {
 	public int sendMessages(List<MMessage> smessages) {
 		if (isConnected()) {
 			if (smessages.size() > 0) {
-				log.info("writing messages " + smessages);
+				log.debug("writing messages " + smessages);
 
 				channel.write(smessages).addListener(
 						ChannelFutureListener.CLOSE_ON_FAILURE); //
@@ -64,7 +64,7 @@ public class TCPNode {
 				for (MMessage mMessage : smessages) {
 					bytecount += mMessage.getByteCount();
 				}
-				log.info("messages written " + bytecount);
+				log.debug("messages written " + bytecount + " bytes");
 				return bytecount;
 			} else {
 				log.info("not writing zero messages");

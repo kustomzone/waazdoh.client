@@ -26,7 +26,7 @@ public class MessageEncoder extends MessageToByteEncoder<List<MMessage>> {
 
 	protected void encode(ChannelHandlerContext arg0, List<MMessage> list,
 			ByteBuf bb) throws Exception {
-		log.info("encoding message " + list);
+		log.debug("encoding message " + list);
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			DataOutputStream dos = new DataOutputStream(baos);
