@@ -15,6 +15,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -28,22 +29,28 @@ public class MessageEncoder extends MessageToByteEncoder<List<MMessage>> {
 		log.info("encoding message " + list);
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			DataOutputStream dos = new DataOutputStream(baos);
 			//
-			bb.writeInt(list.size());
+			dos.writeInt(list.size());
 			for (MMessage bean : list) {
-				int bytes = writeMessage(bb, bean);
+				int bytes = writeMessage(dos, bean);
 			}
+			//
+			byte[] dosbb = baos.toByteArray();
+			bb.writeInt(dosbb.length);
+			bb.writeBytes(dosbb, 0, dosbb.length);
 		} catch (IOException e1) {
 			log.error(e1);
 		}
 	}
 
-	public int writeMessage(ByteBuf bb, MMessage bean) throws IOException {
+	public int writeMessage(DataOutputStream dos, MMessage bean)
+			throws IOException {
 		log.debug("channelwrite " + bean);
 		//
 		byte bs[] = bean.getAsBytes();
-		bb.writeInt(bs.length);
-		bb.writeBytes(bs);
+		dos.writeInt(bs.length);
+		dos.write(bs);
 		return bs.length;
 	}
 }
