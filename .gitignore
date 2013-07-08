@@ -30,3 +30,4 @@ cc.properties
 *.msi
 bin
 .externalToolBuilders
+.settings
