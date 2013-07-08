@@ -10,7 +10,7 @@
  ******************************************************************************/
 package waazdoh.cp2p.impl;
 
-public class NewNodeHandler implements MMessageHandler {
+public final class NewNodeHandler implements MMessageHandler {
 	private MMessageFactory factory;
 	private P2PServer server;
 
@@ -22,7 +22,7 @@ public class NewNodeHandler implements MMessageHandler {
 	public boolean handle(MMessage childb, Node node) {
 		return false;
 	}
-	
+
 	@Override
 	public void setFactory(MMessageFactory factory) {
 		this.factory = factory;

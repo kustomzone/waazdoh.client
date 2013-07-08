@@ -10,11 +10,10 @@
  ******************************************************************************/
 package waazdoh.client;
 
-
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.xml.JBean;
 
-public class WUser {
+public final class WUser {
 
 	private String name;
 	private String img;

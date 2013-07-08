@@ -12,7 +12,7 @@ package waazdoh.client;
 
 import waazdoh.cutils.xml.JBean;
 
-public class WBookmark {
+public final class WBookmark {
 	private String id;
 	private String oid;
 	private String created;

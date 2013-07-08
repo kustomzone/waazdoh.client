@@ -63,7 +63,7 @@ public final class MCRC {
 		} else {
 			if (obj instanceof MCRC) {
 				MCRC crc = (MCRC) obj;
-				if(crc.isError()) {
+				if (crc.isError()) {
 					return false;
 				}
 				if (crc.value > 0 && crc.value >= 0 && value >= 0) {

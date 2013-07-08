@@ -28,7 +28,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MURL;
 
-public class URLCaller {
+public final class URLCaller {
 	private int MaxCount = 10;
 
 	public int getMaxCount() {

@@ -21,7 +21,7 @@ import javax.xml.bind.Marshaller;
 import waazdoh.cutils.xml.JBean;
 import waazdoh.cutils.xml.XML;
 
-public class JBeanResponse {
+public final class JBeanResponse {
 	private static final String AUTHENTICATION_FAILED_MESSAGE = "auth failed";
 	private JBean bean = new JBean("response");
 	private MLogger log = MLogger.getLogger(this);

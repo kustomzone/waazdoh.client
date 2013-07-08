@@ -20,7 +20,7 @@ import waazdoh.cutils.UserID;
 import waazdoh.cutils.xml.JBean;
 import waazdoh.service.CMService;
 
-public class StaticService implements CMService {
+public final class StaticService implements CMService {
 	private UserID userid;
 	private static Map<MID, JBean> data = new HashMap<MID, JBean>();
 

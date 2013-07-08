@@ -24,7 +24,7 @@ import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MTimedFlag;
 import waazdoh.cutils.xml.JBean;
 
-public class TCPNode {
+public final class TCPNode {
 	private static final long MAX_GIVEUP_TIME = 6000;
 
 	private Channel channel;

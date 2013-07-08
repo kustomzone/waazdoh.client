@@ -30,7 +30,7 @@ import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MPreferences;
 import waazdoh.service.CMService;
 
-public class MBinaryStorage {
+public final class MBinaryStorage {
 	private List<Binary> streams = new LinkedList<Binary>();
 	private Map<MID, MCRC> crcs = new HashMap<MID, MCRC>();
 	//

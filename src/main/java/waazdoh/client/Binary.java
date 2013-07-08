@@ -26,7 +26,7 @@ import waazdoh.cutils.UserID;
 import waazdoh.cutils.xml.JBean;
 import waazdoh.service.CMService;
 
-public class Binary {
+public final class Binary {
 	private Byte[] bytes = new Byte[10];
 	private int bytesindex = 0;
 	//

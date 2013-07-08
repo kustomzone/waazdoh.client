@@ -23,7 +23,7 @@ import waazdoh.cutils.xml.JBean;
 import waazdoh.cutils.xml.XML;
 import waazdoh.service.CMService;
 
-public class ServiceMock implements CMService {
+public final class ServiceMock implements CMService {
 	private String username;
 	private String session;
 	private UserID userid;

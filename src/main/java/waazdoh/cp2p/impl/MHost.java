@@ -10,15 +10,13 @@
  ******************************************************************************/
 package waazdoh.cp2p.impl;
 
-
-
-public class MHost {
+public final class MHost {
 	private String host;
-	
+
 	public MHost(String string) {
 		this.host = string;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "" + host;

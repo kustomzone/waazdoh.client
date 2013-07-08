@@ -24,7 +24,7 @@ import java.util.List;
 
 import waazdoh.cutils.MLogger;
 
-public class MessageDecoder extends ByteToMessageDecoder {
+public final class MessageDecoder extends ByteToMessageDecoder {
 	private MLogger log = MLogger.getLogger(this);
 	private ByteArrayOutputStream baos;
 

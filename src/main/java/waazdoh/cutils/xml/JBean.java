@@ -27,7 +27,7 @@ import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.UserID;
 
-public class JBean implements Comparable<JBean> {
+public final class JBean implements Comparable<JBean> {
 	private String name, text;
 	private List<JBean> children = new LinkedList<JBean>();
 	private MLogger log = MLogger.getLogger(this);

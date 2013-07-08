@@ -10,7 +10,6 @@
  ******************************************************************************/
 package waazdoh.cp2p.impl.handlers;
 
-
 import waazdoh.cp2p.impl.Download;
 import waazdoh.cp2p.impl.MMessage;
 import waazdoh.cp2p.impl.MMessageFactory;
@@ -20,16 +19,15 @@ import waazdoh.cp2p.impl.P2PServer;
 import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
 
-
-public class StreamHandler implements MMessageHandler {
+public final class StreamHandler implements MMessageHandler {
 	private MMessageFactory factory;
 	private P2PServer source;
 	private MLogger log = MLogger.getLogger(this);
-	
+
 	public StreamHandler(P2PServer server) {
 		this.source = server;
 	}
-	
+
 	@Override
 	public boolean handle(MMessage childb, Node node) {
 		/**
@@ -62,7 +60,7 @@ public class StreamHandler implements MMessageHandler {
 			return false;
 		}
 	}
-	
+
 	@Override
 	public void setFactory(MMessageFactory factory) {
 		this.factory = factory;

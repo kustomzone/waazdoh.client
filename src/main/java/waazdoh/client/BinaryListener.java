@@ -10,8 +10,6 @@
  ******************************************************************************/
 package waazdoh.client;
 
-
-
 public interface BinaryListener {
 
 	void ready(Binary binary);

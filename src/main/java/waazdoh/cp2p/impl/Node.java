@@ -16,7 +16,7 @@ import java.util.List;
 import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
 
-public class Node {
+public final class Node {
 	private static final long MAX_DIE_TIME = 30100;
 	private static final int WARNING_TRESHOLD = 5;
 	private static final long MAX_PINGDELAY = 10000;

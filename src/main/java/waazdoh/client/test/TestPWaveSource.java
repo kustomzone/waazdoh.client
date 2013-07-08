@@ -25,7 +25,7 @@ import waazdoh.cutils.MPreferences;
 import waazdoh.service.CMService;
 import waazdoh.service.ReportingService;
 
-public class TestPWaveSource implements MBinarySource {
+public final class TestPWaveSource implements MBinarySource {
 	private MPreferences preferences;
 	private MBinaryStorage storage;
 	private CMService service;

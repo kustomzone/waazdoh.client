@@ -10,7 +10,7 @@
  ******************************************************************************/
 package waazdoh.cutils;
 
-public class UserID {
+public final class UserID {
 	private String id;
 
 	public UserID(String id) {

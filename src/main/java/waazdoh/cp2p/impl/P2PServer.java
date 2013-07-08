@@ -33,7 +33,8 @@ import waazdoh.cutils.MPreferences;
 import waazdoh.cutils.xml.JBean;
 import waazdoh.service.ReportingService;
 
-public class P2PServer implements MMessager, MMessageFactory, MNodeConnection {
+public final class P2PServer implements MMessager, MMessageFactory,
+		MNodeConnection {
 	static final int MESSAGESENDLOOP_COUNT = 10;
 	private static final int MAX_SENTCOUNT = 2;
 	private static final long REBOOT_DELAY = 120000;
@@ -277,30 +278,27 @@ public class P2PServer implements MMessager, MMessageFactory, MNodeConnection {
 	}
 
 	private void sendPing(Node node) {
-		node.addMessage(getMessage("ping"),
-				new MessageResponseListener() {
-					private long sent = System.currentTimeMillis();
-					private boolean done = false;
+		node.addMessage(getMessage("ping"), new MessageResponseListener() {
+			private long sent = System.currentTimeMillis();
+			private boolean done = false;
 
-					@Override
-					public void messageReceived(Node n,
-							MMessage message) {
-						log.info("PING response in "
-								+ (System.currentTimeMillis() - sent)
-								+ " ms");
-						done = true;
-					}
+			@Override
+			public void messageReceived(Node n, MMessage message) {
+				log.info("PING response in "
+						+ (System.currentTimeMillis() - sent) + " ms");
+				done = true;
+			}
 
-					@Override
-					public boolean isDone() {
-						if ((System.currentTimeMillis() - sent) > 10000) {
-							log.info("PING giving up");
-							return true;
-						} else {
-							return done;
-						}
-					}
-				});
+			@Override
+			public boolean isDone() {
+				if ((System.currentTimeMillis() - sent) > 10000) {
+					log.info("PING giving up");
+					return true;
+				} else {
+					return done;
+				}
+			}
+		});
 	}
 
 	private Iterator<Node> getNodesIterator() {
@@ -389,7 +387,7 @@ public class P2PServer implements MMessager, MMessageFactory, MNodeConnection {
 		for (Node n : ns) {
 			n.close();
 		}
-		
+
 		if (tcplistener != null) {
 			tcplistener.close();
 		}
@@ -408,7 +406,7 @@ public class P2PServer implements MMessager, MMessageFactory, MNodeConnection {
 	public List<MMessage> handle(List<MMessage> messages) {
 		lastmessagereceived = System.currentTimeMillis();
 		//
-		Node sentbynode = null;// should be same node for every message
+		Node sentbynode = null; // should be same node for every message
 		Node lasthandler = null;
 		for (MMessage message : messages) {
 			MID lasthandlerid = message.getLastHandler();

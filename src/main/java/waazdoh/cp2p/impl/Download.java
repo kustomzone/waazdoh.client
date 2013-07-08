@@ -21,8 +21,7 @@ import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MTimedFlag;
 import waazdoh.cutils.xml.JBean;
 
-
-public class Download implements Runnable, MessageResponseListener,
+public final class Download implements Runnable, MessageResponseListener,
 		SourceListener {
 	private Binary bin;
 	private MNodeConnection source;

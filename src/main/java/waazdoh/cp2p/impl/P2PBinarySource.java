@@ -25,7 +25,7 @@ import waazdoh.cutils.MPreferences;
 import waazdoh.service.CMService;
 import waazdoh.service.ReportingService;
 
-public class P2PBinarySource implements MBinarySource {
+public final class P2PBinarySource implements MBinarySource {
 	P2PServer server;
 	//
 	MLogger log = MLogger.getLogger(this);

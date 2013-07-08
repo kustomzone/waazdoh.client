@@ -20,11 +20,10 @@ import java.util.List;
 
 import waazdoh.cutils.MLogger;
 
-
-public class MConverter {
+public final class MConverter {
 	private byte[] bytes;
 	private MLogger log = MLogger.getLogger(this);
-	
+
 	public MConverter(float[] fs) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputStream das = new DataOutputStream(baos);
@@ -38,21 +37,21 @@ public class MConverter {
 		}
 		bytes = baos.toByteArray();
 	}
-	
+
 	@Override
 	public String toString() {
 		String s = new String(bytes);
 		return s;
 	}
-	
+
 	public MConverter(byte[] attachment) {
 		this.bytes = attachment;
 	}
-	
+
 	public byte[] toByteArray() {
 		return bytes;
 	}
-	
+
 	public List<Float> toFloatList() {
 		List<Float> ret = new ArrayList<Float>();
 		DataInputStream dis = getDataInputStream();
@@ -65,7 +64,7 @@ public class MConverter {
 		}
 		return ret;
 	}
-	
+
 	private DataInputStream getDataInputStream() {
 		return new DataInputStream(new ByteArrayInputStream(bytes));
 	}

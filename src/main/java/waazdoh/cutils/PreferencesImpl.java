@@ -14,14 +14,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class PreferencesImpl implements MPreferences {
+public final class PreferencesImpl implements MPreferences {
 	private Map<String, String> values = new HashMap<String, String>();
 
 	@Override
 	public Set<String> getNames() {
 		return values.keySet();
 	}
-	
+
 	@Override
 	public String get(String name, String defaultvalue) {
 		String v = values.get(name);

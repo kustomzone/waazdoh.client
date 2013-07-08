@@ -24,7 +24,7 @@ import waazdoh.cutils.MID;
 import waazdoh.cutils.xml.JBean;
 import waazdoh.cutils.xml.XML;
 
-public class MMessage {
+public final class MMessage {
 	private JBean bean;
 	private Map<String, byte[]> attachments = new HashMap<String, byte[]>();
 	private int bytecount;

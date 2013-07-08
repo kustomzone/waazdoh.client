@@ -5,7 +5,7 @@ import waazdoh.cutils.MCRC;
 import waazdoh.cutils.MLogger;
 import waazdoh.test.StaticService;
 
-public class TestBinary extends TestCase {
+public final class TestBinary extends TestCase {
 	private MLogger log = MLogger.getLogger(this);
 
 	public void testBinary() {

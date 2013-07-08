@@ -15,7 +15,7 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.logging.Logger;
 
-public class MLogger {
+public final class MLogger {
 	private Logger log;
 	private Object o;
 

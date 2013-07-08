@@ -7,7 +7,7 @@ import java.util.prefs.Preferences;
 
 import waazdoh.cutils.MPreferences;
 
-public class StaticTestPreferences implements MPreferences {
+public final class StaticTestPreferences implements MPreferences {
 	private String username;
 
 	public StaticTestPreferences(String username) {

@@ -9,7 +9,7 @@ import waazdoh.cp2p.impl.P2PBinarySource;
 import waazdoh.cutils.MID;
 import waazdoh.cutils.MPreferences;
 
-public class TestiBinaryTransfer extends TestCase {
+public final class TestiBinaryTransfer extends TestCase {
 
 	public void testTransfer10k() {
 		testTransfer(10000);
@@ -72,7 +72,7 @@ public class TestiBinaryTransfer extends TestCase {
 		assertEquals(b1, b2);
 		//
 		source1.close();
-		source2.close();		
+		source2.close();
 	}
 
 	private P2PBinarySource getServiceSource(String username1, boolean bind) {

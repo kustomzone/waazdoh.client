@@ -10,30 +10,30 @@
  ******************************************************************************/
 package waazdoh.cutils;
 
-public class MTimedFlag {
+public final class MTimedFlag {
 	private long lastreset;
 	private int delaytime;
-	
+
 	public MTimedFlag(int readytimer) {
 		delaytime = readytimer;
 		reset();
 	}
-	
+
 	public void reset() {
 		this.lastreset = System.currentTimeMillis();
 	}
-	
+
 	public boolean isTriggered() {
 		return System.currentTimeMillis() - lastreset > delaytime;
 	}
-	
+
 	public void trigger() {
 		lastreset = 0;
 		synchronized (this) {
 			notifyAll();
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Trigger[" + isTriggered() + "]["
@@ -41,10 +41,10 @@ public class MTimedFlag {
 	}
 
 	public void waitTimer() {
-		while(!isTriggered()) {
+		while (!isTriggered()) {
 			synchronized (this) {
 				try {
-					wait(delaytime/10);
+					wait(delaytime / 10);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

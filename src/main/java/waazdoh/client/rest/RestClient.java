@@ -26,7 +26,7 @@ import waazdoh.cutils.UserID;
 import waazdoh.cutils.xml.JBean;
 import waazdoh.service.CMService;
 
-public class RestClient implements CMService {
+public final class RestClient implements CMService {
 	private URL url;
 	private MLogger log = MLogger.getLogger(this);
 	private String sessionid;
@@ -149,7 +149,7 @@ public class RestClient implements CMService {
 			//
 			source.addBean(userid.toString(), b);
 		}
-		
+
 		return b;
 	}
 

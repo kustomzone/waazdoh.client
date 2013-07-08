@@ -26,7 +26,7 @@ import waazdoh.cutils.MPreferences;
 import waazdoh.cutils.xml.JBean;
 import waazdoh.cutils.xml.XML;
 
-public class MBeanStorage {
+public final class MBeanStorage {
 	private MLogger log = MLogger.getLogger(this);
 	private String path;
 

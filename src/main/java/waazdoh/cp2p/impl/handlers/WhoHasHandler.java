@@ -27,7 +27,7 @@ import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.xml.JBean;
 
-public class WhoHasHandler extends SimpleMessageHandler {
+public final class WhoHasHandler extends SimpleMessageHandler {
 	private int maxResponseWaitTime = WaazdohInfo.MAX_RESPONSE_WAIT_TIME;
 	//
 	private MLogger log = MLogger.getLogger(this);
@@ -58,9 +58,10 @@ public class WhoHasHandler extends SimpleMessageHandler {
 			JBean needed = childb.get("needed");
 			List<JBean> neededpieces = needed.getChildren();
 			int bytes = 0;
-			while (bytes < WaazdohInfo.WHOHAS_RESPONSE_MAX_PIECE_SIZE && neededpieces.size() > 0) {
+			while (bytes < WaazdohInfo.WHOHAS_RESPONSE_MAX_PIECE_SIZE
+					&& neededpieces.size() > 0) {
 				log.info("processing pieces wanted " + neededpieces);
-				
+
 				int pieceindex = (int) (Math.random() * neededpieces.size());
 				if (pieceindex == neededpieces.size()) {
 					pieceindex = neededpieces.size() - 1;
@@ -91,7 +92,7 @@ public class WhoHasHandler extends SimpleMessageHandler {
 				m.addAttribute("start", start);
 				m.addAttribute("end", end);
 			}
-			
+
 			node.addMessage(m);
 			return true;
 		} else {

@@ -17,16 +17,16 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
-public class JBeanContentHandler implements ContentHandler {
+public final class JBeanContentHandler implements ContentHandler {
 	// private JLogger log = JLogger.getLogger(this);
 	private Stack<JBean> stack = new Stack<JBean>();
 	private JBean last;
 	private JBean org;
-	
+
 	public JBeanContentHandler(JBean b) {
 		org = b;
 	}
-	
+
 	private JBean getCurrent() {
 		if (stack.size() > 0) {
 			return stack.lastElement();
@@ -34,28 +34,28 @@ public class JBeanContentHandler implements ContentHandler {
 			return null;
 		}
 	}
-	
+
 	public void setDocumentLocator(Locator locator) {
 		// TODO Auto-generated method stub
 	}
-	
+
 	public void startDocument() throws SAXException {
 		// TODO Auto-generated method stub
 	}
-	
+
 	public void endDocument() throws SAXException {
 		// TODO Auto-generated method stub
 	}
-	
+
 	public void startPrefixMapping(String prefix, String uri)
 			throws SAXException {
 		// TODO Auto-generated method stub
 	}
-	
+
 	public void endPrefixMapping(String prefix) throws SAXException {
 		// TODO Auto-generated method stub
 	}
-	
+
 	public void startElement(String uri, String localName, String qName,
 			Attributes atts) throws SAXException {
 		// log.info("start " + localName + " qn:" + qName + " attrs:" + atts);
@@ -69,7 +69,7 @@ public class JBeanContentHandler implements ContentHandler {
 		}
 		stack.push(b);
 	}
-	
+
 	public void endElement(String uri, String localName, String qName)
 			throws SAXException {
 		// log.info("end " + localName + " qn:" + qName);
@@ -77,7 +77,7 @@ public class JBeanContentHandler implements ContentHandler {
 		// log.info("current "+ (getCurrent() != null ? getCurrent().toXML() :
 		// "null"));
 	}
-	
+
 	public void characters(char[] ch, int start, int length)
 			throws SAXException {
 		String text = getCurrent().getValue();
@@ -87,17 +87,17 @@ public class JBeanContentHandler implements ContentHandler {
 		text = text + new String(ch, start, length);
 		getCurrent().setValue(text);
 	}
-	
+
 	public void ignorableWhitespace(char[] ch, int start, int length)
 			throws SAXException {
 		// TODO Auto-generated method stub
 	}
-	
+
 	public void processingInstruction(String target, String data)
 			throws SAXException {
 		// TODO Auto-generated method stub
 	}
-	
+
 	public void skippedEntity(String name) throws SAXException {
 		// TODO Auto-generated method stub
 	}

@@ -33,7 +33,7 @@ import java.util.Map;
 
 import waazdoh.cutils.MLogger;
 
-public class NodeConnectionFactory {
+public final class NodeConnectionFactory {
 
 	private static Bootstrap _bootstrap;
 	private Map<Channel, TCPNode> nodes = new HashMap<Channel, TCPNode>();

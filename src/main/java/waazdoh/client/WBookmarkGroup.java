@@ -18,7 +18,7 @@ import waazdoh.cutils.MLogger;
 import waazdoh.cutils.xml.JBean;
 import waazdoh.service.CMService;
 
-public class WBookmarkGroup {
+public final class WBookmarkGroup {
 	private CMService service;
 	private String id;
 	private String name;

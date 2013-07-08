@@ -10,19 +10,18 @@
  ******************************************************************************/
 package waazdoh.cp2p.impl.handlers;
 
-
 import waazdoh.cp2p.impl.MMessage;
 import waazdoh.cp2p.impl.MessageResponseListener;
 import waazdoh.cp2p.impl.Node;
 import waazdoh.cp2p.impl.SimpleMessageHandler;
 import waazdoh.cutils.MLogger;
 
-public class PingHandler extends SimpleMessageHandler {
+public final class PingHandler extends SimpleMessageHandler {
 	private MLogger log = MLogger.getLogger(this);
 
 	@Override
 	public boolean handle(MMessage childb, Node n) {
-		 final long st = System.currentTimeMillis();
+		final long st = System.currentTimeMillis();
 		//
 		MMessage response = getFactory().newResponseMessage(childb,
 				"pingresponse");
@@ -36,7 +35,7 @@ public class PingHandler extends SimpleMessageHandler {
 
 			@Override
 			public boolean isDone() {
-				return (System.currentTimeMillis()-st)>50000;
+				return (System.currentTimeMillis() - st) > 50000;
 			}
 		});
 		return true;

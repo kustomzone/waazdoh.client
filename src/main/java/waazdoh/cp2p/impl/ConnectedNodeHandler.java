@@ -10,7 +10,7 @@
  ******************************************************************************/
 package waazdoh.cp2p.impl;
 
-public class ConnectedNodeHandler extends SimpleMessageHandler {
+public final class ConnectedNodeHandler extends SimpleMessageHandler {
 	private P2PServer source;
 
 	public ConnectedNodeHandler(P2PServer server) {

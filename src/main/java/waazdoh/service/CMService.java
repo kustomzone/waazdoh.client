@@ -20,24 +20,23 @@ import waazdoh.cutils.xml.JBean;
 
 public interface CMService {
 	boolean setSession(String username, String session);
-	
+
 	JBeanResponse read(MID id);
-	
+
 	JBeanResponse write(MID id, JBean b);
-	
+
 	boolean publish(MID id);
-	
+
 	UserID getUserID();
-	
-	JBeanResponse search(
-			String filter, int index, int i);
-	
+
+	JBeanResponse search(String filter, int index, int i);
+
 	MURL getURL(String service, String method, MID id);
-	
+
 	String getUsername();
-	
+
 	boolean isLoggedIn();
-	
+
 	String requestAppLogin(String username, String appname, MID appid);
 
 	String getSessionID();

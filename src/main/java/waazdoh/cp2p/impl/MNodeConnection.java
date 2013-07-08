@@ -14,7 +14,6 @@ import java.util.Set;
 
 import waazdoh.cutils.MID;
 
-
 public interface MNodeConnection {
 
 	void removeDownload(MID id);

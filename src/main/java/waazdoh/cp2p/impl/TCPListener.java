@@ -31,7 +31,7 @@ import java.util.List;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MPreferences;
 
-public class TCPListener {
+public final class TCPListener {
 	public static final int DEFAULT_PORT = 7900;
 
 	private int port = DEFAULT_PORT;

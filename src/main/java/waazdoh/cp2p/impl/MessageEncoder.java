@@ -21,7 +21,7 @@ import java.util.List;
 
 import waazdoh.cutils.MLogger;
 
-public class MessageEncoder extends MessageToByteEncoder<List<MMessage>> {
+public final class MessageEncoder extends MessageToByteEncoder<List<MMessage>> {
 	private MLogger log = MLogger.getLogger(this);
 
 	protected void encode(ChannelHandlerContext arg0, List<MMessage> list,

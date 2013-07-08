@@ -14,21 +14,21 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 
-public class XML {
+public final class XML {
 	private String string;
-	
+
 	public XML(String string) {
 		this.string = string;
 	}
-	
+
 	public String getString() {
 		return string;
 	}
-	
+
 	public void setString(String string) {
 		this.string = string;
 	}
-	
+
 	public XML(Reader stringReader) throws IOException {
 		StringBuffer sb = new StringBuffer();
 		BufferedReader br = new BufferedReader(stringReader);
@@ -42,7 +42,7 @@ public class XML {
 		}
 		string = sb.toString();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof XML) {
@@ -52,12 +52,12 @@ public class XML {
 			return false;
 		}
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return string.hashCode();
 	}
-	
+
 	@Override
 	public String toString() {
 		return "" + string;

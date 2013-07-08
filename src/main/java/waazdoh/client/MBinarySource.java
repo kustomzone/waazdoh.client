@@ -18,7 +18,6 @@ import waazdoh.cutils.MID;
 import waazdoh.service.CMService;
 import waazdoh.service.ReportingService;
 
-
 public interface MBinarySource {
 	Binary get(MID bin);
 
@@ -57,6 +56,5 @@ public interface MBinarySource {
 	boolean reload(Binary binary);
 
 	Set<MID> getLocalObjectIDs();
-
 
 }
