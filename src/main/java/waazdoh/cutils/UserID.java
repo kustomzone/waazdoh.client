@@ -14,7 +14,7 @@ public final class UserID {
 	private String id;
 
 	public UserID(String id) {
-		this.id = id;
+		this.id = id.toString();
 	}
 
 	@Override
