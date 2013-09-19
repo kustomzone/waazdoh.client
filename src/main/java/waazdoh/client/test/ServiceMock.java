@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Map;
 
 import waazdoh.client.MBinarySource;
+import waazdoh.client.MStringID;
 import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MID;
 import waazdoh.cutils.MURL;
@@ -30,15 +31,15 @@ public final class ServiceMock implements CMService {
 	private Map<String, JBean> groups = new HashMap<String, JBean>();
 	private MBinarySource source;
 
-	private static Map<MID, JBeanResponse> objects = new HashMap<MID, JBeanResponse>();
+	private static Map<String, JBeanResponse> objects = new HashMap<String, JBeanResponse>();
 
 	public ServiceMock(MBinarySource source) {
-		MID gusersid = new MID();
+		MStringID gusersid = new MStringID();
 		this.source = source;
 		//
 		String gname = "users";
 		addBGroup(gusersid.toString(), gname);
-		addBGroup(new MID().toString(), "test");
+		addBGroup(new MStringID().toString(), "test");
 
 	}
 
@@ -75,26 +76,30 @@ public final class ServiceMock implements CMService {
 	}
 
 	@Override
-	public JBeanResponse read(MID id) {
+	public JBeanResponse read(MStringID id) {
 		JBeanResponse resp = source.getBean(id.toString());
 		if (resp == null) {
-			resp = ServiceMock.objects.get(id);
+			resp = ServiceMock.objects.get(id.toString());
 		}
 		return resp;
 	}
 
 	@Override
-	public JBeanResponse write(MID id, JBean b) {
+	public JBeanResponse write(MStringID id, JBean b) {
 		JBeanResponse res = JBeanResponse.getTrue();
 		res.setBean(b);
 		source.addBean(id.toString(), res);
-		ServiceMock.objects.put(id, res);
+		ServiceMock.objects.put(id.toString(), res);
 		return JBeanResponse.getTrue();
 	}
 
 	@Override
 	public boolean publish(MID id) {
-		// TODO Auto-generated method stub
+		return publish(id.getStringID());
+	}
+
+	@Override
+	public boolean publish(MStringID id) {
 		return true;
 	}
 
@@ -108,7 +113,7 @@ public final class ServiceMock implements CMService {
 		JBeanResponse ret = JBeanResponse.getTrue();
 		HashSet<String> list = new HashSet<String>();
 		for (int i = index; i < count; i++) {
-			list.add("" + new MID());
+			list.add("" + new MStringID());
 		}
 		ret.getBean().addList("items", list);
 		return ret;
@@ -130,14 +135,15 @@ public final class ServiceMock implements CMService {
 	}
 
 	@Override
-	public String requestAppLogin(String username, String appname, MID appid) {
+	public String requestAppLogin(String username, String appname,
+			MStringID appid) {
 		createSession(username);
 		return session;
 	}
 
 	private void createSession(String username) {
-		session = new MID().toString();
-		userid = new UserID(new MID().toString());
+		session = new MStringID().toString();
+		userid = new UserID(new MStringID().toString());
 		this.username = username;
 	}
 
@@ -153,7 +159,7 @@ public final class ServiceMock implements CMService {
 	}
 
 	@Override
-	public JBeanResponse reportDownload(MID id, boolean success) {
+	public JBeanResponse reportDownload(MStringID id, boolean success) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -170,7 +176,7 @@ public final class ServiceMock implements CMService {
 		Map<String, String> ret = new HashMap<String, String>();
 		for (String id : groups.keySet()) {
 			JBean b = groups.get(id);
-			ret.put(id, b.getAttribute("name"));
+			ret.put(id, b.getValue("name"));
 		}
 		return ret;
 	}

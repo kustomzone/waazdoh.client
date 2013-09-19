@@ -18,21 +18,20 @@ import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
 
+import waazdoh.cutils.HashSource;
 import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MCRC;
-import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.UserID;
 import waazdoh.cutils.xml.JBean;
 import waazdoh.service.CMService;
 
-public final class Binary {
+public final class Binary implements HashSource {
 	private Byte[] bytes = new Byte[10];
 	private int bytesindex = 0;
 	//
 	private int length = -1;
 	private MCRC crc;
-	private MID id;
 	private long timestamp;
 	//
 	private MLogger log = MLogger.getLogger(this);
@@ -48,12 +47,15 @@ public final class Binary {
 	private boolean ready;
 	private CMService service;
 	private String extension;
+	private MBinaryID id;
 
 	private static int count = 0;
 
 	public Binary(CMService service, String comment, String extension) {
 		this.service = service;
-		this.id = new MID();
+		this.id = new MBinaryID();
+		creatorid = service.getUserID();
+		//
 		if (service != null) {
 			this.creatorid = service.getUserID();
 		}
@@ -64,15 +66,20 @@ public final class Binary {
 		used();
 	}
 
-	public Binary(MID id, CMService service) {
+	public Binary(MBinaryID streamid, CMService service) {
 		count++;
 
-		this.id = id;
+		this.id = streamid;
 		this.service = service;
 		//
-		loadFromService();
+		loadFromService(streamid);
 		//
 		used();
+	}
+
+	@Override
+	public String getHash() {
+		return getBean().getContentHash();
 	}
 
 	public int getMemoryUsage() {
@@ -185,25 +192,25 @@ public final class Binary {
 	private void load(JBean b) {
 		if (b.get("binary") != null) {
 			b = b.get("binary");
+			id = new MBinaryID(b.getAttribute("id"));
 		}
 		//
-		this.id = new MID(b.getAttribute("id"));
-		this.length = b.getAttributeInt("length");
-		this.storedcrc = new MCRC(b.getAttributeLong("crc"));
-		this.creatorid = new UserID(b.getAttribute("creator"));
-		this.version = b.getAttribute("version");
-		this.extension = b.getAttribute("extension");
-		this.comment = b.getAttribute("comment");
+		this.length = b.getIntValue("length");
+		this.storedcrc = new MCRC(b.getLongValue("crc"));
+		this.creatorid = new UserID(b.getValue("creator"));
+		this.version = b.getValue("version");
+		this.extension = b.getValue("extension");
+		this.comment = b.getValue("comment");
 	}
 
-	private synchronized boolean loadFromService() {
-		JBeanResponse b = service.read(getID());
+	private synchronized boolean loadFromService(MStringID pid) {
+		JBeanResponse b = service.read(pid);
 		if (b != null && b.isSuccess()) {
 			log.info("loading Binary " + b);
 			load(b.getBean().find("binary"));
 			return true;
 		} else {
-			log.info("Service read " + getID() + " failed");
+			log.info("Service read " + pid + " failed");
 			return false;
 		}
 	}
@@ -215,7 +222,11 @@ public final class Binary {
 
 	public void save() {
 		creatorid = service.getUserID();
-		service.write(getID(), getBean());
+
+		JBean bean = getBean();
+		bean.setAttribute("id", getID().toString());
+		//
+		service.write(getID(), bean);
 	}
 
 	public synchronized void fillWithNaN(int length) {
@@ -240,13 +251,13 @@ public final class Binary {
 
 	public JBean getBean() {
 		JBean b = new JBean("binary");
-		b.addAttribute("id", id.toString());
-		b.addAttribute("length", "" + length);
-		b.addAttribute("crc", "" + currentCRC().getValue());
-		b.addAttribute("creator", creatorid.toString());
-		b.addAttribute("version", version);
-		b.addAttribute("comment", "" + comment);
-		b.addAttribute("extension", extension);
+		//
+		b.addValue("length", "" + length);
+		b.addValue("crc", "" + currentCRC().getValue());
+		b.addValue("creator", "" + creatorid);
+		b.addValue("version", version);
+		b.addValue("comment", "" + comment);
+		b.addValue("extension", extension);
 		return b;
 	}
 
@@ -310,7 +321,7 @@ public final class Binary {
 		return ncrc;
 	}
 
-	public MID getID() {
+	public MBinaryID getID() {
 		return id;
 	}
 

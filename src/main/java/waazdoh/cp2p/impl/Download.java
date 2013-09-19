@@ -15,8 +15,9 @@ import java.util.HashSet;
 import java.util.Map;
 
 import waazdoh.client.Binary;
+import waazdoh.client.MBinaryID;
+import waazdoh.client.MStringID;
 import waazdoh.client.WaazdohInfo;
-import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MTimedFlag;
 import waazdoh.cutils.xml.JBean;
@@ -165,8 +166,8 @@ public final class Download implements Runnable, MessageResponseListener,
 
 	private void handleResponse(Node n, MMessage b) {
 		if (b.getName().equals("stream") && !isReady()) {
-			MID sid = b.getIDAttribute("streamid");
-			if (sid != null && sid.equals(getID())) {
+			MStringID sid = b.getIDAttribute("streamid");
+			if (sid != null && getID().equals(sid)) {
 				log.info("response " + b);
 
 				flag.reset();
@@ -195,7 +196,7 @@ public final class Download implements Runnable, MessageResponseListener,
 					log.info("response bytes null");
 				}
 				//
-				MID throughtid = b.getIDAttribute("through");
+				MNodeID throughtid = new MNodeID(b.getAttribute("through"));
 				if (throughtid != null) {
 					sendWhoHasMessage(source.getNode(throughtid));
 				} else if (n != null) {
@@ -221,7 +222,7 @@ public final class Download implements Runnable, MessageResponseListener,
 		return sb.toString();
 	}
 
-	private MID getID() {
+	private MBinaryID getID() {
 		return bin.getID();
 	}
 
@@ -268,8 +269,8 @@ public final class Download implements Runnable, MessageResponseListener,
 				sentstarts.put(start, s);
 				//
 				JBean p = needed.add("piece");
-				p.addAttribute("start", start);
-				p.addAttribute("end", end);
+				p.addValue("start", start);
+				p.addValue("end", end);
 				log.info("piece needed " + p);
 				return true;
 			} else {

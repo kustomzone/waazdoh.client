@@ -12,6 +12,7 @@ package waazdoh.service;
 
 import java.util.Map;
 
+import waazdoh.client.MStringID;
 import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MID;
 import waazdoh.cutils.MURL;
@@ -21,11 +22,11 @@ import waazdoh.cutils.xml.JBean;
 public interface CMService {
 	boolean setSession(String username, String session);
 
-	JBeanResponse read(MID id);
+	JBeanResponse read(MStringID id);
 
-	JBeanResponse write(MID id, JBean b);
+	JBeanResponse write(MStringID id, JBean b);
 
-	boolean publish(MID id);
+	boolean publish(MStringID id);
 
 	UserID getUserID();
 
@@ -37,18 +38,20 @@ public interface CMService {
 
 	boolean isLoggedIn();
 
-	String requestAppLogin(String username, String appname, MID appid);
+	String requestAppLogin(String username, String appname, MStringID id);
 
 	String getSessionID();
 
 	String getInfoText();
 
-	JBeanResponse reportDownload(MID id, boolean success);
+	JBeanResponse reportDownload(MStringID id, boolean success);
 
 	JBeanResponse getBookmarkGroup(String id);
 
 	Map<String, String> getBookmarkGroups();
 
 	JBeanResponse getUser(UserID userid);
+
+	boolean publish(MID id);
 
 }

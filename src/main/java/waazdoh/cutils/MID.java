@@ -12,32 +12,45 @@ package waazdoh.cutils;
 
 import java.util.UUID;
 
+import waazdoh.client.MStringID;
+
 public final class MID {
 	private final String id;
-	private Version version;
+	private HashSource hashsource;
 
-	public MID(String value) {
+	public MID(String value, HashSource hsource) {
 		int i = value.indexOf(".");
 		id = value.substring(0, i);
 		MID.check(id);
-		version = new Version(value.substring(i + 1));
+		hashsource = hsource;
 	}
 
-	public MID() {
+	public MID(HashSource hsource) {
 		id = UUID.randomUUID().toString();
-		version = new Version();
+		hashsource = hsource;
+	}
+
+	public MID(MStringID oid, HashSource nhashsource) {
+		this(oid.toString(), nhashsource);
 	}
 
 	@Override
 	public int hashCode() {
-		return id.hashCode() + version.hashCode();
+		return id.hashCode();
+	}
+
+	private String getSourceHash() {
+		return hashsource.getHash();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof MID) {
 			MID bid = (MID) obj;
-			return bid.id.equals(id) && version.equals(bid.version);
+			return bid.id.equals(id)
+					&& getSourceHash().equals(bid.hashsource.getHash());
+		} else if (obj instanceof MStringID) {
+			return getStringID().equals((MStringID) obj);
 		} else {
 			return false;
 		}
@@ -45,11 +58,7 @@ public final class MID {
 
 	@Override
 	public String toString() {
-		return id + "." + version;
-	}
-
-	public void updateVersion() {
-		this.version = new Version();
+		return id + "." + getSourceHash();
 	}
 
 	public static void check(String substring) {
@@ -59,7 +68,8 @@ public final class MID {
 		}
 	}
 
-	public MID copy() {
-		return new MID(this.toString());
+	public MStringID getStringID() {
+		return new MStringID(toString());
 	}
+
 }

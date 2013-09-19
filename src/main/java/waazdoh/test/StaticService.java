@@ -13,6 +13,7 @@ package waazdoh.test;
 import java.util.HashMap;
 import java.util.Map;
 
+import waazdoh.client.MStringID;
 import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MID;
 import waazdoh.cutils.MURL;
@@ -22,7 +23,7 @@ import waazdoh.service.CMService;
 
 public final class StaticService implements CMService {
 	private UserID userid;
-	private static Map<MID, JBean> data = new HashMap<MID, JBean>();
+	private static Map<MStringID, JBean> data = new HashMap<MStringID, JBean>();
 
 	@Override
 	public boolean setSession(String username, String session) {
@@ -36,7 +37,7 @@ public final class StaticService implements CMService {
 	}
 
 	@Override
-	public JBeanResponse reportDownload(MID id, boolean success) {
+	public JBeanResponse reportDownload(MStringID id, boolean success) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -52,8 +53,7 @@ public final class StaticService implements CMService {
 	}
 
 	@Override
-	public String requestAppLogin(String username, String appname, MID appid) {
-		// TODO Auto-generated method stub
+	public String requestAppLogin(String username, String appname, MStringID id) {
 		return null;
 	}
 
@@ -68,7 +68,13 @@ public final class StaticService implements CMService {
 	}
 
 	@Override
-	public JBeanResponse read(MID id) {
+	public boolean publish(MStringID id) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public JBeanResponse read(MStringID id) {
 		JBean bean = data.get(id);
 		if (bean != null) {
 			JBeanResponse resp = JBeanResponse.getTrue();
@@ -98,7 +104,7 @@ public final class StaticService implements CMService {
 	}
 
 	@Override
-	public JBeanResponse write(MID id, JBean b) {
+	public JBeanResponse write(MStringID id, JBean b) {
 		data.put(id, b);
 		return JBeanResponse.getTrue();
 	}
@@ -106,7 +112,7 @@ public final class StaticService implements CMService {
 	@Override
 	public UserID getUserID() {
 		if (userid == null) {
-			userid = new UserID((new MID()).toString());
+			userid = new UserID((new MStringID()).toString());
 		}
 		return userid;
 	}

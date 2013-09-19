@@ -25,7 +25,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.compression.JZlibDecoder;
 import io.netty.handler.codec.compression.JZlibEncoder;
 
-import java.net.BindException;
 import java.util.List;
 
 import waazdoh.cutils.MLogger;

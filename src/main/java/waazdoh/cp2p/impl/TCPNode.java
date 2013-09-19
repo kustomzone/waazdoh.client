@@ -12,10 +12,7 @@ package waazdoh.cp2p.impl;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.MessageList;
 
 import java.net.ConnectException;
 import java.util.List;

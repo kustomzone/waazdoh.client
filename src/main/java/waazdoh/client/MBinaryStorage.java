@@ -32,7 +32,7 @@ import waazdoh.service.CMService;
 
 public final class MBinaryStorage {
 	private List<Binary> streams = new LinkedList<Binary>();
-	private Map<MID, MCRC> crcs = new HashMap<MID, MCRC>();
+	private Map<MBinaryID, MCRC> crcs = new HashMap<MBinaryID, MCRC>();
 	//
 	private MLogger log = MLogger.getLogger(this);
 	private final String localpath;
@@ -101,17 +101,17 @@ public final class MBinaryStorage {
 		}
 	}
 
-	public Binary getBinary(MID fsid) {
+	public Binary getBinary(MBinaryID streamid) {
 		synchronized (streams) {
-			Binary fs = findStream(fsid);
+			Binary fs = findStream(streamid);
 			//
 			if (fs == null) {
-				fs = getPersistentStream(fsid);
+				fs = getPersistentStream(streamid);
 				if (fs != null) {
-					log.info("found persistent data " + fsid);
+					log.info("found persistent data " + streamid);
 					streams.add(fs);
 				} else {
-					log.info("ERROR Stream with id " + fsid + " null");
+					log.info("ERROR Stream with id " + streamid + " null");
 				}
 			}
 			return fs;
@@ -120,26 +120,26 @@ public final class MBinaryStorage {
 
 	public void clearFromMemory(int time, MID binaryid) {
 		saveWaves();
-		Binary persistentStream = findStream(binaryid);
+		Binary persistentStream = findStream(binaryid.getStringID());
 		log.info("clear from memory " + persistentStream + " time:" + time);
 		if (persistentStream != null) {
 			if (!persistentStream.isUsed(time)) {
 				log.info("removing " + binaryid);
 				synchronized (streams) {
-					streams.remove(findStream(binaryid));
+					streams.remove(findStream(binaryid.getStringID()));
 				}
 			}
 		}
 	}
 
-	public Binary findStream(MID fsid) {
+	public Binary findStream(MStringID streamid) {
 		synchronized (streams) {
 			Binary fs = null;
 			Iterator<Binary> i = new LinkedList(streams).iterator();
 			while (fs == null && i.hasNext()) {
 				Binary test = i.next();
-				MID testid = test.getID();
-				if (testid.equals(fsid)) {
+				MBinaryID testid = test.getID();
+				if (testid.equals(streamid)) {
 					fs = test;
 				}
 			}
@@ -188,14 +188,14 @@ public final class MBinaryStorage {
 		}
 	}
 
-	public synchronized Binary loadPersistentStream(MID id)
+	public synchronized Binary loadPersistentStream(MBinaryID streamid)
 			throws FileNotFoundException {
 		synchronized (streams) {
 			Binary bin;
-			bin = new Binary(id, service);
+			bin = new Binary(streamid, service);
 			if (bin.isOK()) {
 				String datapath = getDataPath(bin);
-				log.info("loading persistent wave " + id + " datapath:"
+				log.info("loading persistent wave " + streamid + " datapath:"
 						+ datapath);
 				File f = new File(datapath);
 				if (f.exists()) {
@@ -224,14 +224,14 @@ public final class MBinaryStorage {
 		return new File(getDataPath(bin));
 	}
 
-	private MCRC getPersistentWaveTimestamp(MID id) {
-		return crcs.get(id);
+	private MCRC getPersistentWaveTimestamp(MBinaryID mBinaryID) {
+		return crcs.get(mBinaryID);
 	}
 
-	private Binary getPersistentStream(MID id) {
+	private Binary getPersistentStream(MBinaryID streamid) {
 		synchronized (streams) {
 			try {
-				return loadPersistentStream(id);
+				return loadPersistentStream(streamid);
 			} catch (IOException e) {
 				e.printStackTrace();
 				log.error(e);
@@ -246,8 +246,8 @@ public final class MBinaryStorage {
 		return datapath;
 	}
 
-	private String getWavePath(MID waveid) {
-		String sid = waveid.toString();
+	private String getWavePath(MBinaryID mBinaryID) {
+		String sid = mBinaryID.toString();
 		String wavepath = this.localpath;
 		if (directorytree) {
 			int index = 0;

@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import waazdoh.cutils.MID;
+import waazdoh.client.MStringID;
 import waazdoh.cutils.xml.JBean;
 import waazdoh.cutils.xml.XML;
 
@@ -37,15 +37,15 @@ public final class MMessage {
 	}
 
 	private void addCreatedTimestamp() {
-		if (bean.getAttribute("timestamp") == null) {
-			bean.addAttribute("timestamp", System.currentTimeMillis());
+		if (bean.getValue("timestamp") == null) {
+			bean.addValue("timestamp", System.currentTimeMillis());
 		}
 	}
 
-	public MMessage(String string, MID sentby) {
+	public MMessage(String string, MStringID sentby) {
 		bean = new JBean(string);
-		bean.addAttribute("sentby", sentby.toString());
-		setID(new MID());
+		bean.addValue("sentby", sentby.toString());
+		setID(new MessageID());
 		//
 		bytecount = bean.toXML().toString().length();
 		addCreatedTimestamp();
@@ -84,16 +84,16 @@ public final class MMessage {
 		return "MMessage:" + bean.toXML().toString();
 	}
 
-	private void setID(MID mid) {
-		this.addAttribute("messageid", "" + mid);
+	private void setID(MessageID messageID) {
+		this.addAttribute("messageid", "" + messageID);
 	}
 
-	public MID getID() {
-		return new MID(getAttribute("messageid"));
+	public MessageID getID() {
+		return new MessageID(getAttribute("messageid"));
 	}
 
 	public String getAttribute(String string) {
-		return bean.getAttribute(string);
+		return bean.getValue(string);
 	}
 
 	public JBean get(String string) {
@@ -101,11 +101,11 @@ public final class MMessage {
 	}
 
 	public void addAttribute(String string, String string2) {
-		this.bean.addAttribute(string, string2);
+		this.bean.addValue(string, string2);
 	}
 
 	public void addAttribute(String string, int start) {
-		this.bean.addAttribute(string, start);
+		this.bean.addValue(string, start);
 	}
 
 	public String getName() {
@@ -117,7 +117,7 @@ public final class MMessage {
 	}
 
 	public int getAttributeInt(String string) {
-		return this.bean.getAttributeInt(string);
+		return this.bean.getIntValue(string);
 	}
 
 	public JBean add(String string) {
@@ -136,24 +136,40 @@ public final class MMessage {
 		return attachments.get(string);
 	}
 
-	public MID getSentBy() {
-		return getIDAttribute("sentby");
+	public MNodeID getSentBy() {
+		MStringID sentby = getIDAttribute("sentby");
+
+		return new MNodeID(sentby);
 	}
 
-	public MID getResponseTo() {
-		return getIDAttribute("responseto");
+	public MNodeID getTo(String string) {
+		String to = getAttribute("to");
+		if (to != null) {
+			return new MNodeID(to);
+		} else {
+			return null;
+		}
+	}
+
+	public MessageID getResponseTo() {
+		String responseto = getAttribute("responseto");
+		if (responseto != null) {
+			return new MessageID(responseto);
+		} else {
+			return null;
+		}
 	}
 
 	public List<JBean> getChildren() {
 		return bean.getChildren();
 	}
 
-	public void setLastHandler(MID networkid) {
-		bean.addAttribute("lasthandler", networkid.toString());
+	public void setLastHandler(MStringID networkid) {
+		bean.addValue("lasthandler", networkid.toString());
 	}
 
-	public MID getLastHandler() {
-		return getIDAttribute("lasthandler");
+	public MNodeID getLastHandler() {
+		return new MNodeID(getIDAttribute("lasthandler"));
 	}
 
 	public byte[] getAsBytes() {
@@ -186,16 +202,16 @@ public final class MMessage {
 		}
 	}
 
-	public MID getIDAttribute(String string) {
+	public MStringID getIDAttribute(String string) {
 		String sid = getAttribute(string);
 		if (sid != null) {
-			return new MID(sid);
+			return new MStringID(sid);
 		} else {
 			return null;
 		}
 	}
 
-	public void addIDAttribute(String string, MID id) {
+	public void addIDAttribute(String string, MStringID id) {
 		addAttribute(string, id.toString());
 	}
 
@@ -206,4 +222,5 @@ public final class MMessage {
 	public int getByteCount() {
 		return this.bytecount;
 	}
+
 }

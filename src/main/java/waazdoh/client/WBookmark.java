@@ -18,9 +18,9 @@ public final class WBookmark {
 	private String created;
 
 	public WBookmark(JBean bbookmark) {
-		id = bbookmark.getAttribute("bookmarkid");
-		oid = bbookmark.getAttribute("objectid");
-		created = bbookmark.getAttribute("created");
+		id = bbookmark.getValue("bookmarkid");
+		oid = bbookmark.getValue("objectid");
+		created = bbookmark.getValue("created");
 	}
 
 	public String getObjectID() {

@@ -18,6 +18,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import waazdoh.client.MStringID;
 import waazdoh.cutils.xml.JBean;
 import waazdoh.cutils.xml.XML;
 
@@ -78,23 +79,23 @@ public final class JBeanResponse {
 
 	public static JBeanResponse getTrue() {
 		JBeanResponse ret = new JBeanResponse();
-		ret.bean.addAttribute("success", "true");
+		ret.bean.addValue("success", "true");
 		return ret;
 	}
 
 	public static JBeanResponse getError(String s) {
 		JBeanResponse ret = getFalse();
-		ret.bean.addAttribute("error", s);
+		ret.bean.addValue("error", s);
 		return ret;
 	}
 
-	public List<MID> getIDList() {
-		List<MID> ret = new LinkedList<MID>();
+	public List<MStringID> getIDList() {
+		List<MStringID> ret = new LinkedList<MStringID>();
 		JBean items = bean.get("items");
 		if (items != null) {
 			List<JBean> ids = items.getChildren();
 			for (JBean jBean : ids) {
-				ret.add(new MID(jBean.getValue()));
+				ret.add(new MStringID(jBean.getText()));
 			}
 			return ret;
 		} else {
@@ -104,7 +105,7 @@ public final class JBeanResponse {
 
 	public static JBeanResponse getFalse() {
 		JBeanResponse ret = new JBeanResponse();
-		ret.bean.addAttribute("success", "false");
+		ret.bean.addValue("success", "false");
 		return ret;
 	}
 
@@ -114,11 +115,11 @@ public final class JBeanResponse {
 	}
 
 	public boolean isSuccess() {
-		Boolean asuccess = bean.getAttributeBoolean("success");
+		Boolean asuccess = bean.getBooleanValue("success");
 		if (asuccess != null) {
 			return asuccess;
 		} else {
-			String serror = bean.getAttribute("error");
+			String serror = bean.getValue("error");
 			return serror == null;
 		}
 	}

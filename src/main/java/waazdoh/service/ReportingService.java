@@ -10,10 +10,10 @@
  ******************************************************************************/
 package waazdoh.service;
 
-import waazdoh.cutils.MID;
+import waazdoh.client.MStringID;
 
 public interface ReportingService {
 
-	void reportDownload(MID id, boolean success);
+	void reportDownload(MStringID id, boolean success);
 
 }

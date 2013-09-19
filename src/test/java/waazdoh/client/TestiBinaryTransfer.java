@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import waazdoh.client.test.ServiceMock;
 import waazdoh.cp2p.impl.P2PBinarySource;
-import waazdoh.cutils.MID;
 import waazdoh.cutils.MPreferences;
 
 public final class TestiBinaryTransfer extends TestCase {
@@ -80,7 +79,7 @@ public final class TestiBinaryTransfer extends TestCase {
 		P2PBinarySource source1 = new P2PBinarySource(p1, bind);
 		ServiceMock service1 = new ServiceMock(source1);
 		source1.setService(service1);
-		service1.setSession(username1, "" + new MID());
+		service1.setSession(username1, "" + new MStringID());
 		return source1;
 	}
 

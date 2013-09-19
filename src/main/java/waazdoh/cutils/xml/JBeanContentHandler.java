@@ -67,6 +67,10 @@ public final class JBeanContentHandler implements ContentHandler {
 			b = new JBean(localName);
 			getCurrent().add(b);
 		}
+		//
+		for (int i = 0; i < atts.getLength(); i++) {
+			b.setAttribute(atts.getQName(i), atts.getValue(i));
+		}
 		stack.push(b);
 	}
 
@@ -80,7 +84,7 @@ public final class JBeanContentHandler implements ContentHandler {
 
 	public void characters(char[] ch, int start, int length)
 			throws SAXException {
-		String text = getCurrent().getValue();
+		String text = getCurrent().getText();
 		if (text == null) {
 			text = "";
 		}

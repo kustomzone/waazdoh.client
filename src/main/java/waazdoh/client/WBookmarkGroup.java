@@ -59,8 +59,8 @@ public final class WBookmarkGroup {
 		MLogger.getLogger(this).info("BookmarkGroup " + br);
 		//
 		JBean b = br.getBean().get("bookmarkgroup");
-		this.name = b.getAttribute("name");
-		this.created = b.getAttribute("created");
+		this.name = b.getValue("name");
+		this.created = b.getValue("created");
 
 		List<JBean> cbookmarks = b.get("bookmarks").getChildren();
 		for (JBean bbookmark : cbookmarks) {

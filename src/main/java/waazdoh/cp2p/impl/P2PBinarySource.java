@@ -15,8 +15,10 @@ import java.util.Set;
 
 import waazdoh.client.Binary;
 import waazdoh.client.BinaryListener;
+import waazdoh.client.MBinaryID;
 import waazdoh.client.MBinarySource;
 import waazdoh.client.MBinaryStorage;
+import waazdoh.client.MStringID;
 import waazdoh.cp2p.impl.handlers.ByteArraySource;
 import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MID;
@@ -44,7 +46,7 @@ public final class P2PBinarySource implements MBinarySource {
 		//
 		this.server = new P2PServer(p, bind2, new ByteArraySource() {
 			@Override
-			public byte[] get(MID streamid) {
+			public byte[] get(MBinaryID streamid) {
 				Binary fs = P2PBinarySource.this.get(streamid);
 				if (fs == null || !fs.isReady()) {
 					return null;
@@ -54,7 +56,7 @@ public final class P2PBinarySource implements MBinarySource {
 			}
 
 			@Override
-			public void addDownload(MID streamid) {
+			public void addDownload(MBinaryID streamid) {
 				getOrDownload(streamid);
 			}
 		});
@@ -120,14 +122,12 @@ public final class P2PBinarySource implements MBinarySource {
 		return beanstorage.getBean(id);
 	}
 
-	@Override
-	public synchronized Binary get(MID fsid) {
-		Binary fs = storage.getBinary(fsid);
+	private synchronized Binary get(MBinaryID streamid) {
+		Binary fs = storage.getBinary(streamid);
 		return fs;
 	}
 
-	@Override
-	public void clearFromMemory(int time, MID binaryid) {
+	private void clearFromMemory(int time, MID binaryid) {
 		log.info("clear from memory " + binaryid + " time:" + time);
 		storage.clearFromMemory(time, binaryid);
 	}
@@ -141,11 +141,12 @@ public final class P2PBinarySource implements MBinarySource {
 	}
 
 	@Override
-	public Set<MID> getLocalObjectIDs() {
+	public Set<MStringID> getLocalObjectIDs() {
 		return beanstorage.getLocalSetIDs();
 	}
 
-	public synchronized Binary getOrDownload(MID fsid) {
+	@Override
+	public synchronized Binary getOrDownload(MBinaryID fsid) {
 		Binary fs = get(fsid);
 		if (fs == null) {
 			if (server.waitForDownloadSlot(5000)) {

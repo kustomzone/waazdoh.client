@@ -13,8 +13,10 @@ package waazdoh.cutils.xml;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -23,6 +25,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import waazdoh.client.MStringID;
+import waazdoh.cutils.BytesHash;
 import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.UserID;
@@ -30,6 +34,7 @@ import waazdoh.cutils.UserID;
 public final class JBean implements Comparable<JBean> {
 	private String name, text;
 	private List<JBean> children = new LinkedList<JBean>();
+	private Map<String, String> attributes = new HashMap<String, String>();
 	private MLogger log = MLogger.getLogger(this);
 	private JBean parent;
 
@@ -63,7 +68,12 @@ public final class JBean implements Comparable<JBean> {
 
 	public void toXML(int indent, StringBuffer sb) {
 		indent(indent, sb);
-		sb.append("<" + getName() + ">");
+		sb.append("<" + getName());
+		for (String key : attributes.keySet()) {
+			String value = attributes.get(key);
+			sb.append(" " + key + "=\"" + value + "\"");
+		}
+		sb.append(">");
 		//
 		if (text != null) {
 			sb.append(text);
@@ -149,16 +159,16 @@ public final class JBean implements Comparable<JBean> {
 		return new LinkedList<JBean>(children);
 	}
 
-	public String getAttribute(String string) {
+	public String getValue(String string) {
 		JBean child = get(string);
 		if (child != null) {
-			return child.getValue();
+			return child.getText();
 		} else {
 			return null;
 		}
 	}
 
-	public String getValue() {
+	public String getText() {
 		if (text != null) {
 			return text.length() > 0 ? text : null;
 		} else {
@@ -220,7 +230,7 @@ public final class JBean implements Comparable<JBean> {
 		return new XML(sb.toString());
 	}
 
-	public void addAttribute(String string, String string2) {
+	public void addValue(String string, String string2) {
 		if (string2 != null) {
 			string2 = string2.trim();
 			if (string2.length() > 0) {
@@ -264,8 +274,8 @@ public final class JBean implements Comparable<JBean> {
 		return add(beanname, new JBean());
 	}
 
-	public int getAttributeInt(String aname) {
-		String s = getAttribute(aname);
+	public int getIntValue(String aname) {
+		String s = getValue(aname);
 		if (s != null) {
 			return Integer.parseInt(s);
 		} else {
@@ -273,8 +283,8 @@ public final class JBean implements Comparable<JBean> {
 		}
 	}
 
-	public long getAttributeLong(String aname) {
-		String s = getAttribute(aname);
+	public long getLongValue(String aname) {
+		String s = getValue(aname);
 		if (s != null) {
 			return Long.parseLong(s);
 		} else {
@@ -282,8 +292,8 @@ public final class JBean implements Comparable<JBean> {
 		}
 	}
 
-	public float getAttributeFloat(String aname) {
-		String s = getAttribute(aname);
+	public float getFloatValue(String aname) {
+		String s = getValue(aname);
 		if (s != null) {
 			return Float.parseFloat(s);
 		} else {
@@ -291,8 +301,8 @@ public final class JBean implements Comparable<JBean> {
 		}
 	}
 
-	public Boolean getAttributeBoolean(String aname) {
-		String s = getAttribute(aname);
+	public Boolean getBooleanValue(String aname) {
+		String s = getValue(aname);
 		if (s != null) {
 			return Boolean.parseBoolean(s);
 		} else {
@@ -304,12 +314,12 @@ public final class JBean implements Comparable<JBean> {
 		return getChildren().get(0);
 	}
 
-	public void addAttribute(String string, int num) {
-		addAttribute(string, "" + num);
+	public void addValue(String string, int num) {
+		addValue(string, "" + num);
 	}
 
-	public void addAttribute(String string, long num) {
-		addAttribute(string, "" + num);
+	public void addValue(String string, long num) {
+		addValue(string, "" + num);
 	}
 
 	public JBean addList(String string, Set<String> list) {
@@ -320,8 +330,8 @@ public final class JBean implements Comparable<JBean> {
 		return b;
 	}
 
-	public void addAttribute(String string, boolean bvalue) {
-		this.addAttribute(string, "" + bvalue);
+	public void addValue(String string, boolean bvalue) {
+		this.addValue(string, "" + bvalue);
 	}
 
 	public JBean find(String string) {
@@ -343,25 +353,25 @@ public final class JBean implements Comparable<JBean> {
 		return null;
 	}
 
-	public MID getIDAttribute(String string) {
-		String sid = getAttribute(string);
+	public MStringID getIDValue(String string) {
+		String sid = getValue(string);
 		if (sid == null || sid.equals("null")) {
 			return null;
 		} else {
-			return new MID(sid);
+			return new MStringID(sid);
 		}
 	}
 
-	public void addAttribute(String string, MID id) {
-		this.addAttribute(string, id.toString());
+	public void addChildValue(String string, MID id) {
+		this.addValue(string, id.toString());
 	}
 
 	public UserID getUserAttribute(String string) {
-		return new UserID(getAttribute(string));
+		return new UserID(getValue(string));
 	}
 
-	public void addAttribute(String name, float value) {
-		this.addAttribute(name, "" + value);
+	public void addValue(String name, float value) {
+		this.addValue(name, "" + value);
 	}
 
 	public JBean getRoot() {
@@ -374,5 +384,21 @@ public final class JBean implements Comparable<JBean> {
 
 	public void setValue(MID id) {
 		setValue(id.toString());
+	}
+
+	public void setAttribute(String qName, String value) {
+		attributes.put(qName, value);
+	}
+
+	public String getContentHash() {
+		return new BytesHash(toXML().toString().getBytes()).toString();
+	}
+
+	public void addValue(String string, MID id) {
+		this.addValue(string, id.toString());
+	}
+
+	public String getAttribute(String string) {
+		return attributes.get(string);
 	}
 }

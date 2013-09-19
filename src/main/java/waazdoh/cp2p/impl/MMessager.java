@@ -10,8 +10,6 @@
  ******************************************************************************/
 package waazdoh.cp2p.impl;
 
-import io.netty.channel.Channel;
-
 import java.util.List;
 
 public interface MMessager {

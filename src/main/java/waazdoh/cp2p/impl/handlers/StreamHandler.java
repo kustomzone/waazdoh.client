@@ -10,6 +10,7 @@
  ******************************************************************************/
 package waazdoh.cp2p.impl.handlers;
 
+import waazdoh.client.MStringID;
 import waazdoh.cp2p.impl.Download;
 import waazdoh.cp2p.impl.MMessage;
 import waazdoh.cp2p.impl.MMessageFactory;
@@ -43,12 +44,12 @@ public final class StreamHandler implements MMessageHandler {
 		 * .3fe1343a-2afb-4b08-b4ba-ea14315ac8f0</messageid> <end>19594</end>
 		 * <date>Thu Feb 16 23:00:04 EET 2012</date> </stream>
 		 */
-		MID streamid = childb.getIDAttribute("streamid");
+		MStringID streamid = childb.getIDAttribute("streamid");
 		if (streamid != null) {
 			Download download = source.getDownload(streamid);
 			if (download != null) {
-				download.messageReceived(
-						source.getNode(childb.getIDAttribute("sentby")), childb);
+				download.messageReceived(source.getNode(childb.getSentBy()),
+						childb);
 				return true;
 			} else {
 				log.error("download not found " + streamid);

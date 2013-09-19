@@ -12,11 +12,9 @@ package waazdoh.cp2p.impl;
 
 import java.util.Set;
 
-import waazdoh.cutils.MID;
+import waazdoh.client.MStringID;
 
 public interface MNodeConnection {
-
-	void removeDownload(MID id);
 
 	void addSourceListener(SourceListener sourceListener);
 
@@ -27,14 +25,17 @@ public interface MNodeConnection {
 	void broadcastMessage(MMessage notification,
 			MessageResponseListener messageResponseListener);
 
-	Node getNode(MID throughtid);
+	Node getNode(MNodeID throughtid);
 
 	void broadcastMessage(MMessage childb,
-			MessageResponseListener messageResponseListener, Set<MID> exceptions);
+			MessageResponseListener messageResponseListener,
+			Set<MNodeID> exceptions);
 
-	MID getID();
+	MStringID getID();
 
-	Download getDownload(MID streamid);
+	Download getDownload(MStringID streamid);
 
-	void reportDownload(MID id, boolean ready);
+	void reportDownload(MStringID id, boolean ready);
+
+	void removeDownload(MStringID mid);
 }

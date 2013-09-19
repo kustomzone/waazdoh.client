@@ -19,8 +19,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import waazdoh.client.MStringID;
 import waazdoh.cutils.JBeanResponse;
-import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MPreferences;
 import waazdoh.cutils.xml.JBean;
@@ -84,13 +84,13 @@ public final class MBeanStorage {
 		}
 	}
 
-	public Set<MID> getLocalSetIDs() {
+	public Set<MStringID> getLocalSetIDs() {
 		File f = new File(path);
 		String[] list = f.list();
-		Set<MID> ret = new HashSet<MID>();
+		Set<MStringID> ret = new HashSet<MStringID>();
 		for (String string : list) {
 			try {
-				ret.add(new MID(string));
+				ret.add(new MStringID(string));
 			} catch (Exception e) {
 				log.error("Exteption " + e + " with " + string + " in " + path);
 			}

@@ -17,8 +17,10 @@ import java.util.Map;
 import java.util.Set;
 
 import waazdoh.client.Binary;
+import waazdoh.client.MBinaryID;
 import waazdoh.client.MBinarySource;
 import waazdoh.client.MBinaryStorage;
+import waazdoh.client.MStringID;
 import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MID;
 import waazdoh.cutils.MPreferences;
@@ -36,18 +38,13 @@ public final class TestPWaveSource implements MBinarySource {
 	}
 
 	@Override
-	public Set<MID> getLocalObjectIDs() {
-		Set<MID> ret = new HashSet<MID>();
+	public Set<MStringID> getLocalObjectIDs() {
+		Set<MStringID> ret = new HashSet<MStringID>();
 		Set<String> keys = beans.keySet();
 		for (String string : keys) {
-			ret.add(new MID(string));
+			ret.add(new MStringID(string));
 		}
 		return ret;
-	}
-
-	@Override
-	public void clearFromMemory(int treshhold, MID binaryid) {
-		storage.clearFromMemory(treshhold, binaryid);
 	}
 
 	@Override
@@ -112,13 +109,12 @@ public final class TestPWaveSource implements MBinarySource {
 		return beans.get(id);
 	}
 
-	@Override
-	public Binary get(MID fsid) {
+	private Binary get(MBinaryID fsid) {
 		return storage.getBinary(fsid);
 	}
 
 	@Override
-	public Binary getOrDownload(MID samplesid) {
+	public Binary getOrDownload(MBinaryID samplesid) {
 		Binary b = storage.getBinary(samplesid);
 		if (b == null) {
 			b = new Binary(samplesid, service);

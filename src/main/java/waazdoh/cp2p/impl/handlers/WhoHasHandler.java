@@ -16,10 +16,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import waazdoh.client.MBinaryID;
+import waazdoh.client.MStringID;
 import waazdoh.client.WaazdohInfo;
 import waazdoh.cp2p.impl.Download;
 import waazdoh.cp2p.impl.MMessage;
 import waazdoh.cp2p.impl.MNodeConnection;
+import waazdoh.cp2p.impl.MNodeID;
 import waazdoh.cp2p.impl.MessageResponseListener;
 import waazdoh.cp2p.impl.Node;
 import waazdoh.cp2p.impl.SimpleMessageHandler;
@@ -37,8 +40,8 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 	private final ByteArraySource source;
 	private final MNodeConnection nodeconnection;
 	//
-	private Map<MID, MID> whohas = new HashMap<MID, MID>();
-	private Map<MID, Integer> responsecount = new HashMap<MID, Integer>();
+	private Map<MID, MNodeID> whohas = new HashMap<MID, MNodeID>();
+	private Map<MStringID, Integer> responsecount = new HashMap<MStringID, Integer>();
 
 	private boolean downloadeverything;
 
@@ -49,7 +52,7 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 
 	@Override
 	public boolean handle(final MMessage childb, final Node node) {
-		final MID streamid = new MID(childb.getAttribute("streamid"));
+		final MBinaryID streamid = new MBinaryID(childb.getAttribute("streamid"));
 		if (source.get(streamid) != null) {
 			MMessage m;
 			m = getFactory().newResponseMessage(childb, "stream");
@@ -69,8 +72,8 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 
 				JBean neededpiece = neededpieces.remove(pieceindex);
 
-				int start = neededpiece.getAttributeInt("start");
-				int end = neededpiece.getAttributeInt("end");
+				int start = neededpiece.getIntValue("start");
+				int end = neededpiece.getIntValue("end");
 				if (end - start > WaazdohInfo.WHOHAS_RESPONSE_MAX_PIECE_SIZE) {
 					start += (int) ((end - start) * Math.random());
 					while (start + WaazdohInfo.WHOHAS_RESPONSE_MAX_PIECE_SIZE > end) {
@@ -100,7 +103,7 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 				source.addDownload(streamid);
 			}
 			//
-			MID knownwhohas = whohas.get(streamid);
+			MNodeID knownwhohas = whohas.get(streamid);
 			MessageResponseListener responselistener = new MessageResponseListener() {
 				private long st = System.currentTimeMillis();
 
@@ -132,7 +135,7 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 			};
 			//
 			if (knownwhohas == null) {
-				Set<MID> exceptions = new HashSet<MID>();
+				Set<MNodeID> exceptions = new HashSet<MNodeID>();
 				exceptions.add(childb.getSentBy());
 				nodeconnection.broadcastMessage(childb, responselistener,
 						exceptions);

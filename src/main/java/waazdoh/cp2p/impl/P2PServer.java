@@ -10,8 +10,6 @@
  ******************************************************************************/
 package waazdoh.cp2p.impl;
 
-import io.netty.channel.Channel;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,11 +21,11 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import waazdoh.client.Binary;
+import waazdoh.client.MStringID;
 import waazdoh.cp2p.impl.handlers.ByteArraySource;
 import waazdoh.cp2p.impl.handlers.PingHandler;
 import waazdoh.cp2p.impl.handlers.StreamHandler;
 import waazdoh.cp2p.impl.handlers.WhoHasHandler;
-import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MPreferences;
 import waazdoh.cutils.xml.JBean;
@@ -42,13 +40,13 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	public static final String PREFERENCES_PORT = "p2pserver.port";
 	//
 	private MLogger log = MLogger.getLogger(this);
-	private final Map<MID, Download> downloads = new HashMap<MID, Download>();
-	MID networkid;
+	private final Map<MStringID, Download> downloads = new HashMap<MStringID, Download>();
+	MStringID networkid;
 	Map<String, MMessageHandler> handlers = new HashMap<String, MMessageHandler>();
 	//
 	List<Node> nodes = new LinkedList<Node>();
 	Set<SourceListener> sourcelisteners = new HashSet<SourceListener>();
-	private Map<MID, MessageResponseListener> responselisteners = new HashMap<MID, MessageResponseListener>();
+	private Map<MessageID, MessageResponseListener> responselisteners = new HashMap<MessageID, MessageResponseListener>();
 	//
 	boolean dobind;
 	private boolean closed = false;
@@ -78,7 +76,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	}
 
 	@Override
-	public void reportDownload(MID id, boolean success) {
+	public void reportDownload(MStringID id, boolean success) {
 		if (reporting != null) {
 			reporting.reportDownload(id, success);
 		}
@@ -183,7 +181,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		lastmessagereceived = System.currentTimeMillis();
 		closed = false;
 		if (networkid == null) {
-			networkid = new MID();
+			networkid = new MStringID();
 		}
 		//
 		if (dobind) {
@@ -203,7 +201,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		return n;
 	}
 
-	Node addNode(MID nodeid, MHost host, int port) {
+	Node addNode(MNodeID nodeid, MHost host, int port) {
 		Node n = new Node(nodeid, host, port, this);
 		addNode(this, n);
 		return n;
@@ -351,7 +349,8 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	}
 
 	public void broadcastMessage(MMessage notification,
-			MessageResponseListener messageResponseListener, Set<MID> exceptions) {
+			MessageResponseListener messageResponseListener,
+			Set<MNodeID> exceptions) {
 		if (notification.getSentCount() <= MAX_SENTCOUNT) {
 			notification.addAttribute("sentcount",
 					notification.getSentCount() + 1);
@@ -409,10 +408,10 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		Node sentbynode = null; // should be same node for every message
 		Node lasthandler = null;
 		for (MMessage message : messages) {
-			MID lasthandlerid = message.getLastHandler();
+			MNodeID lasthandlerid = message.getLastHandler();
 			lasthandler = getNode(lasthandlerid);
 
-			MID sentby = message.getSentBy();
+			MNodeID sentby = message.getSentBy();
 			//
 			sentbynode = getNode(sentby);
 			if (sentbynode == null) {
@@ -455,17 +454,17 @@ public final class P2PServer implements MMessager, MMessageFactory,
 			if (nodeinfo != null) {
 				List<JBean> nodeinfos = nodeinfo.getChildren();
 				for (JBean inode : nodeinfos) {
-					MID nodeinfoid = new MID(inode.getName());
+					MNodeID nodeinfoid = new MNodeID(inode.getName());
 					if (getNode(nodeinfoid) == null) {
-						MHost host = new MHost(inode.getAttribute("host"));
-						int port = inode.getAttributeInt("port");
+						MHost host = new MHost(inode.getValue("host"));
+						int port = inode.getIntValue("port");
 						addNode(nodeinfoid, host, port);
 					}
 				}
 			}
 			//
-			MID responseto = message.getResponseTo();
-			MID to = message.getIDAttribute("to");
+			MessageID responseto = message.getResponseTo();
+			MNodeID to = message.getTo("to");
 			if (to == null || to.equals(getID())) {
 				if (handler != null) {
 					handler.handle(message, node);
@@ -515,10 +514,10 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		return ret;
 	}
 
-	public Node getNode(MID id) {
-		if (id != null) {
+	public Node getNode(MNodeID sentby) {
+		if (sentby != null) {
 			for (Node node : nodes) {
-				if (id.equals(node.getID())) {
+				if (sentby.equals(node.getID())) {
 					return node;
 				}
 			}
@@ -526,14 +525,14 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		return null;
 	}
 
-	private void removeResponseListener(MID responseto) {
+	private void removeResponseListener(MessageID id) {
 		synchronized (responselisteners) {
-			responselisteners.remove(responseto);
+			responselisteners.remove(id);
 		}
 
 	}
 
-	public void addResponseListener(MID id,
+	public void addResponseListener(MessageID id,
 			MessageResponseListener messageResponseListener) {
 		synchronized (responselisteners) {
 			if (messageResponseListener != null) {
@@ -542,7 +541,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		}
 	}
 
-	private MessageResponseListener getResponseListener(MID id) {
+	private MessageResponseListener getResponseListener(MessageID id) {
 		synchronized (responselisteners) {
 			return responselisteners.get(id);
 		}
@@ -550,26 +549,27 @@ public final class P2PServer implements MMessager, MMessageFactory,
 
 	public void nodeConnected(Node node) {
 		MMessage m = new MMessage("connectednode", getID());
-		Set<MID> exceptions = new HashSet<MID>();
+		Set<MNodeID> exceptions = new HashSet<MNodeID>();
 		exceptions.add(node.getID());
 		broadcastMessage(m, null, exceptions);
 	}
 
-	public MID getID() {
+	public MStringID getID() {
 		return networkid;
 	}
 
-	public Download getDownload(MID streamid) {
+	@Override
+	public Download getDownload(MStringID streamid) {
 		return downloads.get(streamid);
 	}
 
 	@Override
-	public void removeDownload(MID id) {
+	public void removeDownload(MStringID did) {
 		synchronized (downloads) {
-			log.info("removing download " + id);
-			if (getDownload(id) != null) {
-				getDownload(id).stop();
-				downloads.remove(id);
+			log.info("removing download " + did);
+			if (getDownload(did) != null) {
+				getDownload(did).stop();
+				downloads.remove(did);
 			}
 		}
 	}
@@ -594,9 +594,9 @@ public final class P2PServer implements MMessager, MMessageFactory,
 
 	public void clearMemory(int suggestedmemorytreshold) {
 		synchronized (responselisteners) {
-			HashMap<MID, MessageResponseListener> nresponselisteners = new HashMap<MID, MessageResponseListener>(
+			HashMap<MessageID, MessageResponseListener> nresponselisteners = new HashMap<MessageID, MessageResponseListener>(
 					responselisteners);
-			for (MID id : nresponselisteners.keySet()) {
+			for (MessageID id : nresponselisteners.keySet()) {
 				MessageResponseListener l = getResponseListener(id);
 				if (l.isDone()) {
 					removeResponseListener(id);
@@ -614,9 +614,9 @@ public final class P2PServer implements MMessager, MMessageFactory,
 			}
 
 			synchronized (downloads) {
-				Map<MID, Download> ndownloads = new HashMap<MID, Download>(
+				Map<MStringID, Download> ndownloads = new HashMap<MStringID, Download>(
 						downloads);
-				for (MID did : ndownloads.keySet()) {
+				for (MStringID did : ndownloads.keySet()) {
 					Download d = getDownload(did);
 					if (d.isDone()) {
 						removeDownload(did);

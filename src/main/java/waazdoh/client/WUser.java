@@ -29,9 +29,9 @@ public final class WUser {
 		 */
 		JBean buser = bean.get("user");
 		MLogger.getLogger(this).info("user : " + buser);
-		name = buser.getAttribute("name");
+		name = buser.getValue("name");
 		JBean profile = buser.get("profile");
-		img = profile.getAttribute("pictureURL");
+		img = profile.getValue("pictureURL");
 	}
 
 	public String getName() {

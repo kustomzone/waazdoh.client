@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import waazdoh.client.MBinarySource;
+import waazdoh.client.MStringID;
 import waazdoh.client.URLCaller;
 import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MID;
@@ -47,20 +48,20 @@ public final class RestClient implements CMService {
 	}
 
 	@Override
-	public String requestAppLogin(String email, String appname, MID appid) {
+	public String requestAppLogin(String email, String appname, MStringID appid) {
 		// @Path("/authenticateapp/{email}/{appid}/{appname}")
 		JBean request = new JBean("request");
-		request.addAttribute("email", email);
-		request.addAttribute("appid", appid.toString());
-		request.addAttribute("appname", appname);
+		request.addValue("email", email);
+		request.addValue("appid", appid.toString());
+		request.addValue("appname", appname);
 		//
 		String method = "authenticateapp";
 		JBeanResponse response = post("users", method,
 				new LinkedList<String>(), request);
 		log.info("response " + response);
 		JBean responsebean = response.getBean();
-		sessionid = responsebean.getAttribute("sessionid");
-		userid = new UserID(responsebean.getAttribute("user"));
+		sessionid = responsebean.getValue("sessionid");
+		userid = new UserID(responsebean.getValue("user"));
 		this.username = email;
 		//
 		loggedin = response.isSuccess();
@@ -92,7 +93,7 @@ public final class RestClient implements CMService {
 			JBeanResponse response = get("users", "checksession", true, params);
 			log.info("checksession response " + response);
 			if (response.isSuccess()) {
-				String suserid = response.getBean().find("uid").getValue();
+				String suserid = response.getBean().find("uid").getText();
 				if (suserid != null) {
 					userid = new UserID(suserid);
 					this.username = username;
@@ -130,7 +131,7 @@ public final class RestClient implements CMService {
 	}
 
 	@Override
-	public JBeanResponse reportDownload(MID id, boolean success) {
+	public JBeanResponse reportDownload(MStringID id, boolean success) {
 		List<String> params = new LinkedList<String>();
 		params.add(sessionid.toString());
 		params.add(id.toString());
@@ -154,7 +155,7 @@ public final class RestClient implements CMService {
 	}
 
 	@Override
-	public JBeanResponse read(MID id) {
+	public JBeanResponse read(MStringID id) {
 		JBeanResponse bean = source.getBean(id.toString());
 		if (bean != null) {
 			return bean;
@@ -170,7 +171,7 @@ public final class RestClient implements CMService {
 	}
 
 	@Override
-	public JBeanResponse write(MID id, JBean b) {
+	public JBeanResponse write(MStringID id, JBean b) {
 		// TODO
 		JBeanResponse resp = new JBeanResponse();
 		resp.setBean(b);
@@ -178,7 +179,7 @@ public final class RestClient implements CMService {
 		return resp;
 	}
 
-	private JBeanResponse store(MID id, JBeanResponse beanresponse) {
+	private JBeanResponse store(MStringID id, JBeanResponse beanresponse) {
 		List<String> params = new LinkedList<String>();
 		params.add(id.toString());
 		return post("objects", "write", params, beanresponse.getBean());
@@ -201,6 +202,11 @@ public final class RestClient implements CMService {
 
 	@Override
 	public boolean publish(MID id) {
+		return publish(id.getStringID());
+	}
+
+	@Override
+	public boolean publish(MStringID id) {
 		List<String> params = new LinkedList<String>();
 		params.add(id.toString());
 		store(id, read(id));
@@ -281,8 +287,8 @@ public final class RestClient implements CMService {
 				 * </group>
 				 */
 				log.info("bookmarkgroup " + groupbean);
-				list.put(groupbean.getAttribute("groupid"),
-						groupbean.getAttribute("name"));
+				list.put(groupbean.getValue("groupid"),
+						groupbean.getValue("name"));
 			}
 
 			return list;

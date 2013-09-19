@@ -13,7 +13,6 @@ package waazdoh.cp2p.impl;
 import java.util.LinkedList;
 import java.util.List;
 
-import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
 
 public final class Node {
@@ -21,7 +20,7 @@ public final class Node {
 	private static final int WARNING_TRESHOLD = 5;
 	private static final long MAX_PINGDELAY = 10000;
 	private static final int MAX_MESSAGES_COUNT = 20;
-	private MID id;
+	private MNodeID id;
 	//
 	private MLogger log = MLogger.getLogger(this);
 	private long lastping;
@@ -35,7 +34,7 @@ public final class Node {
 
 	private List<MMessage> outgoingmessages = new LinkedList<MMessage>();
 
-	public Node(MID id, MHost host, int port, P2PServer nsource) {
+	public Node(MNodeID id, MHost host, int port, P2PServer nsource) {
 		this.id = id;
 		tcpnode = new TCPNode(host, port, this);
 		this.source = nsource;
@@ -48,7 +47,7 @@ public final class Node {
 	 * touch(); }
 	 */
 
-	public Node(MID id2, P2PServer source) {
+	public Node(MNodeID id2, P2PServer source) {
 		this.id = id2;
 		this.source = source;
 		touch();
@@ -103,7 +102,7 @@ public final class Node {
 		tcpnode.sendMessages(smessages);
 	}
 
-	public MID getID() {
+	public MNodeID getID() {
 		return id;
 	}
 
@@ -222,7 +221,7 @@ public final class Node {
 			updatePing();
 
 			if (id == null) {
-				this.id = new MID(messages.get(0).getAttribute("sentby"));
+				this.id = new MNodeID(messages.get(0).getAttribute("sentby"));
 			}
 
 			List<MMessage> retmessages = source

@@ -10,11 +10,12 @@
  ******************************************************************************/
 package waazdoh.cp2p.impl.handlers;
 
-import waazdoh.cutils.MID;
+import waazdoh.client.MBinaryID;
 
 public interface ByteArraySource {
 
-	byte[] get(MID streamid);
+	byte[] get(MBinaryID streamid);
 
-	void addDownload(MID streamid);
+	void addDownload(MBinaryID streamid);
+
 }

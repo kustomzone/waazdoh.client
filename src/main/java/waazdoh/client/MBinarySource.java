@@ -14,13 +14,10 @@ import java.io.File;
 import java.util.Set;
 
 import waazdoh.cutils.JBeanResponse;
-import waazdoh.cutils.MID;
 import waazdoh.service.CMService;
 import waazdoh.service.ReportingService;
 
 public interface MBinarySource {
-	Binary get(MID bin);
-
 	void saveWaves();
 
 	void close();
@@ -31,9 +28,7 @@ public interface MBinarySource {
 
 	CMService getService();
 
-	Binary getOrDownload(MID samplesid);
-
-	void clearFromMemory(int time, MID binaryid);
+	Binary getOrDownload(MBinaryID binaryid);
 
 	void clearMemory(int suggestedmemorytreshold);
 
@@ -55,6 +50,6 @@ public interface MBinarySource {
 
 	boolean reload(Binary binary);
 
-	Set<MID> getLocalObjectIDs();
+	Set<MStringID> getLocalObjectIDs();
 
 }
