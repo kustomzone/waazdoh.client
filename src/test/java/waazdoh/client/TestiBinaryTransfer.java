@@ -34,9 +34,10 @@ public final class TestiBinaryTransfer extends TestCase {
 		testTransfer(1000000);
 	}
 
+	/*
 	public void testTransfer4M() {
 		testTransfer(4000000);
-	}
+	}*/
 
 	@Test
 	public void testTransfer(int time) {
