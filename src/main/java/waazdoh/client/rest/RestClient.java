@@ -59,13 +59,13 @@ public final class RestClient implements CMService {
 		JBeanResponse response = post("users", method,
 				new LinkedList<String>(), request);
 		log.info("response " + response);
-		JBean responsebean = response.getBean();
-		sessionid = responsebean.getValue("sessionid");
-		userid = new UserID(responsebean.getValue("user"));
-		this.username = email;
-		//
 		loggedin = response.isSuccess();
 		if (loggedin) {
+			JBean responsebean = response.getBean();
+			sessionid = responsebean.getValue("sessionid");
+			userid = new UserID(responsebean.getValue("user"));
+			this.username = email;
+			//
 			return sessionid;
 		} else {
 			sessionid = null;
