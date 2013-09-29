@@ -88,9 +88,11 @@ public final class P2PServer implements MMessager, MMessageFactory,
 				+ (System.currentTimeMillis() - lastmessagereceived)
 				+ "ms ago ";
 		long dtime = System.currentTimeMillis() - bytecountstart;
-		s += " I:" + (inputbytecount * 1000 / dtime);
-		s += " O:" + (outputbytecount * 1000 / dtime);
-
+		if (dtime > 0) {
+			s += " I:" + (inputbytecount * 1000 / dtime);
+			s += " O:" + (outputbytecount * 1000 / dtime);
+		}
+		//
 		if (dtime > 10 * 1000) {
 			bytecountstart = System.currentTimeMillis();
 			inputbytecount = 0;
