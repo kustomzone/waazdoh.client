@@ -196,9 +196,10 @@ public final class Download implements Runnable, MessageResponseListener,
 					log.info("response bytes null");
 				}
 				//
-				MNodeID throughtid = new MNodeID(b.getAttribute("through"));
-				if (throughtid != null) {
-					sendWhoHasMessage(source.getNode(throughtid));
+				String sthrough = b.getAttribute("through");
+				if (sthrough != null) {
+					MNodeID throughid = new MNodeID(sthrough);
+					sendWhoHasMessage(source.getNode(throughid));
 				} else if (n != null) {
 					sendWhoHasMessage(n);
 				} else {
