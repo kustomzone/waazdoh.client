@@ -10,7 +10,6 @@
  ******************************************************************************/
 package waazdoh.cp2p.impl;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import waazdoh.cutils.MLogger;
@@ -32,7 +31,7 @@ public final class Node {
 	private TCPNode tcpnode;
 	private int outputbytecount;
 
-	private List<MMessage> outgoingmessages = new LinkedList<MMessage>();
+	private MMessageList outgoingmessages = new MMessageList();
 
 	public Node(MNodeID id, MHost host, int port, P2PServer nsource) {
 		this.id = id;
@@ -94,7 +93,7 @@ public final class Node {
 	}
 
 	public void sendMessages() {
-		List<MMessage> smessages;
+		MMessageList smessages;
 		synchronized (outgoingmessages) {
 			smessages = getMessages();
 			outgoingmessages.clear();
@@ -110,12 +109,11 @@ public final class Node {
 		return outgoingmessages.size();
 	}
 
-	public List<MMessage> getMessages() {
+	public MMessageList getMessages() {
 		synchronized (outgoingmessages) {
 			if (outgoingmessages.size() > 0) {
-				LinkedList<MMessage> ret = new LinkedList<MMessage>(
-						outgoingmessages);
-				outgoingmessages = new LinkedList<MMessage>();
+				MMessageList ret = new MMessageList(outgoingmessages);
+				outgoingmessages = new MMessageList();
 				return ret;
 			} else {
 				return outgoingmessages;
@@ -123,8 +121,7 @@ public final class Node {
 		}
 	}
 
-	public void messagesAsResponse(List<MMessage> messages)
-			throws NodeException {
+	public void messagesAsResponse(MMessageList messages) throws NodeException {
 		log.info("Handling node response " + messages);
 		touch();
 		//
@@ -216,7 +213,7 @@ public final class Node {
 		}
 	}
 
-	public List<MMessage> incomingMessages(List<MMessage> messages) {
+	public MMessageList incomingMessages(List<MMessage> messages) {
 		if (messages.size() > 0) {
 			updatePing();
 
@@ -224,8 +221,8 @@ public final class Node {
 				this.id = new MNodeID(messages.get(0).getAttribute("sentby"));
 			}
 
-			List<MMessage> retmessages = source
-					.handle(new LinkedList<MMessage>(messages));
+			List<MMessage> retmessages = source.handle(new MMessageList(
+					messages));
 			synchronized (messages) {
 				messages.addAll(retmessages);
 			}

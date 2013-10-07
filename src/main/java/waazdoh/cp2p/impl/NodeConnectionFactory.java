@@ -14,12 +14,11 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.MessageList;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.oio.OioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.oio.OioSocketChannel;
@@ -28,7 +27,6 @@ import io.netty.handler.codec.compression.JZlibEncoder;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import waazdoh.cutils.MLogger;
@@ -81,7 +79,7 @@ public final class NodeConnectionFactory {
 		return nodes.get(ctx.channel());
 	}
 
-	private class NodeHandler extends ChannelInboundHandlerAdapter {
+	private class NodeHandler extends SimpleChannelInboundHandler<MMessageList> {
 		@Override
 		public void channelActive(ChannelHandlerContext ctx) throws Exception {
 			super.channelActive(ctx);
@@ -115,10 +113,10 @@ public final class NodeConnectionFactory {
 		}
 
 		@Override
-		public void messageReceived(ChannelHandlerContext ctx,
-				MessageList<Object> msgs) throws Exception {
+		protected void channelRead0(ChannelHandlerContext ctx, MMessageList msgs)
+				throws Exception {
 			for (int i = 0; i < msgs.size(); i++) {
-				getNode(ctx).messageReceived((List<MMessage>) msgs.get(i));
+				getNode(ctx).messageReceived(msgs);
 			}
 		}
 

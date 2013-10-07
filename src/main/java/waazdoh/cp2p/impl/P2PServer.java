@@ -404,8 +404,12 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		log.info("closing done");
 	}
 
-	public List<MMessage> handle(List<MMessage> messages) {
+	@Override
+	public MMessageList handle(MMessageList messages) {
 		lastmessagereceived = System.currentTimeMillis();
+		//
+		MMessageList ret;
+		ret = new MMessageList();
 		//
 		Node sentbynode = null; // should be same node for every message
 		Node lasthandler = null;
@@ -414,33 +418,31 @@ public final class P2PServer implements MMessager, MMessageFactory,
 			lasthandler = getNode(lasthandlerid);
 
 			MNodeID sentby = message.getSentBy();
-			//
-			sentbynode = getNode(sentby);
-			if (sentbynode == null) {
-				sentbynode = new Node(sentby, this);
-				addNode(this, sentbynode);
-			}
-			//
-			sentbynode.touch();
-			//
-			log.info("handling message: " + message + " from " + sentbynode);
-			message.setLastHandler(networkid);
-			//
-			if (!networkid.equals(message.getSentBy())) {
+			if (!networkid.equals(sentby)) {
+				//
+				sentbynode = getNode(sentby);
+				if (sentbynode == null) {
+					sentbynode = new Node(sentby, this);
+					addNode(this, sentbynode);
+				}
+				//
+				sentbynode.touch();
+				//
+				log.info("handling message: " + message + " from " + sentbynode);
+				message.setLastHandler(networkid);
+				//
 				handle(message, lasthandler != null ? lasthandler : sentbynode);
 			} else {
 				log.info("not handling message because networkid is equal with sentby "
 						+ message);
+				ret.add(newResponseMessage(message, "close"));
 			}
 		}
 
-		List<MMessage> ret;
 		if (lasthandler != null) {
 			ret = lasthandler.getMessages();
 		} else if (sentbynode != null) {
 			ret = sentbynode.getMessages();
-		} else {
-			ret = new LinkedList<MMessage>();
 		}
 		log.info("" + messages.size() + " handled and returning " + ret);
 		return ret;

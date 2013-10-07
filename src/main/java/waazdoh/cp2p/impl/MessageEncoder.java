@@ -17,14 +17,13 @@ import io.netty.handler.codec.MessageToByteEncoder;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.List;
 
 import waazdoh.cutils.MLogger;
 
-public final class MessageEncoder extends MessageToByteEncoder<List<MMessage>> {
+public final class MessageEncoder extends MessageToByteEncoder<MMessageList> {
 	private MLogger log = MLogger.getLogger(this);
 
-	protected void encode(ChannelHandlerContext arg0, List<MMessage> list,
+	protected void encode(ChannelHandlerContext arg0, MMessageList list,
 			ByteBuf bb) throws Exception {
 		log.debug("encoding message " + list);
 		try {
@@ -44,11 +43,11 @@ public final class MessageEncoder extends MessageToByteEncoder<List<MMessage>> {
 		}
 	}
 
-	public int writeMessage(DataOutputStream dos, MMessage bean)
+	public int writeMessage(DataOutputStream dos, MMessage m)
 			throws IOException {
-		log.debug("channelwrite " + bean);
+		log.info("encoding " + m);
 		//
-		byte bs[] = bean.getAsBytes();
+		byte bs[] = m.getAsBytes();
 		dos.writeInt(bs.length);
 		dos.write(bs);
 		return bs.length;

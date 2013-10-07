@@ -12,14 +12,12 @@ package waazdoh.cp2p.impl;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.MessageList;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 
 import waazdoh.cutils.MLogger;
@@ -30,24 +28,28 @@ public final class MessageDecoder extends ByteToMessageDecoder {
 
 	@Override
 	protected void decode(ChannelHandlerContext arg0, ByteBuf cb,
-			MessageList<Object> msgs) throws Exception {
+			List<Object> msgs) throws Exception {
 		if (cb.readableBytes() < 8)
 			return;
-		int length = cb.getInt(0);
+		cb.markReaderIndex();
+		int length = cb.readInt();
 
-		if (cb.readableBytes() < length + 8)
+		if (cb.readableBytes() < length) {
+			log.info("missing readablebytes " + cb.readableBytes() + " vs " + length);
+			cb.resetReaderIndex();
 			return;
-		int size = cb.readInt();
-		byte[] bs = new byte[size];
+		}
+
+		byte[] bs = new byte[length];
 		cb.readBytes(bs);
 
 		DataInputStream dis = new DataInputStream(new ByteArrayInputStream(bs));
 		msgs.add(parse(dis));
 	}
 
-	private List<MMessage> parse(DataInputStream dis) throws IOException {
+	private MMessageList parse(DataInputStream dis) throws IOException {
 		//
-		List<MMessage> ret = new LinkedList<MMessage>();
+		MMessageList ret = new MMessageList();
 		int messagecount = dis.readInt();
 		log.debug("messagecount : " + messagecount);
 		for (int i = 0; i < messagecount; i++) {
@@ -63,7 +65,7 @@ public final class MessageDecoder extends ByteToMessageDecoder {
 		byte messagebytes[] = new byte[messagelength];
 		dis.read(messagebytes, 0, messagelength);
 		MMessage m = new MMessage(messagebytes);
-		log.debug("decoded " + m);
+		log.info("decoded " + m);
 		return m;
 	}
 }

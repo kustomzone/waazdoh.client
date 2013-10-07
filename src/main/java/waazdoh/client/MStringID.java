@@ -20,7 +20,9 @@ public class MStringID {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof MStringID) {
+		if (obj == null) {
+			return false;
+		} else if (obj instanceof MStringID) {
 			MStringID bid = (MStringID) obj;
 			return bid.sid.equals(sid);
 		}

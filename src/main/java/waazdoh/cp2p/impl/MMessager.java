@@ -10,7 +10,6 @@
  ******************************************************************************/
 package waazdoh.cp2p.impl;
 
-import java.util.List;
 
 public interface MMessager {
 
@@ -18,7 +17,7 @@ public interface MMessager {
 
 	void broadcastMessage(MMessage b);
 
-	List<MMessage> handle(List<MMessage> messages);
+	MMessageList handle(MMessageList ms);
 
 	Node addNode(MHost mHost, int nport);
 }

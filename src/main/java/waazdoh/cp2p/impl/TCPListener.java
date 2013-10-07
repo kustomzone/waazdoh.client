@@ -12,21 +12,18 @@ package waazdoh.cp2p.impl;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.MessageList;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.compression.JZlibDecoder;
 import io.netty.handler.codec.compression.JZlibEncoder;
-
-import java.util.List;
-
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MPreferences;
 
@@ -130,19 +127,16 @@ public final class TCPListener {
 		bind = null;
 	}
 
-	class MServerHandler extends ChannelInboundHandlerAdapter {
-		@Override
-		public void messageReceived(ChannelHandlerContext ctx,
-				MessageList<Object> omsgs) throws Exception {
-			log.info("messageReceived " + omsgs);
+	class MServerHandler extends SimpleChannelInboundHandler<MMessageList> {
 
-			for (Object omsg : omsgs) {
-				List<MMessage> ms = (List<MMessage>) omsg;
+		protected void channelRead0(ChannelHandlerContext ctx, MMessageList ms)
+				throws Exception {
+			log.info("messageReceived " + ms);
 
-				List<MMessage> response = messager.handle(ms);
-				log.debug("sending back response " + response);
-				ctx.write(response);
-			}
+			MMessageList response = messager.handle(ms);
+			log.debug("sending back response " + response);
+			ctx.writeAndFlush(response).addListener(
+					ChannelFutureListener.CLOSE_ON_FAILURE);
 		}
 
 		@Override

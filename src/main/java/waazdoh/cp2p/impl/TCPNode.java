@@ -50,12 +50,12 @@ public final class TCPNode {
 		this.node = node;
 	}
 
-	public int sendMessages(List<MMessage> smessages) {
+	public synchronized int sendMessages(MMessageList smessages) {
 		if (isConnected()) {
 			if (smessages.size() > 0) {
 				log.debug("writing messages " + smessages);
 
-				channel.write(smessages).addListener(
+				channel.writeAndFlush(smessages).addListener(
 						ChannelFutureListener.CLOSE_ON_FAILURE); //
 				int bytecount = 0;
 				for (MMessage mMessage : smessages) {
@@ -177,9 +177,8 @@ public final class TCPNode {
 	void messageReceived(List<MMessage> messages) {
 		log.info("got " + messages.size() + " messages");
 		touch();
-		List<MMessage> response = node.incomingMessages(messages);
+		MMessageList response = node.incomingMessages(messages);
 		sendMessages(response);
-
 	}
 
 	private void closeChannel() {
