@@ -75,7 +75,7 @@ public final class JBean implements Comparable<JBean> {
 		}
 		sb.append(">");
 		//
-		if (text != null) {
+		if (text != null && getChildren().size() == 0) {
 			sb.append(text);
 		} else {
 			sb.append("\n");
@@ -382,6 +382,19 @@ public final class JBean implements Comparable<JBean> {
 
 	public void addValue(String name, float value) {
 		this.addValue(name, "" + value);
+	}
+
+	public void addChildren(JBean nb) {
+		for (JBean c : nb.getChildren()) {
+			if (c.getChildren().size() > 0) {
+				JBean ncb = new JBean(c.getName());
+				add(ncb);
+				ncb.addChildren(c);
+			} else {
+				addValue(c.getName(), c.getText());
+			}
+		}
+
 	}
 
 	public JBean getRoot() {
