@@ -109,6 +109,11 @@
 					</programs>
 				</configuration>
 			</plugin>
+		    <plugin>
+		        <groupId>org.codehaus.mojo</groupId>
+		        <artifactId>cobertura-maven-plugin</artifactId>
+        		<version>2.6</version>
+      		</plugin>
 		</plugins>
 		<!-- Name of the generated WAR file -->
 		<finalName>cmclient</finalName>
