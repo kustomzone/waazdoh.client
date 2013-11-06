@@ -10,7 +10,6 @@
  ******************************************************************************/
 package waazdoh.cp2p.impl.handlers;
 
-import waazdoh.client.MStringID;
 import waazdoh.cp2p.impl.Download;
 import waazdoh.cp2p.impl.MMessage;
 import waazdoh.cp2p.impl.MMessageFactory;
@@ -19,6 +18,7 @@ import waazdoh.cp2p.impl.Node;
 import waazdoh.cp2p.impl.P2PServer;
 import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
+import waazdoh.cutils.MStringID;
 
 public final class StreamHandler implements MMessageHandler {
 	private MMessageFactory factory;

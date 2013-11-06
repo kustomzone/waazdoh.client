@@ -18,7 +18,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import waazdoh.client.MStringID;
 import waazdoh.cutils.xml.JBean;
 import waazdoh.cutils.xml.XML;
 

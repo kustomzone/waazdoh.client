@@ -12,9 +12,9 @@ package waazdoh.service;
 
 import java.util.Map;
 
-import waazdoh.client.MStringID;
 import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MID;
+import waazdoh.cutils.MStringID;
 import waazdoh.cutils.MURL;
 import waazdoh.cutils.UserID;
 import waazdoh.cutils.xml.JBean;

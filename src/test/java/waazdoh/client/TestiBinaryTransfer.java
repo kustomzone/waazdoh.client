@@ -7,6 +7,7 @@ import org.junit.Test;
 import waazdoh.client.test.ServiceMock;
 import waazdoh.cp2p.impl.P2PBinarySource;
 import waazdoh.cutils.MPreferences;
+import waazdoh.cutils.MStringID;
 
 public final class TestiBinaryTransfer extends TestCase {
 

@@ -22,6 +22,7 @@ import waazdoh.cutils.HashSource;
 import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MCRC;
 import waazdoh.cutils.MLogger;
+import waazdoh.cutils.MStringID;
 import waazdoh.cutils.UserID;
 import waazdoh.cutils.xml.JBean;
 import waazdoh.service.CMService;

@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Set;
 
 import waazdoh.client.MBinaryID;
-import waazdoh.client.MStringID;
 import waazdoh.client.WaazdohInfo;
 import waazdoh.cp2p.impl.Download;
 import waazdoh.cp2p.impl.MMessage;
@@ -28,6 +27,7 @@ import waazdoh.cp2p.impl.Node;
 import waazdoh.cp2p.impl.SimpleMessageHandler;
 import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
+import waazdoh.cutils.MStringID;
 import waazdoh.cutils.xml.JBean;
 
 public final class WhoHasHandler extends SimpleMessageHandler {

@@ -21,13 +21,13 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import waazdoh.client.Binary;
-import waazdoh.client.MStringID;
 import waazdoh.cp2p.impl.handlers.ByteArraySource;
 import waazdoh.cp2p.impl.handlers.PingHandler;
 import waazdoh.cp2p.impl.handlers.StreamHandler;
 import waazdoh.cp2p.impl.handlers.WhoHasHandler;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MPreferences;
+import waazdoh.cutils.MStringID;
 import waazdoh.cutils.xml.JBean;
 import waazdoh.service.ReportingService;
 

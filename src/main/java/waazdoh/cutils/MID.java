@@ -12,8 +12,6 @@ package waazdoh.cutils;
 
 import java.util.UUID;
 
-import waazdoh.client.MStringID;
-
 public final class MID {
 	private final String id;
 	private HashSource hashsource;

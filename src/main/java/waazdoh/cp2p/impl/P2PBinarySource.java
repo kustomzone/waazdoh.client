@@ -18,12 +18,12 @@ import waazdoh.client.BinaryListener;
 import waazdoh.client.MBinaryID;
 import waazdoh.client.MBinarySource;
 import waazdoh.client.MBinaryStorage;
-import waazdoh.client.MStringID;
 import waazdoh.cp2p.impl.handlers.ByteArraySource;
 import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MPreferences;
+import waazdoh.cutils.MStringID;
 import waazdoh.service.CMService;
 import waazdoh.service.ReportingService;
 

@@ -16,9 +16,9 @@ import java.util.Map;
 
 import waazdoh.client.Binary;
 import waazdoh.client.MBinaryID;
-import waazdoh.client.MStringID;
 import waazdoh.client.WaazdohInfo;
 import waazdoh.cutils.MLogger;
+import waazdoh.cutils.MStringID;
 import waazdoh.cutils.MTimedFlag;
 import waazdoh.cutils.xml.JBean;
 

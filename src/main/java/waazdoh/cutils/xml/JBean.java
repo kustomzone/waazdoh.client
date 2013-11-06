@@ -25,10 +25,10 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import waazdoh.client.MStringID;
 import waazdoh.cutils.BytesHash;
 import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
+import waazdoh.cutils.MStringID;
 import waazdoh.cutils.UserID;
 
 public final class JBean implements Comparable<JBean> {

@@ -20,10 +20,10 @@ import waazdoh.client.Binary;
 import waazdoh.client.MBinaryID;
 import waazdoh.client.MBinarySource;
 import waazdoh.client.MBinaryStorage;
-import waazdoh.client.MStringID;
 import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MID;
 import waazdoh.cutils.MPreferences;
+import waazdoh.cutils.MStringID;
 import waazdoh.service.CMService;
 import waazdoh.service.ReportingService;
 

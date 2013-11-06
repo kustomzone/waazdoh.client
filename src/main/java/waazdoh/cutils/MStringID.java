@@ -1,4 +1,4 @@
-package waazdoh.client;
+package waazdoh.cutils;
 
 import java.util.UUID;
 

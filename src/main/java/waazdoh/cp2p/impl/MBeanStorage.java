@@ -19,10 +19,10 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import waazdoh.client.MStringID;
 import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MPreferences;
+import waazdoh.cutils.MStringID;
 import waazdoh.cutils.xml.JBean;
 import waazdoh.cutils.xml.XML;
 

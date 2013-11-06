@@ -14,6 +14,7 @@ import java.io.File;
 import java.util.Set;
 
 import waazdoh.cutils.JBeanResponse;
+import waazdoh.cutils.MStringID;
 import waazdoh.service.CMService;
 import waazdoh.service.ReportingService;
 

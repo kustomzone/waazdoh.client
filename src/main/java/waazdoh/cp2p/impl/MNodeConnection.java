@@ -12,7 +12,7 @@ package waazdoh.cp2p.impl;
 
 import java.util.Set;
 
-import waazdoh.client.MStringID;
+import waazdoh.cutils.MStringID;
 
 public interface MNodeConnection {
 

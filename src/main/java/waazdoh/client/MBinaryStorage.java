@@ -28,6 +28,7 @@ import waazdoh.cutils.MCRC;
 import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MPreferences;
+import waazdoh.cutils.MStringID;
 import waazdoh.service.CMService;
 
 public final class MBinaryStorage {
