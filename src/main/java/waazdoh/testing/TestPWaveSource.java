@@ -8,7 +8,7 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.client.test;
+package waazdoh.testing;
 
 import java.io.File;
 import java.util.HashMap;
@@ -21,7 +21,6 @@ import waazdoh.client.MBinaryID;
 import waazdoh.client.MBinarySource;
 import waazdoh.client.MBinaryStorage;
 import waazdoh.cutils.JBeanResponse;
-import waazdoh.cutils.MID;
 import waazdoh.cutils.MPreferences;
 import waazdoh.cutils.MStringID;
 import waazdoh.service.CMService;

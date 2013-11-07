@@ -4,10 +4,10 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
-import waazdoh.client.test.ServiceMock;
 import waazdoh.cp2p.impl.P2PBinarySource;
 import waazdoh.cutils.MPreferences;
 import waazdoh.cutils.MStringID;
+import waazdoh.testing.ServiceMock;
 
 public final class TestiBinaryTransfer extends TestCase {
 

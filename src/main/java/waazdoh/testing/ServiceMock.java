@@ -8,7 +8,7 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.client.test;
+package waazdoh.testing;
 
 import java.util.HashMap;
 import java.util.HashSet;
