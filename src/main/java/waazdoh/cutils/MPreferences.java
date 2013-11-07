@@ -19,7 +19,6 @@ public interface MPreferences {
 	static final String SERVERLIST = "server.list";
 	static final String NETWORK_MAX_DOWNLOADS = "network.downloads.max";
 	static final String MEMORY_MAX_USAGE = "memory.max";
-	static final String SERVICE_MOCK = "service.mock";
 
 	String get(String name, String defaultvalue);
 
