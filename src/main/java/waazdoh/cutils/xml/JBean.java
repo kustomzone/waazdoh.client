@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.apache.commons.codec.binary.Base64;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -424,4 +425,20 @@ public final class JBean implements Comparable<JBean> {
 	public String getAttribute(String string) {
 		return attributes.get(string);
 	}
+
+	public void setBase64Value(String valuename, String value) {
+		byte[] bytes64 = Base64.encodeBase64(value.getBytes());
+		addValue(valuename, new String(bytes64));
+	}
+
+	public String getBase64Value(String string) {
+		String value64 = getValue(string);
+		if (value64 != null) {
+			byte[] bytes = Base64.decodeBase64(value64.getBytes());
+			return new String(bytes);
+		} else {
+			return null;
+		}
+	}
+
 }
