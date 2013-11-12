@@ -36,9 +36,8 @@ public final class TestiBinaryTransfer extends TestCase {
 	}
 
 	/*
-	public void testTransfer4M() {
-		testTransfer(4000000);
-	}*/
+	 * public void testTransfer4M() { testTransfer(4000000); }
+	 */
 
 	@Test
 	public void testTransfer(int time) {
@@ -55,6 +54,13 @@ public final class TestiBinaryTransfer extends TestCase {
 		//
 		b1.setReady();
 		b1.publish();
+		String b1hasht = b1.getHash();
+		//
+		source1.clearMemory(0);
+		Binary b1reload = source1.getOrDownload(b1.getID());
+		assertNotNull(b1reload);
+		assertEquals(b1hasht, b1reload.getHash());
+
 		//
 		String username2 = "test2" + Math.random();
 		P2PBinarySource source2 = getServiceSource(username2, false);
