@@ -398,17 +398,6 @@ public final class Binary implements HashSource {
 		}
 	}
 
-	public synchronized Byte[] getSamples(int start, int length) {
-		used();
-
-		Byte[] ret = new Byte[length];
-		for (int i = start; i < start + length; i++) {
-			Byte s = get(i);
-			ret[i - start] = s;
-		}
-		return ret;
-	}
-
 	public void addListener(BinaryListener listener) {
 		getListeners().add(listener);
 	}
@@ -430,42 +419,6 @@ public final class Binary implements HashSource {
 
 	public void clear() {
 		init();
-	}
-
-	public synchronized Byte[] getSamples() {
-		used();
-
-		return getSamples(0, length());
-	}
-
-	public InputStream getInputStream() {
-		used();
-
-		if (isReady()) {
-			return new InputStream() {
-				private int index = 0;
-				private Byte nbytes[] = bytes;
-
-				@Override
-				public int available() throws IOException {
-					return length() - index;
-				}
-
-				@Override
-				public int read() throws IOException {
-					used();
-
-					if (index < bytesindex) {
-						return nbytes[index++] & 0xff;
-					} else {
-						return -1;
-					}
-				}
-			};
-		} else {
-			log.info("getInputStream returning null");
-			return null;
-		}
 	}
 
 	public Byte[] getByteBuffer() {
