@@ -250,17 +250,7 @@ public final class JBean implements Comparable<JBean> {
 	}
 
 	public JBean setValue(String string2) {
-		string2 = string2.trim();
-		String notallowed = "<>&/\\";
-		for (int i = 0; i < string2.length(); i++) {
-			if (notallowed.indexOf(string2.charAt(i)) >= 0) {
-				throw new IllegalArgumentException("Char '" + string2.charAt(i)
-						+ "' not allow in a value '" + this.name + "' ("
-						+ string2 + ")");
-			}
-		}
-		//
-		text = string2;
+		text = string2.trim();
 		return this;
 	}
 
