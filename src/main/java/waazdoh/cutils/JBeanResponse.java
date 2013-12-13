@@ -10,13 +10,8 @@
  ******************************************************************************/
 package waazdoh.cutils;
 
-import java.io.StringWriter;
 import java.util.LinkedList;
 import java.util.List;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import waazdoh.cutils.xml.JBean;
 import waazdoh.cutils.xml.XML;
@@ -26,37 +21,23 @@ public final class JBeanResponse {
 	private JBean bean = new JBean("response");
 	private MLogger log = MLogger.getLogger(this);
 
-	public JBeanResponse(Object o) {
-		if (o instanceof String) {
-			String string = (String) o;
-			JBean bean = new JBean(new XML(string));
-			if (bean.getName().equals("response")) {
-				this.bean = bean;
-			} else {
-				bean.add(bean);
-			}
+	public JBeanResponse(String o) {
+		String string = (String) o;
+		JBean bean = new JBean(new XML(string));
+		if (bean.getName().equals("response")) {
+			this.bean = bean;
 		} else {
-			try {
-				JAXBContext c = JAXBContext.newInstance(o.getClass());
-				Marshaller m;
-				m = c.createMarshaller();
-				m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-				StringWriter writer = new StringWriter();
-				m.marshal(o, writer);
-				//
-				StringBuffer buffer = writer.getBuffer();
-				log.info("marshalled " + buffer);
-				bean.add(new JBean(new XML(buffer.toString())));
-			} catch (JAXBException e) {
-				e.printStackTrace();
-				log.error(e);
-				getBean().add("error " + e);
-			}
+			bean.add(bean);
 		}
 	}
 
 	public JBeanResponse() {
 		// TODO Auto-generated constructor stub
+	}
+
+	public JBeanResponse(Error error) {
+		bean.addValue("error", "" + error);
+		log.error(error);
 	}
 
 	@Override
