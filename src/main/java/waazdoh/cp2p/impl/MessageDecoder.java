@@ -20,6 +20,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.List;
 
+import org.xml.sax.SAXException;
+
 import waazdoh.cutils.MLogger;
 
 public final class MessageDecoder extends ByteToMessageDecoder {
@@ -35,7 +37,8 @@ public final class MessageDecoder extends ByteToMessageDecoder {
 		int length = cb.readInt();
 
 		if (cb.readableBytes() < length) {
-			log.info("missing readablebytes " + cb.readableBytes() + " vs " + length);
+			log.info("missing readablebytes " + cb.readableBytes() + " vs "
+					+ length);
 			cb.resetReaderIndex();
 			return;
 		}
@@ -64,8 +67,14 @@ public final class MessageDecoder extends ByteToMessageDecoder {
 		log.debug("decoder reading " + messagelength);
 		byte messagebytes[] = new byte[messagelength];
 		dis.read(messagebytes, 0, messagelength);
-		MMessage m = new MMessage(messagebytes);
-		log.info("decoded " + m);
-		return m;
+		MMessage m;
+		try {
+			m = new MMessage(messagebytes);
+			log.info("decoded " + m);
+			return m;
+		} catch (SAXException e) {
+			log.error(e);
+			return null;
+		}
 	}
 }

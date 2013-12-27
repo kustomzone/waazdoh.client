@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.xml.sax.SAXException;
+
 import waazdoh.client.MBinarySource;
 import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MID;
@@ -33,7 +35,7 @@ public final class ServiceMock implements CMService {
 
 	private static Map<String, JBeanResponse> objects = new HashMap<String, JBeanResponse>();
 
-	public ServiceMock(MBinarySource source) {
+	public ServiceMock(MBinarySource source) throws SAXException {
 		MStringID gusersid = new MStringID();
 		this.source = source;
 		//
@@ -43,7 +45,7 @@ public final class ServiceMock implements CMService {
 
 	}
 
-	private void addBGroup(String gid, String gname) {
+	private void addBGroup(String gid, String gname) throws SAXException {
 		String sxml = "<response> <bookmarkgroup>		  <owner>1b32558c-827d-4f4c-83bf-b9ea4a313db6</owner>		  <name>users</name>"
 				+ "  <groupid>"
 				+ gid
@@ -65,7 +67,12 @@ public final class ServiceMock implements CMService {
 				+ userid
 				+ "</name>		  </user> <success>true</success> </response>";
 		JBeanResponse r = JBeanResponse.getTrue();
-		r.setBean(new JBean(new XML(sxml)));
+		try {
+			r.setBean(new JBean(new XML(sxml)));
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return r;
 	}
 

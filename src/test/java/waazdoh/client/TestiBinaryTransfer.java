@@ -3,6 +3,7 @@ package waazdoh.client;
 import junit.framework.TestCase;
 
 import org.junit.Test;
+import org.xml.sax.SAXException;
 
 import waazdoh.cp2p.impl.P2PBinarySource;
 import waazdoh.cutils.MPreferences;
@@ -11,27 +12,27 @@ import waazdoh.testing.ServiceMock;
 
 public final class TestiBinaryTransfer extends TestCase {
 
-	public void testTransfer10k() {
+	public void testTransfer10k() throws SAXException {
 		testTransfer(10000);
 	}
 
-	public void testTransfer30k() {
+	public void testTransfer30k() throws SAXException {
 		testTransfer(30000);
 	}
 
-	public void testTransfer75k() {
+	public void testTransfer75k() throws SAXException {
 		testTransfer(75000);
 	}
 
-	public void testTransfer100k() {
+	public void testTransfer100k() throws SAXException {
 		testTransfer(100000);
 	}
 
-	public void testTransfer300k() {
+	public void testTransfer300k() throws SAXException {
 		testTransfer(300000);
 	}
 
-	public void testTransfer1M() {
+	public void testTransfer1M() throws SAXException {
 		testTransfer(1000000);
 	}
 
@@ -40,7 +41,7 @@ public final class TestiBinaryTransfer extends TestCase {
 	 */
 
 	@Test
-	public void testTransfer(int time) {
+	public void testTransfer(int time) throws SAXException {
 
 		String username1 = "test1" + Math.random();
 
@@ -82,7 +83,7 @@ public final class TestiBinaryTransfer extends TestCase {
 		source2.close();
 	}
 
-	private P2PBinarySource getServiceSource(String username1, boolean bind) {
+	private P2PBinarySource getServiceSource(String username1, boolean bind) throws SAXException {
 		MPreferences p1 = new StaticTestPreferences(username1);
 		P2PBinarySource source1 = new P2PBinarySource(p1, bind);
 		ServiceMock service1 = new ServiceMock(source1);

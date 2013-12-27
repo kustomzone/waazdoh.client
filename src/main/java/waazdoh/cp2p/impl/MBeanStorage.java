@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.xml.sax.SAXException;
+
 import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MPreferences;
@@ -61,6 +63,9 @@ public final class MBeanStorage {
 				return null;
 			}
 		} catch (IOException e) {
+			log.error(e);
+			return null;
+		} catch (SAXException e) {
 			log.error(e);
 			return null;
 		}

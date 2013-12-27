@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.xml.sax.SAXException;
+
 import waazdoh.cutils.MStringID;
 import waazdoh.cutils.xml.JBean;
 import waazdoh.cutils.xml.XML;
@@ -51,7 +53,7 @@ public final class MMessage {
 		addCreatedTimestamp();
 	}
 
-	public MMessage(byte[] messagebytes) throws IOException {
+	public MMessage(byte[] messagebytes) throws IOException, SAXException {
 		this.bytecount = messagebytes.length;
 		//
 		ByteArrayInputStream bais = new ByteArrayInputStream(messagebytes);

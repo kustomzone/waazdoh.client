@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.xml.sax.SAXException;
+
 import waazdoh.client.MBinarySource;
 import waazdoh.client.URLCaller;
 import waazdoh.cutils.JBeanResponse;
@@ -197,7 +199,12 @@ public final class RestClient implements CMService {
 		} else {
 			sbody = "";
 		}
-		return new JBeanResponse(sbody);
+		try {
+			return new JBeanResponse(sbody);
+		} catch (SAXException e) {
+			log.error(e);
+			return null;
+		}
 	}
 
 	@Override

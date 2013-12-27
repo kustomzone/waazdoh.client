@@ -109,7 +109,7 @@ public final class JBean implements Comparable<JBean> {
 		}
 	}
 
-	public void parseXml(XML oxml) {
+	public void parseXml(XML oxml) throws SAXException {
 		if (oxml != null) {
 			String xml = "" + oxml.toString().trim();
 			if (xml.indexOf("<!xml") >= 0) {
@@ -129,12 +129,6 @@ public final class JBean implements Comparable<JBean> {
 				r.setContentHandler(new JBeanContentHandler(this));
 				InputSource input = new InputSource(new StringReader(xml));
 				r.parse(input);
-			} catch (SAXException e) {
-				e.printStackTrace();
-				log.info("tried to parse " + oxml);
-				log.info("tried to parse " + xml);
-				log.error(e);
-				throw new IllegalArgumentException(e);
 			} catch (IOException e) {
 				e.printStackTrace();
 				log.info("tried to parse " + oxml);
@@ -152,7 +146,7 @@ public final class JBean implements Comparable<JBean> {
 		setName(name);
 	}
 
-	public JBean(XML xml) {
+	public JBean(XML xml) throws SAXException {
 		parseXml(xml);
 	}
 

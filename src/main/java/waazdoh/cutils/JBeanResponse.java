@@ -13,6 +13,8 @@ package waazdoh.cutils;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.xml.sax.SAXException;
+
 import waazdoh.cutils.xml.JBean;
 import waazdoh.cutils.xml.XML;
 
@@ -21,7 +23,7 @@ public final class JBeanResponse {
 	private JBean bean = new JBean("response");
 	private MLogger log = MLogger.getLogger(this);
 
-	public JBeanResponse(String o) {
+	public JBeanResponse(String o) throws SAXException {
 		String string = (String) o;
 		JBean bean = new JBean(new XML(string));
 		if (bean.getName().equals("response")) {
