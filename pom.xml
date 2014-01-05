@@ -14,6 +14,13 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
 
+	<distributionManagement>
+		<repository>
+			<id>waazdoh-ssh-repository</id>
+			<url>scp://maven.waazdoh.com:/opt/maven/repository</url>
+		</repository>
+	</distributionManagement>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -23,6 +30,7 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
@@ -39,62 +47,6 @@
 							</descriptors>
 						</configuration>
 					</execution>
-					<execution>
-						<id>make-package</id> <!-- this is used for inheritance merges -->
-						<phase>package</phase> <!-- bind to the packaging phase -->
-						<goals>
-							<goal>single</goal>
-						</goals>
-
-						<configuration>
-							<descriptors>
-								<descriptor>src/assemble/distribution.xml</descriptor>
-							</descriptors>
-						</configuration>
-					</execution>
-
-				</executions>
-			</plugin>
-
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.2.2</version>
-
-				<executions>
-					<execution>
-						<id>make-jar</id> <!-- this is used for inheritance merges -->
-						<phase>package</phase> <!-- bind to the packaging phase -->
-						<goals>
-							<goal>single</goal>
-						</goals>
-
-						<configuration>
-							<descriptors>
-								<descriptor>src/assemble/jar.xml</descriptor>
-							</descriptors>
-						</configuration>
-					</execution>
-					<execution>
-						<id>make-package</id> <!-- this is used for inheritance merges -->
-						<phase>package</phase> <!-- bind to the packaging phase -->
-						<goals>
-							<goal>single</goal>
-						</goals>
-
-						<configuration>
-							<descriptors>
-								<descriptor>src/assemble/distribution.xml</descriptor>
-							</descriptors>
-						</configuration>
-					</execution>
-
 				</executions>
 			</plugin>
 
@@ -126,6 +78,7 @@
 					</formats>
 				</configuration>
 			</plugin>
+			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
@@ -135,6 +88,7 @@
 					<configLocation>src/main/resources/checkstyle.xml</configLocation>
 				</configuration>
 			</plugin>
+			
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
@@ -145,9 +99,49 @@
 					<xmlOutput>true</xmlOutput>
 				</configuration>
 			</plugin>
+
+
+			<!-- 
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>wagon-maven-plugin</artifactId>
+				<version>1.0-beta-4</version>
+				<executions>
+					<execution>
+						<id>upload-javadoc</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>upload</goal>
+						</goals>
+						<configuration>
+							<fromDir>local.dir</fromDir>
+							<includes>
+								*
+							</includes>
+							<excludes>pom.xml</excludes>
+							<url>scp://maven.waazdoh.com:/tmp</url>
+							<toDir>mavenwaazdoh/repository</toDir>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			 -->
+			 
 		</plugins>
+
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh</artifactId>
+				<version>1.0</version>
+			</extension>
+		</extensions>
+
+
+
 		<!-- Name of the generated WAR file -->
 		<finalName>cmclient</finalName>
+
 
 	</build>
 
@@ -179,7 +173,6 @@
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
-
 	<repositories>
 		<!-- Repository needed to include the jboss netty library -->
 		<repository>

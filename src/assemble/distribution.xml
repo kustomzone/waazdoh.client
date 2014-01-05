@@ -10,7 +10,7 @@
 	</formats>
 	<files>
 		<file>
-			<source>target/cmclient-jar-with-dependencies.jar</source>
+			<source>target/waazdoh-client-jar-with-dependencies.jar</source>
 			<outputDirectory>/</outputDirectory>
 		</file>
 	</files>
