@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>waazdoh.client</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.8-SNAPSHOT</version>
+	<version>1.0.9-SNAPSHOT</version>
 	<name>waazdoh.client</name>
 	<url>http://maven.apache.org</url>
 	<groupId>waazdoh</groupId>
@@ -78,7 +78,7 @@
 					</formats>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
@@ -88,7 +88,7 @@
 					<configLocation>src/main/resources/checkstyle.xml</configLocation>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
@@ -101,32 +101,13 @@
 			</plugin>
 
 
-			<!-- 
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>wagon-maven-plugin</artifactId>
-				<version>1.0-beta-4</version>
-				<executions>
-					<execution>
-						<id>upload-javadoc</id>
-						<phase>deploy</phase>
-						<goals>
-							<goal>upload</goal>
-						</goals>
-						<configuration>
-							<fromDir>local.dir</fromDir>
-							<includes>
-								*
-							</includes>
-							<excludes>pom.xml</excludes>
-							<url>scp://maven.waazdoh.com:/tmp</url>
-							<toDir>mavenwaazdoh/repository</toDir>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			 -->
-			 
+			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>wagon-maven-plugin</artifactId> 
+				<version>1.0-beta-4</version> <executions> <execution> <id>upload-javadoc</id> 
+				<phase>deploy</phase> <goals> <goal>upload</goal> </goals> <configuration> 
+				<fromDir>local.dir</fromDir> <includes> * </includes> <excludes>pom.xml</excludes> 
+				<url>scp://maven.waazdoh.com:/tmp</url> <toDir>mavenwaazdoh/repository</toDir> 
+				</configuration> </execution> </executions> </plugin> -->
+
 		</plugins>
 
 		<extensions>
