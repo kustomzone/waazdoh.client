@@ -7,6 +7,7 @@ import java.util.Set;
 import waazdoh.client.rest.RestClient;
 import waazdoh.cutils.MPreferences;
 import waazdoh.cutils.MStringID;
+import waazdoh.cutils.UserID;
 import waazdoh.service.CMService;
 
 public class WClient {
@@ -44,6 +45,10 @@ public class WClient {
 
 	public WBookmarks getBookmarks() {
 		return bookmarks;
+	}
+
+	public UserID getUserID() {
+		return service.getUserID();
 	}
 
 	public MBinarySource getBinarySource() {
