@@ -302,10 +302,10 @@ public final class MBinaryStorage {
 			this.streams.addAll(nbis);
 		}
 	}
-
-	public Binary newBinary(String string, String extension) {
+	
+	public Binary newBinary(String comment, String extension) {
 		synchronized (streams) {
-			Binary b = new Binary(service, string, extension);
+			Binary b = new Binary(service, comment, extension);
 			this.streams.add(b);
 			return b;
 		}
