@@ -193,18 +193,31 @@ public final class RestClient implements CMService {
 		//
 		URLCaller urlcaller = new URLCaller(murl, new ClientProxySettings());
 		byte[] responseBody = urlcaller.getResponseBody();
+		return parseResponse(responseBody);
+	}
+
+	private JBeanResponse parseResponse(byte[] responseBody) {
 		String sbody;
 		if (responseBody != null) {
 			sbody = new String(responseBody);
+			try {
+				return new JBeanResponse(sbody);
+			} catch (SAXException e) {
+				log.error("" + e);
+				return null;
+			}
 		} else {
-			sbody = "";
-		}
-		try {
-			return new JBeanResponse(sbody);
-		} catch (SAXException e) {
-			log.error(e);
 			return null;
 		}
+	}
+
+	public boolean isConnected() {
+		MURL murl = getURL("test", "test", false, new LinkedList<String>());
+		URLCaller urlcaller = new URLCaller(murl, new ClientProxySettings());
+		urlcaller.setTimeout(1000);
+		
+		byte[] responseBody = urlcaller.getResponseBody();
+		return parseResponse(responseBody) != null;
 	}
 
 	@Override

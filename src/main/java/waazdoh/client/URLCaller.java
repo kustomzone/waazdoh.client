@@ -24,31 +24,12 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.params.HttpClientParams;
 
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MURL;
 
 public final class URLCaller {
-	private int MaxCount = 10;
-
-	public int getMaxCount() {
-		return MaxCount;
-	}
-
-	public void setMaxCount(int maxCount) {
-		MaxCount = maxCount;
-	}
-
-	private long MaxWait = 10000;
-
-	public long getMaxWait() {
-		return MaxWait;
-	}
-
-	public void setMaxWait(long maxWait) {
-		MaxWait = maxWait;
-	}
-
 	private MURL url;
 	private Integer code;
 	private byte[] o;
@@ -59,6 +40,7 @@ public final class URLCaller {
 	private String username;
 	private File postfile;
 	private String postfilename;
+	private int timeout;
 	private static int clientscreated = 0;
 	private static List<HttpClient> httpclients = new LinkedList<HttpClient>();
 
@@ -99,25 +81,12 @@ public final class URLCaller {
 		this.log = MLogger.getLogger(this);
 	}
 
-	private void checkCalled() {
-		if (code == null) {
-			byte[] responsebody = null;
-			int count = 0;
-			long st = System.currentTimeMillis();
-			while (responsebody == null && count++ < MaxCount
-					&& (System.currentTimeMillis() - st) < MaxWait
-					&& code == null) {
-				responsebody = tryCall();
-			}
-		}
-	}
-
 	public void setCredentials(String un, String pw) {
 		this.username = un;
 		this.password = pw;
 	}
 
-	private byte[] tryCall() {
+	private byte[] doCall() {
 		try {
 			HttpMethodBase method;
 			if (post == null && postfile == null) {
@@ -127,6 +96,8 @@ public final class URLCaller {
 			}
 			MLogger.getLogger(this).info("calling " + method + " url:" + url);
 			HttpClient httpClient = getHttpClient();
+			httpClient.getParams().setSoTimeout(timeout);
+			//
 			if (proxysettings != null) {
 				proxysettings.handle(httpClient);
 			}
@@ -180,22 +151,10 @@ public final class URLCaller {
 	}
 
 	public byte[] getResponseBody() {
-		checkCalled();
-		if (o != null) {
-			return o;
-		} else {
-			return null;
-		}
-	}
-
-	public byte[] getResponseBytes() {
-		checkCalled();
-		return o;
+		return doCall();
 	}
 
 	private boolean isOKHttpReponse() {
-		checkCalled();
-		//
 		if (code == 0 || code == 200) {
 			return true;
 		} else {
@@ -226,5 +185,9 @@ public final class URLCaller {
 		for (HttpClient httpClient : cs) {
 			httpClient.getHttpConnectionManager().closeIdleConnections(0);
 		}
+	}
+
+	public void setTimeout(int i) {
+		this.timeout = i;
 	}
 }
