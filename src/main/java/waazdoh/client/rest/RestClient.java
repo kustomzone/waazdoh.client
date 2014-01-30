@@ -215,7 +215,7 @@ public final class RestClient implements CMService {
 		MURL murl = getURL("test", "test", false, new LinkedList<String>());
 		URLCaller urlcaller = new URLCaller(murl, new ClientProxySettings());
 		urlcaller.setTimeout(1000);
-		
+
 		byte[] responseBody = urlcaller.getResponseBody();
 		return parseResponse(responseBody) != null;
 	}

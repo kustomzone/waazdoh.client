@@ -10,7 +10,6 @@
  ******************************************************************************/
 package waazdoh.cp2p.impl;
 
-
 public interface MMessager {
 
 	MMessage getMessage(String string);
