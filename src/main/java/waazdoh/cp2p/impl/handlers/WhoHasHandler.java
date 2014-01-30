@@ -52,7 +52,8 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 
 	@Override
 	public boolean handle(final MMessage childb, final Node node) {
-		final MBinaryID streamid = new MBinaryID(childb.getAttribute("streamid"));
+		final MBinaryID streamid = new MBinaryID(
+				childb.getAttribute("streamid"));
 		if (source.get(streamid) != null) {
 			MMessage m;
 			m = getFactory().newResponseMessage(childb, "stream");
