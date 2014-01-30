@@ -10,7 +10,7 @@ import waazdoh.cutils.MStringID;
 import waazdoh.cutils.UserID;
 import waazdoh.service.CMService;
 
-public class WClient {
+public final class WClient {
 	private CMService service;
 	private MPreferences preferences;
 	private MBinarySource source;
