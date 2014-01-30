@@ -2,7 +2,7 @@ package waazdoh.cp2p.impl;
 
 import waazdoh.cutils.MStringID;
 
-public class MNodeID extends MStringID {
+public final class MNodeID extends MStringID {
 
 	public MNodeID(String attribute) {
 		super(attribute);
