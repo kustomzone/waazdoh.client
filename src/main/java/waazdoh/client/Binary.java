@@ -28,6 +28,7 @@ import waazdoh.cutils.xml.JBean;
 import waazdoh.service.CMService;
 
 public final class Binary implements HashSource {
+	private static final int DEFAULT_BYTEARRAYSIZE = 1000;
 	private Byte[] bytes = new Byte[10];
 	private int bytesindex = 0;
 	//
@@ -233,7 +234,7 @@ public final class Binary implements HashSource {
 	public synchronized void fillWithNaN(int length) {
 		used();
 
-		bytes = new Byte[1000];
+		bytes = new Byte[DEFAULT_BYTEARRAYSIZE];
 	}
 
 	@Override

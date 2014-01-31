@@ -24,11 +24,12 @@ import waazdoh.cutils.xml.JBean;
 
 public final class Download implements Runnable, MessageResponseListener,
 		SourceListener {
+	private static final int GIVEUP_TIMEOUT_MSEC = 1000 * 60 * 4;
 	private Binary bin;
 	private MNodeConnection source;
 	private MLogger log;
 	private MTimedFlag flag;
-	private MTimedFlag giveupflag = new MTimedFlag(1000 * 60 * 4);
+	private MTimedFlag giveupflag = new MTimedFlag(GIVEUP_TIMEOUT_MSEC);
 	private long endtime;
 	private long starttime;
 	private Map<Integer, NeededStart> sentstarts = new HashMap<Integer, Download.NeededStart>();
