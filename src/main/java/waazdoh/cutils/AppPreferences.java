@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-public class AppPreferences implements MPreferences {
+public final class AppPreferences implements MPreferences {
 	private Preferences p;
 	private MLogger log = MLogger.getLogger(this);
 
