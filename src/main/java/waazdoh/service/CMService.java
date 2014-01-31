@@ -20,7 +20,7 @@ import waazdoh.cutils.UserID;
 import waazdoh.cutils.xml.JBean;
 
 public interface CMService {
-	boolean setSession(String username, String session);
+	boolean setSession(final String username, String session);
 
 	JBeanResponse read(MStringID id);
 
@@ -30,15 +30,15 @@ public interface CMService {
 
 	UserID getUserID();
 
-	JBeanResponse search(String filter, int index, int i);
+	JBeanResponse search(final String filter, int index, int i);
 
-	MURL getURL(String service, String method, MID id);
+	MURL getURL(final String service, String method, MID id);
 
 	String getUsername();
 
 	boolean isLoggedIn();
 
-	String requestAppLogin(String username, String appname, MStringID id);
+	String requestAppLogin(final String username, String appname, MStringID id);
 
 	String getSessionID();
 
@@ -46,7 +46,7 @@ public interface CMService {
 
 	JBeanResponse reportDownload(MStringID id, boolean success);
 
-	JBeanResponse getBookmarkGroup(String id);
+	JBeanResponse getBookmarkGroup(final String id);
 
 	Map<String, String> getBookmarkGroups();
 

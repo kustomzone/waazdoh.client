@@ -13,7 +13,7 @@ package waazdoh.cp2p.impl;
 public final class MHost {
 	private String host;
 
-	public MHost(String string) {
+	public MHost(final String string) {
 		this.host = string;
 	}
 

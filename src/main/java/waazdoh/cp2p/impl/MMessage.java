@@ -44,7 +44,7 @@ public final class MMessage {
 		}
 	}
 
-	public MMessage(String string, MStringID sentby) {
+	public MMessage(final String string, MStringID sentby) {
 		bean = new JBean(string);
 		bean.addValue("sentby", sentby.toString());
 		setID(new MessageID());
@@ -94,19 +94,19 @@ public final class MMessage {
 		return new MessageID(getAttribute("messageid"));
 	}
 
-	public String getAttribute(String string) {
+	public String getAttribute(final String string) {
 		return bean.getValue(string);
 	}
 
-	public JBean get(String string) {
+	public JBean get(final String string) {
 		return bean.get(string);
 	}
 
-	public void addAttribute(String string, String string2) {
+	public void addAttribute(final String string, String string2) {
 		this.bean.addValue(string, string2);
 	}
 
-	public void addAttribute(String string, int start) {
+	public void addAttribute(final String string, int start) {
 		this.bean.addValue(string, start);
 	}
 
@@ -114,15 +114,15 @@ public final class MMessage {
 		return this.bean.getName();
 	}
 
-	public void addAttachment(String string, byte[] byteArray) {
+	public void addAttachment(final String string, byte[] byteArray) {
 		attachments.put(string, byteArray);
 	}
 
-	public int getAttributeInt(String string) {
+	public int getAttributeInt(final String string) {
 		return this.bean.getIntValue(string);
 	}
 
-	public JBean add(String string) {
+	public JBean add(final String string) {
 		return this.bean.add(string);
 	}
 
@@ -134,7 +134,7 @@ public final class MMessage {
 		return attachments.keySet();
 	}
 
-	public byte[] getAttachment(String string) {
+	public byte[] getAttachment(final String string) {
 		return attachments.get(string);
 	}
 
@@ -144,7 +144,7 @@ public final class MMessage {
 		return new MNodeID(sentby);
 	}
 
-	public MNodeID getTo(String string) {
+	public MNodeID getTo(final String string) {
 		String to = getAttribute("to");
 		if (to != null) {
 			return new MNodeID(to);
@@ -187,7 +187,7 @@ public final class MMessage {
 			//
 			Set<String> akeys = getAttachments();
 			dos.writeInt(akeys.size());
-			for (String string : akeys) {
+			for (final String string : akeys) {
 				byte[] a = getAttachment(string);
 				byte[] namebytes = string.getBytes();
 				dos.writeInt(namebytes.length);
@@ -204,7 +204,7 @@ public final class MMessage {
 		}
 	}
 
-	public MStringID getIDAttribute(String string) {
+	public MStringID getIDAttribute(final String string) {
 		String sid = getAttribute(string);
 		if (sid != null) {
 			return new MStringID(sid);
@@ -213,7 +213,7 @@ public final class MMessage {
 		}
 	}
 
-	public void addIDAttribute(String string, MStringID id) {
+	public void addIDAttribute(final String string, MStringID id) {
 		addAttribute(string, id.toString());
 	}
 

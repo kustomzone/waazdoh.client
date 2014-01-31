@@ -12,7 +12,7 @@ package waazdoh.cp2p.impl;
 
 public interface MMessager {
 
-	MMessage getMessage(String string);
+	MMessage getMessage(final String string);
 
 	void broadcastMessage(MMessage b);
 

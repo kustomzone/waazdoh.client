@@ -35,7 +35,7 @@ public final class AppPreferences implements MPreferences {
 		String[] keys;
 		try {
 			keys = p.keys();
-			for (String string : keys) {
+			for (final String string : keys) {
 				ret.add(string);
 			}
 			return ret;
@@ -46,7 +46,7 @@ public final class AppPreferences implements MPreferences {
 	}
 
 	@Override
-	public String get(String name, String defaultvalue) {
+	public String get(final String name, String defaultvalue) {
 		if (p.get(name, null) == null && defaultvalue != null) {
 			if (System.getProperty("waazdoh." + name) != null) {
 				defaultvalue = System.getProperty("waazdoh." + name);
@@ -61,12 +61,12 @@ public final class AppPreferences implements MPreferences {
 	}
 
 	@Override
-	public int getInteger(String string, int i) {
+	public int getInteger(final String string, int i) {
 		String sint = get(string, "" + i);
 		return Integer.parseInt(sint);
 	}
 
-	private String parse(String name, String value) {
+	private String parse(final String name, String value) {
 		if (name.indexOf(".path") > 0) {
 			if (value != null && value.indexOf("/") != 0) {
 				value = System.getProperty("user.home") + File.separator
@@ -77,19 +77,19 @@ public final class AppPreferences implements MPreferences {
 	}
 
 	@Override
-	public void set(String name, String value) {
+	public void set(final String name, String value) {
 		if (name != null && value != null) {
 			p.put(name, value);
 		}
 	}
 
 	@Override
-	public void set(String name, boolean b) {
+	public void set(final String name, boolean b) {
 		set(name, "" + b);
 	}
 
 	@Override
-	public boolean getBoolean(String valuename, boolean defaultvalue) {
+	public boolean getBoolean(final String valuename, boolean defaultvalue) {
 		return "true".equals("" + get(valuename, "" + defaultvalue));
 	}
 }

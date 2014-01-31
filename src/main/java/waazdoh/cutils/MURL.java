@@ -18,13 +18,13 @@ public final class MURL {
 	private int port;
 	private String host;
 
-	public MURL(String host, int port) {
+	public MURL(final String host, int port) {
 		this.host = host;
 		this.port = port;
 		checkURL();
 	}
 
-	public MURL(String host) {
+	public MURL(final String host) {
 		this.host = host;
 		checkURL();
 	}
@@ -39,7 +39,7 @@ public final class MURL {
 		return url;
 	}
 
-	public MURL append(String string) {
+	public MURL append(final String string) {
 		append = append + string;
 		checkURL();
 		return this;

@@ -4,7 +4,7 @@ import waazdoh.cutils.MStringID;
 
 public final class MBinaryID extends MStringID {
 
-	public MBinaryID(MStringID idValue) {
+	public MBinaryID(final MStringID idValue) {
 		super(idValue.toString());
 	}
 
@@ -12,7 +12,7 @@ public final class MBinaryID extends MStringID {
 		super();
 	}
 
-	public MBinaryID(String sid) {
+	public MBinaryID(final String sid) {
 		super(sid);
 	}
 }

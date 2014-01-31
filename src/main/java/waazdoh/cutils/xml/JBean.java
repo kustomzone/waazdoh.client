@@ -70,7 +70,7 @@ public final class JBean implements Comparable<JBean> {
 	public void toXML(int indent, StringBuffer sb) {
 		indent(indent, sb);
 		sb.append("<" + getName());
-		for (String key : attributes.keySet()) {
+		for (final String key : attributes.keySet()) {
 			String value = attributes.get(key);
 			sb.append(" " + key + "=\"" + value + "\"");
 		}
@@ -142,7 +142,7 @@ public final class JBean implements Comparable<JBean> {
 		//
 	}
 
-	public JBean(String name) {
+	public JBean(final String name) {
 		setName(name);
 	}
 
@@ -154,7 +154,7 @@ public final class JBean implements Comparable<JBean> {
 		return new LinkedList<JBean>(children);
 	}
 
-	public String getValue(String string) {
+	public String getValue(final String string) {
 		JBean child = get(string);
 		if (child != null) {
 			return child.getText();
@@ -184,13 +184,13 @@ public final class JBean implements Comparable<JBean> {
 		this.parent = jBean;
 	}
 
-	public JBean add(String string, JBean bean) {
+	public JBean add(final String string, JBean bean) {
 		bean.setName(string);
 		add(bean);
 		return bean;
 	}
 
-	public JBean get(String name) {
+	public JBean get(final String name) {
 		List<JBean> lc = children;
 		for (JBean jBean : lc) {
 			if (jBean.getName().equals(name)) {
@@ -205,7 +205,7 @@ public final class JBean implements Comparable<JBean> {
 		}
 	}
 
-	public void setName(String nname) {
+	public void setName(final String nname) {
 		if (nname == null || nname.indexOf(' ') >= 0
 				|| nname.indexOf('\n') >= 0) {
 			throw new IllegalArgumentException("JBean name illegal (" + nname
@@ -225,7 +225,7 @@ public final class JBean implements Comparable<JBean> {
 		return new XML(sb.toString());
 	}
 
-	public void addValue(String string, String string2) {
+	public void addValue(final String string, String string2) {
 		if (string2 != null) {
 			string2 = string2.trim();
 			if (string2.length() > 0) {
@@ -239,11 +239,11 @@ public final class JBean implements Comparable<JBean> {
 		}
 	}
 
-	private void delete(String string) {
+	private void delete(final String string) {
 		children.remove(get(string));
 	}
 
-	public JBean setValue(String string2) {
+	public JBean setValue(final String string2) {
 		text = string2.trim();
 		return this;
 	}
@@ -265,11 +265,11 @@ public final class JBean implements Comparable<JBean> {
 		return "JBean:" + toXML();
 	}
 
-	public JBean add(String beanname) {
+	public JBean add(final String beanname) {
 		return add(beanname, new JBean());
 	}
 
-	public int getIntValue(String aname) {
+	public int getIntValue(final String aname) {
 		String s = getValue(aname);
 		if (s != null) {
 			return Integer.parseInt(s);
@@ -278,7 +278,7 @@ public final class JBean implements Comparable<JBean> {
 		}
 	}
 
-	public long getLongValue(String aname) {
+	public long getLongValue(final String aname) {
 		String s = getValue(aname);
 		if (s != null) {
 			return Long.parseLong(s);
@@ -287,7 +287,7 @@ public final class JBean implements Comparable<JBean> {
 		}
 	}
 
-	public float getFloatValue(String aname) {
+	public float getFloatValue(final String aname) {
 		String s = getValue(aname);
 		if (s != null) {
 			return Float.parseFloat(s);
@@ -296,7 +296,7 @@ public final class JBean implements Comparable<JBean> {
 		}
 	}
 
-	public Boolean getBooleanValue(String aname) {
+	public Boolean getBooleanValue(final String aname) {
 		String s = getValue(aname);
 		if (s != null) {
 			return Boolean.parseBoolean(s);
@@ -309,27 +309,27 @@ public final class JBean implements Comparable<JBean> {
 		return getChildren().get(0);
 	}
 
-	public void addValue(String string, int num) {
+	public void addValue(final String string, int num) {
 		addValue(string, "" + num);
 	}
 
-	public void addValue(String string, long num) {
+	public void addValue(final String string, long num) {
 		addValue(string, "" + num);
 	}
 
-	public JBean addList(String string, Set<String> list) {
+	public JBean addList(final String string, Set<String> list) {
 		JBean b = add(string);
-		for (String item : list) {
+		for (final String item : list) {
 			b.add("item").setValue(item);
 		}
 		return b;
 	}
 
-	public void addValue(String string, boolean bvalue) {
+	public void addValue(final String string, boolean bvalue) {
 		this.addValue(string, "" + bvalue);
 	}
 
-	public JBean find(String string) {
+	public JBean find(final String string) {
 		if (name.equals(string)) {
 			return this;
 		} else {
@@ -337,7 +337,7 @@ public final class JBean implements Comparable<JBean> {
 		}
 	}
 
-	private JBean findChild(String string) {
+	private JBean findChild(final String string) {
 		List<JBean> cs = this.children;
 		for (JBean cb : cs) {
 			JBean findcb = cb.find(string);
@@ -348,7 +348,7 @@ public final class JBean implements Comparable<JBean> {
 		return null;
 	}
 
-	public MStringID getIDValue(String string) {
+	public MStringID getIDValue(final String string) {
 		String sid = getValue(string);
 		if (sid == null || sid.equals("null")) {
 			return null;
@@ -357,15 +357,15 @@ public final class JBean implements Comparable<JBean> {
 		}
 	}
 
-	public void addChildValue(String string, MID id) {
+	public void addChildValue(final String string, MID id) {
 		this.addValue(string, id.toString());
 	}
 
-	public UserID getUserAttribute(String string) {
+	public UserID getUserAttribute(final String string) {
 		return new UserID(getValue(string));
 	}
 
-	public void addValue(String name, float value) {
+	public void addValue(final String name, float value) {
 		this.addValue(name, "" + value);
 	}
 
@@ -394,7 +394,7 @@ public final class JBean implements Comparable<JBean> {
 		setValue(id.toString());
 	}
 
-	public void setAttribute(String qName, String value) {
+	public void setAttribute(final String qName, String value) {
 		attributes.put(qName, value);
 	}
 
@@ -402,20 +402,20 @@ public final class JBean implements Comparable<JBean> {
 		return new BytesHash(toXML().toString().getBytes()).toString();
 	}
 
-	public void addValue(String string, MID id) {
+	public void addValue(final String string, MID id) {
 		this.addValue(string, id.toString());
 	}
 
-	public String getAttribute(String string) {
+	public String getAttribute(final String string) {
 		return attributes.get(string);
 	}
 
-	public void setBase64Value(String valuename, String value) {
+	public void setBase64Value(final String valuename, String value) {
 		byte[] bytes64 = Base64.encodeBase64(value.getBytes());
 		addValue(valuename, new String(bytes64));
 	}
 
-	public String getBase64Value(String string) {
+	public String getBase64Value(final String string) {
 		String value64 = getValue(string);
 		if (value64 != null) {
 			byte[] bytes = Base64.decodeBase64(value64.getBytes());

@@ -38,7 +38,7 @@ public final class RestClient implements CMService {
 	private boolean loggedin;
 	private MBinarySource source;
 
-	public RestClient(String localurl, MBinarySource source)
+	public RestClient(final String localurl, MBinarySource source)
 			throws MalformedURLException {
 		this.url = new URL(localurl);
 		this.source = source;
@@ -50,7 +50,7 @@ public final class RestClient implements CMService {
 	}
 
 	@Override
-	public String requestAppLogin(String email, String appname, MStringID appid) {
+	public String requestAppLogin(final String email, String appname, MStringID appid) {
 		// @Path("/authenticateapp/{email}/{appid}/{appname}")
 		JBean request = new JBean("request");
 		request.addValue("email", email);
@@ -87,7 +87,7 @@ public final class RestClient implements CMService {
 	}
 
 	@Override
-	public boolean setSession(String username, String session) {
+	public boolean setSession(final String username, String session) {
 		if (session != null && session.length() > 0) {
 			sessionid = session;
 			List<String> params = new LinkedList<String>();
@@ -121,13 +121,13 @@ public final class RestClient implements CMService {
 	}
 
 	@Override
-	public MURL getURL(String service, String type, MID id) {
+	public MURL getURL(final String service, String type, MID id) {
 		LinkedList<String> params = new LinkedList<String>();
 		params.add("" + id);
 		return getAnonymousURL(service, type, params);
 	}
 
-	private MURL getAnonymousURL(String service, String string,
+	private MURL getAnonymousURL(final String service, String string,
 			LinkedList<String> params) {
 		return getAuthURL(service, string, params, null);
 	}
@@ -187,7 +187,7 @@ public final class RestClient implements CMService {
 		return post("objects", "write", params, beanresponse.getBean());
 	}
 
-	private JBeanResponse get(String service, String method, boolean auth,
+	private JBeanResponse get(final String service, String method, boolean auth,
 			List<String> params) {
 		MURL murl = getURL(service, method, auth, params);
 		//
@@ -233,7 +233,7 @@ public final class RestClient implements CMService {
 		return get("objects", "publish", true, params).isSuccess();
 	}
 
-	private MURL getURL(String service, String method, boolean doauth,
+	private MURL getURL(final String service, String method, boolean doauth,
 			List<String> params) {
 		String auth = null;
 		if (doauth) {
@@ -242,7 +242,7 @@ public final class RestClient implements CMService {
 		return getAuthURL(service, method, params, auth);
 	}
 
-	public MURL getAuthURL(String service, String method, List<String> params,
+	public MURL getAuthURL(final String service, String method, List<String> params,
 			String auth) {
 		MURL murl = new MURL(url.getHost(), url.getPort());
 		murl.append(url.getPath());
@@ -252,7 +252,7 @@ public final class RestClient implements CMService {
 			murl.append("/" + auth);
 		}
 		if (params != null) {
-			for (String string : params) {
+			for (final String string : params) {
 				murl.append("/" + string);
 			}
 		}
@@ -260,7 +260,7 @@ public final class RestClient implements CMService {
 	}
 
 	@Override
-	public JBeanResponse search(String filter, int index, int i) {
+	public JBeanResponse search(final String filter, int index, int i) {
 		List<String> params = new LinkedList<String>();
 		params.add(filter);
 		params.add("" + index);
@@ -269,7 +269,7 @@ public final class RestClient implements CMService {
 		return get("objects", "search", false, params);
 	}
 
-	private JBeanResponse post(String service, String method,
+	private JBeanResponse post(final String service, String method,
 			List<String> params, JBean b) {
 		String sbody = null;
 		try {
@@ -318,7 +318,7 @@ public final class RestClient implements CMService {
 	}
 
 	@Override
-	public JBeanResponse getBookmarkGroup(String id) {
+	public JBeanResponse getBookmarkGroup(final String id) {
 		List<String> params = new LinkedList<String>();
 		params.add(id.toString());
 		return get("bookmarks", "getgroup", true, params);

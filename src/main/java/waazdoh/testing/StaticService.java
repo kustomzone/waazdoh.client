@@ -26,7 +26,7 @@ public final class StaticService implements CMService {
 	private static Map<MStringID, JBean> data = new HashMap<MStringID, JBean>();
 
 	@Override
-	public boolean setSession(String username, String session) {
+	public boolean setSession(final String username, String session) {
 		// TODO Auto-generated method stub
 		return true;
 	}
@@ -53,7 +53,7 @@ public final class StaticService implements CMService {
 	}
 
 	@Override
-	public String requestAppLogin(String username, String appname, MStringID id) {
+	public String requestAppLogin(final String username, String appname, MStringID id) {
 		return null;
 	}
 
@@ -92,7 +92,7 @@ public final class StaticService implements CMService {
 	}
 
 	@Override
-	public MURL getURL(String service, String method, MID id) {
+	public MURL getURL(final String service, String method, MID id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -118,13 +118,13 @@ public final class StaticService implements CMService {
 	}
 
 	@Override
-	public JBeanResponse search(String filter, int index, int i) {
+	public JBeanResponse search(final String filter, int index, int i) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public JBeanResponse getBookmarkGroup(String id) {
+	public JBeanResponse getBookmarkGroup(final String id) {
 		// TODO Auto-generated method stub
 		return null;
 	}

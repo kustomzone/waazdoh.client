@@ -83,7 +83,7 @@ public final class TestiBinaryTransfer extends TestCase {
 		source2.close();
 	}
 
-	private P2PBinarySource getServiceSource(String username1, boolean bind)
+	private P2PBinarySource getServiceSource(final String username1, boolean bind)
 			throws SAXException {
 		MPreferences p1 = new StaticTestPreferences(username1);
 		P2PBinarySource source1 = new P2PBinarySource(p1, bind);

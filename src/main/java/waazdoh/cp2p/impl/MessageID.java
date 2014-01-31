@@ -4,7 +4,7 @@ import waazdoh.cutils.MStringID;
 
 public final class MessageID extends MStringID {
 
-	public MessageID(String sid) {
+	public MessageID(final String sid) {
 		super(sid);
 	}
 

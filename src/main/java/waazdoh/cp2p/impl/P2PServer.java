@@ -499,7 +499,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		}
 	}
 
-	private MMessageHandler getHandler(String name) {
+	private MMessageHandler getHandler(final String name) {
 		return handlers.get(name);
 	}
 
@@ -512,7 +512,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	}
 
 	@Override
-	public MMessage getMessage(String string) {
+	public MMessage getMessage(final String string) {
 		MMessage ret = new MMessage(string, networkid);
 		ret.addAttribute("date", "" + new Date());
 		return ret;

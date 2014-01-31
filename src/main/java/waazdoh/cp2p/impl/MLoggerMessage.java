@@ -15,7 +15,7 @@ import waazdoh.cutils.MLogger;
 
 public final class MLoggerMessage implements LogObjectHandler {
 	@Override
-	public void handle(String title, Object message2, MLogger log) {
+	public void handle(final String title, Object message2, MLogger log) {
 		MMessage message = (MMessage) message2;
 		log.info("#MMessage:" + title + "[" + message.getID() + "("
 				+ message.getResponseTo() + ")][" + message.getName()

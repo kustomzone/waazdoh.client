@@ -23,7 +23,7 @@ public final class PreferencesImpl implements MPreferences {
 	}
 
 	@Override
-	public String get(String name, String defaultvalue) {
+	public String get(final String name, String defaultvalue) {
 		String v = values.get(name);
 		if (v == null) {
 			set(name, defaultvalue);
@@ -32,23 +32,23 @@ public final class PreferencesImpl implements MPreferences {
 	}
 
 	@Override
-	public int getInteger(String string, int i) {
+	public int getInteger(final String string, int i) {
 		String sint = get(string, "" + i);
 		return Integer.parseInt(sint);
 	}
 
 	@Override
-	public boolean getBoolean(String name, boolean def) {
+	public boolean getBoolean(final String name, boolean def) {
 		return Boolean.parseBoolean(get(name, "" + def));
 	}
 
 	@Override
-	public void set(String name, String value) {
+	public void set(final String name, String value) {
 		values.put(name, value);
 	}
 
 	@Override
-	public void set(String name, boolean b) {
+	public void set(final String name, boolean b) {
 		set(name, "" + b);
 	}
 }

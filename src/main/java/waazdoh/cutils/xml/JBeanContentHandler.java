@@ -47,16 +47,16 @@ public final class JBeanContentHandler implements ContentHandler {
 		// TODO Auto-generated method stub
 	}
 
-	public void startPrefixMapping(String prefix, String uri)
+	public void startPrefixMapping(final String prefix, String uri)
 			throws SAXException {
 		// TODO Auto-generated method stub
 	}
 
-	public void endPrefixMapping(String prefix) throws SAXException {
+	public void endPrefixMapping(final String prefix) throws SAXException {
 		// TODO Auto-generated method stub
 	}
 
-	public void startElement(String uri, String localName, String qName,
+	public void startElement(final String uri, String localName, String qName,
 			Attributes atts) throws SAXException {
 		// log.info("start " + localName + " qn:" + qName + " attrs:" + atts);
 		JBean b;
@@ -74,7 +74,7 @@ public final class JBeanContentHandler implements ContentHandler {
 		stack.push(b);
 	}
 
-	public void endElement(String uri, String localName, String qName)
+	public void endElement(final String uri, String localName, String qName)
 			throws SAXException {
 		// log.info("end " + localName + " qn:" + qName);
 		last = stack.pop();
@@ -97,12 +97,12 @@ public final class JBeanContentHandler implements ContentHandler {
 		// TODO Auto-generated method stub
 	}
 
-	public void processingInstruction(String target, String data)
+	public void processingInstruction(final String target, String data)
 			throws SAXException {
 		// TODO Auto-generated method stub
 	}
 
-	public void skippedEntity(String name) throws SAXException {
+	public void skippedEntity(final String name) throws SAXException {
 		// TODO Auto-generated method stub
 	}
 }

@@ -4,7 +4,7 @@ import waazdoh.cutils.MStringID;
 
 public final class MNodeID extends MStringID {
 
-	public MNodeID(String attribute) {
+	public MNodeID(final String attribute) {
 		super(attribute);
 	}
 

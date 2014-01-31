@@ -45,7 +45,7 @@ public final class ServiceMock implements CMService {
 
 	}
 
-	private void addBGroup(String gid, String gname) throws SAXException {
+	private void addBGroup(final String gid, String gname) throws SAXException {
 		String sxml = "<response> <bookmarkgroup>		  <owner>1b32558c-827d-4f4c-83bf-b9ea4a313db6</owner>		  <name>users</name>"
 				+ "  <groupid>"
 				+ gid
@@ -77,7 +77,7 @@ public final class ServiceMock implements CMService {
 	}
 
 	@Override
-	public boolean setSession(String username, String session) {
+	public boolean setSession(final String username, String session) {
 		createSession(username);
 		return true;
 	}
@@ -116,7 +116,7 @@ public final class ServiceMock implements CMService {
 	}
 
 	@Override
-	public JBeanResponse search(String filter, int index, int count) {
+	public JBeanResponse search(final String filter, int index, int count) {
 		JBeanResponse ret = JBeanResponse.getTrue();
 		HashSet<String> list = new HashSet<String>();
 		for (int i = index; i < count; i++) {
@@ -127,7 +127,7 @@ public final class ServiceMock implements CMService {
 	}
 
 	@Override
-	public MURL getURL(String service, String method, MID id) {
+	public MURL getURL(final String service, String method, MID id) {
 		return new MURL("localhost");
 	}
 
@@ -142,13 +142,13 @@ public final class ServiceMock implements CMService {
 	}
 
 	@Override
-	public String requestAppLogin(String username, String appname,
+	public String requestAppLogin(final String username, String appname,
 			MStringID appid) {
 		createSession(username);
 		return session;
 	}
 
-	private void createSession(String username) {
+	private void createSession(final String username) {
 		session = new MStringID().toString();
 		userid = new UserID(new MStringID().toString());
 		this.username = username;
@@ -172,7 +172,7 @@ public final class ServiceMock implements CMService {
 	}
 
 	@Override
-	public JBeanResponse getBookmarkGroup(String id) {
+	public JBeanResponse getBookmarkGroup(final String id) {
 		JBeanResponse ret = JBeanResponse.getTrue();
 		ret.setBean(groups.get(id));
 		return ret;
@@ -181,7 +181,7 @@ public final class ServiceMock implements CMService {
 	@Override
 	public Map<String, String> getBookmarkGroups() {
 		Map<String, String> ret = new HashMap<String, String>();
-		for (String id : groups.keySet()) {
+		for (final String id : groups.keySet()) {
 			JBean b = groups.get(id);
 			ret.put(id, b.getValue("name"));
 		}

@@ -28,11 +28,11 @@ public final class MLogger {
 		return logger;
 	}
 
-	public void info(String string) {
+	public void info(final String string) {
 		getLog().info(getLine(string));
 	}
 
-	public void debug(String string) {
+	public void debug(final String string) {
 		getLog().finest(getLine(string));
 	}
 
@@ -81,7 +81,7 @@ public final class MLogger {
 		getLog().severe(cause.toString());
 	}
 
-	public void error(String string) {
+	public void error(final String string) {
 		info("ERROR " + string);
 	}
 }

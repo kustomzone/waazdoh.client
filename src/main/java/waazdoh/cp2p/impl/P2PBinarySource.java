@@ -105,7 +105,7 @@ public final class P2PBinarySource implements MBinarySource {
 	}
 
 	@Override
-	public synchronized void addBean(String id, JBeanResponse response) {
+	public synchronized void addBean(final String id, JBeanResponse response) {
 		beanstorage.addBean(id, response);
 	}
 
@@ -118,7 +118,7 @@ public final class P2PBinarySource implements MBinarySource {
 	}
 
 	@Override
-	public JBeanResponse getBean(String id) {
+	public JBeanResponse getBean(final String id) {
 		return beanstorage.getBean(id);
 	}
 
@@ -179,7 +179,7 @@ public final class P2PBinarySource implements MBinarySource {
 	}
 
 	@Override
-	public Binary newBinary(String string, String extension) {
+	public Binary newBinary(final String string, String extension) {
 		return storage.newBinary(string, extension);
 	}
 

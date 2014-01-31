@@ -20,7 +20,7 @@ public interface MNodeConnection {
 
 	boolean isRunning();
 
-	MMessage getMessage(String string);
+	MMessage getMessage(final String string);
 
 	void broadcastMessage(MMessage notification,
 			MessageResponseListener messageResponseListener);

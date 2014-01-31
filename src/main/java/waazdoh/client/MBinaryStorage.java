@@ -303,7 +303,7 @@ public final class MBinaryStorage {
 		}
 	}
 
-	public Binary newBinary(String comment, String extension) {
+	public Binary newBinary(final String comment, String extension) {
 		synchronized (streams) {
 			Binary b = new Binary(service, comment, extension);
 			this.streams.add(b);

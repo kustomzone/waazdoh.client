@@ -16,7 +16,7 @@ public final class MID {
 	private final String id;
 	private HashSource hashsource;
 
-	public MID(String value, HashSource hsource) {
+	public MID(final String value, HashSource hsource) {
 		int i = value.indexOf(".");
 		id = value.substring(0, i);
 		MID.check(id);
@@ -59,7 +59,7 @@ public final class MID {
 		return id + "." + getSourceHash();
 	}
 
-	public static void check(String substring) {
+	public static void check(final String substring) {
 		if (substring.length() != 36) {
 			throw new IllegalArgumentException("id value length "
 					+ substring.length());

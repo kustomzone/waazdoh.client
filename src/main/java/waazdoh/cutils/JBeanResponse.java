@@ -23,7 +23,7 @@ public final class JBeanResponse {
 	private JBean bean = new JBean("response");
 	private MLogger log = MLogger.getLogger(this);
 
-	public JBeanResponse(String o) throws SAXException {
+	public JBeanResponse(final String o) throws SAXException {
 		String string = (String) o;
 		JBean bean = new JBean(new XML(string));
 		if (bean.getName().equals("response")) {
@@ -65,7 +65,7 @@ public final class JBeanResponse {
 		return ret;
 	}
 
-	public static JBeanResponse getError(String s) {
+	public static JBeanResponse getError(final String s) {
 		JBeanResponse ret = getFalse();
 		ret.bean.addValue("error", s);
 		return ret;

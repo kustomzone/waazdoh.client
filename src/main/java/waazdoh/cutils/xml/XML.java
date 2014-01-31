@@ -17,7 +17,7 @@ import java.io.Reader;
 public final class XML {
 	private String string;
 
-	public XML(String string) {
+	public XML(final String string) {
 		this.string = string;
 	}
 
@@ -25,7 +25,7 @@ public final class XML {
 		return string;
 	}
 
-	public void setString(String string) {
+	public void setString(final String string) {
 		this.string = string;
 	}
 

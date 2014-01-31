@@ -28,7 +28,7 @@ public final class WBookmarkGroup {
 	private List<WBookmarkGroupListener> listeners = new LinkedList<WBookmarkGroupListener>();
 	private String created;
 
-	public WBookmarkGroup(String mid, String name, CMService service) {
+	public WBookmarkGroup(final String mid, String name, CMService service) {
 		this.service = service;
 		this.id = mid;
 		this.name = name;

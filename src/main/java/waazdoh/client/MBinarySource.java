@@ -33,9 +33,9 @@ public interface MBinarySource {
 
 	void clearMemory(int suggestedmemorytreshold);
 
-	JBeanResponse getBean(String string);
+	JBeanResponse getBean(final String string);
 
-	void addBean(String string, JBeanResponse response);
+	void addBean(final String string, JBeanResponse response);
 
 	String getInfoText();
 
@@ -45,7 +45,7 @@ public interface MBinarySource {
 
 	void setReportingService(ReportingService rservice);
 
-	Binary newBinary(String string, String extension);
+	Binary newBinary(final String string, String extension);
 
 	File getBinaryFile(Binary bin);
 

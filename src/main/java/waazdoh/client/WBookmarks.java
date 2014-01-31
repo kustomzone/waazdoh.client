@@ -31,7 +31,7 @@ public final class WBookmarks {
 	private void update() {
 		Map<String, String> groups = service.getBookmarkGroups();
 		if (groups != null) {
-			for (String mid : groups.keySet()) {
+			for (final String mid : groups.keySet()) {
 				if (this.groups.get(mid) == null) {
 					this.groups.put(mid,
 							new WBookmarkGroup(mid, groups.get(mid), service));
@@ -41,7 +41,7 @@ public final class WBookmarks {
 		}
 	}
 
-	private WBookmarkGroup get(String mid) {
+	private WBookmarkGroup get(final String mid) {
 		return groups.get(mid);
 	}
 

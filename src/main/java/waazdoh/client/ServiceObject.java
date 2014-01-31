@@ -42,7 +42,7 @@ public final class ServiceObject implements HashSource {
 
 	private String version;
 
-	public ServiceObject(String string, WClient env, ServiceObjectData data,
+	public ServiceObject(final String string, WClient env, ServiceObjectData data,
 			String version) {
 		this.tagname = string;
 		this.creatorid = env.getUserID();

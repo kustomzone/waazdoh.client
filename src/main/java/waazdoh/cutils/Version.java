@@ -19,7 +19,7 @@ public final class Version {
 		this.id = UUID.randomUUID().toString();
 	}
 
-	public Version(String substring) {
+	public Version(final String substring) {
 		MID.check(substring);
 		this.id = substring;
 	}

@@ -10,7 +10,7 @@ public class MStringID {
 		sid = UUID.randomUUID().toString();
 	}
 
-	public MStringID(String sid) {
+	public MStringID(final String sid) {
 		this.sid = sid.toString();
 	}
 

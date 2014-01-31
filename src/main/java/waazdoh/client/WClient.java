@@ -71,7 +71,7 @@ public final class WClient {
 		return preferences;
 	}
 
-	public boolean setUsernameAndSession(String username, String session) {
+	public boolean setUsernameAndSession(final String username, String session) {
 		if (!service.isLoggedIn()) {
 			if (service.setSession(username, session)) {
 				source.setService(service);
@@ -85,7 +85,7 @@ public final class WClient {
 		}
 	}
 
-	public String requestAppLogin(String email, String appname, MStringID id) {
+	public String requestAppLogin(final String email, String appname, MStringID id) {
 		if (service.getSessionID() == null) {
 			String sessionid = service.requestAppLogin(email, appname, id);
 			if (sessionid != null) {

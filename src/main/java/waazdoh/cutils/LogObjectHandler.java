@@ -11,5 +11,5 @@
 package waazdoh.cutils;
 
 public interface LogObjectHandler {
-	void handle(String title, Object message2, MLogger logger);
+	void handle(final String title, Object message2, MLogger logger);
 }

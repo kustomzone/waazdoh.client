@@ -81,7 +81,7 @@ public final class URLCaller {
 		this.log = MLogger.getLogger(this);
 	}
 
-	public void setCredentials(String un, String pw) {
+	public void setCredentials(final String un, String pw) {
 		this.username = un;
 		this.password = pw;
 	}
@@ -171,11 +171,11 @@ public final class URLCaller {
 		}
 	}
 
-	public void setPost(String data) {
+	public void setPost(final String data) {
 		this.post = data;
 	}
 
-	public void setPost(String filename, File f) {
+	public void setPost(final String filename, File f) {
 		this.postfile = f;
 		this.postfilename = filename;
 	}

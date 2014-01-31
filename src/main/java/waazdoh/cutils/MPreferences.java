@@ -20,15 +20,15 @@ public interface MPreferences {
 	static final String NETWORK_MAX_DOWNLOADS = "network.downloads.max";
 	static final String MEMORY_MAX_USAGE = "memory.max";
 
-	String get(String name, String defaultvalue);
+	String get(final String name, String defaultvalue);
 
-	boolean getBoolean(String valuename, boolean defaultvalue);
+	boolean getBoolean(final String valuename, boolean defaultvalue);
 
-	void set(String name, String value);
+	void set(final String name, String value);
 
-	void set(String name, boolean b);
+	void set(final String name, boolean b);
 
-	int getInteger(String string, int i);
+	int getInteger(final String string, int i);
 
 	Set<String> getNames();
 

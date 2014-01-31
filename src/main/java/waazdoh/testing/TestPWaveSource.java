@@ -40,7 +40,7 @@ public final class TestPWaveSource implements MBinarySource {
 	public Set<MStringID> getLocalObjectIDs() {
 		Set<MStringID> ret = new HashSet<MStringID>();
 		Set<String> keys = beans.keySet();
-		for (String string : keys) {
+		for (final String string : keys) {
 			ret.add(new MStringID(string));
 		}
 		return ret;
@@ -61,7 +61,7 @@ public final class TestPWaveSource implements MBinarySource {
 	}
 
 	@Override
-	public Binary newBinary(String string, String extension) {
+	public Binary newBinary(final String string, String extension) {
 		return storage.newBinary(string, extension);
 	}
 
@@ -99,12 +99,12 @@ public final class TestPWaveSource implements MBinarySource {
 	}
 
 	@Override
-	public void addBean(String id, JBeanResponse response) {
+	public void addBean(final String id, JBeanResponse response) {
 		beans.put(id, response);
 	}
 
 	@Override
-	public JBeanResponse getBean(String id) {
+	public JBeanResponse getBean(final String id) {
 		return beans.get(id);
 	}
 

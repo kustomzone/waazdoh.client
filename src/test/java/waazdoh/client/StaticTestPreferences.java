@@ -10,7 +10,7 @@ import waazdoh.cutils.MPreferences;
 public final class StaticTestPreferences implements MPreferences {
 	private String username;
 
-	public StaticTestPreferences(String username) {
+	public StaticTestPreferences(final String username) {
 		this.username = username;
 		Preferences prefs = getPrefs();
 		if (prefs.get(MPreferences.SERVICE_URL, "").equals("")) {
@@ -32,7 +32,7 @@ public final class StaticTestPreferences implements MPreferences {
 		String[] keys;
 		try {
 			keys = getPrefs().keys();
-			for (String string : keys) {
+			for (final String string : keys) {
 				ret.add(string);
 			}
 
@@ -55,28 +55,28 @@ public final class StaticTestPreferences implements MPreferences {
 	}
 
 	@Override
-	public void set(String name, String value) {
+	public void set(final String name, String value) {
 		getPrefs().put(name, value);
 	}
 
 	@Override
-	public void set(String name, boolean b) {
+	public void set(final String name, boolean b) {
 		set(name, "" + b);
 	}
 
 	@Override
-	public int getInteger(String string, int i) {
+	public int getInteger(final String string, int i) {
 		String sint = get(string, "" + i);
 		return Integer.parseInt(sint);
 	}
 
 	@Override
-	public boolean getBoolean(String name, boolean defbool) {
+	public boolean getBoolean(final String name, boolean defbool) {
 		return "true".equals(get(name));
 	}
 
 	@Override
-	public String get(String name, String defaultvalue) {
+	public String get(final String name, String defaultvalue) {
 		String get = get(name);
 		if (get == null || get.equals("")) {
 			getPrefs().put(name, defaultvalue);
@@ -86,7 +86,7 @@ public final class StaticTestPreferences implements MPreferences {
 		}
 	}
 
-	public String get(String string) {
+	public String get(final String string) {
 		return getPrefs().get(string, "");
 	}
 }

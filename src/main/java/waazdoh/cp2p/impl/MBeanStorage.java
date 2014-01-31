@@ -39,7 +39,7 @@ public final class MBeanStorage {
 		file.mkdirs();
 	}
 
-	public JBeanResponse getBean(String id) {
+	public JBeanResponse getBean(final String id) {
 		try {
 			File f = getFile(id);
 			if (f.exists()) {
@@ -71,12 +71,12 @@ public final class MBeanStorage {
 		}
 	}
 
-	private File getFile(String id) {
+	private File getFile(final String id) {
 		File f = new File(path + File.separator + id);
 		return f;
 	}
 
-	public void addBean(String id, JBeanResponse response) {
+	public void addBean(final String id, JBeanResponse response) {
 		try {
 			File f = getFile(id);
 			FileWriter fw;
@@ -93,7 +93,7 @@ public final class MBeanStorage {
 		File f = new File(path);
 		String[] list = f.list();
 		Set<MStringID> ret = new HashSet<MStringID>();
-		for (String string : list) {
+		for (final String string : list) {
 			try {
 				ret.add(new MStringID(string));
 			} catch (Exception e) {
