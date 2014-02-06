@@ -42,8 +42,8 @@ public final class ServiceObject implements HashSource {
 
 	private String version;
 
-	public ServiceObject(final String string, WClient env, ServiceObjectData data,
-			String version) {
+	public ServiceObject(final String string, WClient env,
+			ServiceObjectData data, String version) {
 		this.tagname = string;
 		this.creatorid = env.getUserID();
 		this.data = data;
@@ -88,6 +88,9 @@ public final class ServiceObject implements HashSource {
 		bt.addValue("modified", modifytime);
 		bt.addValue("creator", creatorid.toString());
 		bt.addValue("version", version);
+		bt.addValue("license",
+				"GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html");
+
 		return bt;
 	}
 

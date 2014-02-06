@@ -144,8 +144,6 @@ public final class JBean implements Comparable<JBean> {
 
 	public JBean(final String name) {
 		setName(name);
-		add("license").setValue(
-				"GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html");
 	}
 
 	public JBean(XML xml) throws SAXException {
