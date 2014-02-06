@@ -72,7 +72,7 @@ public final class MBeanStorage {
 	}
 
 	private File getFile(final String id) {
-		File f = new File(path + File.separator + id);
+		File f = new File(path + File.separator + id + ".xml");
 		return f;
 	}
 
