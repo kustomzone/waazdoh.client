@@ -136,7 +136,7 @@ public final class MBinaryStorage {
 	public Binary findStream(MStringID streamid) {
 		synchronized (streams) {
 			Binary fs = null;
-			Iterator<Binary> i = new LinkedList(streams).iterator();
+			Iterator<Binary> i = new LinkedList<Binary>(streams).iterator();
 			while (fs == null && i.hasNext()) {
 				Binary test = i.next();
 				MBinaryID testid = test.getID();
