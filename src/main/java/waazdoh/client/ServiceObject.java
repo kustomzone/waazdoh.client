@@ -24,7 +24,7 @@ import waazdoh.cutils.xml.JBean;
 public final class ServiceObject implements HashSource {
 	private UserID creatorid;
 
-	private MID id = new MID(this);
+	private MID id;
 	private long created = System.currentTimeMillis();
 	private long modifytime;
 
@@ -42,14 +42,24 @@ public final class ServiceObject implements HashSource {
 
 	private String version;
 
+	private String prefix;
+
 	public ServiceObject(final String string, WClient env,
 			ServiceObjectData data, String version) {
+		this(string, env, data, version, "WZH");
+	}
+
+	public ServiceObject(final String string, final WClient env,
+			final ServiceObjectData data, final String version,
+			final String nprefix) {
 		this.tagname = string;
 		this.creatorid = env.getUserID();
 		this.data = data;
 		this.env = env;
 		this.created = System.currentTimeMillis();
 		this.version = version;
+		this.prefix = nprefix;
+		id = new MID(this, prefix);
 	}
 
 	public boolean load(MStringID oid) {
@@ -111,7 +121,7 @@ public final class ServiceObject implements HashSource {
 	public boolean save() {
 		if (!env.getUserID().equals(creatorid)) {
 			copyof = getID().getStringID();
-			id = new MID(this);
+			id = new MID(this, prefix);
 			creatorid = env.getUserID();
 		}
 

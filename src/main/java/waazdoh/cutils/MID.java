@@ -16,15 +16,15 @@ public final class MID {
 	private final String id;
 	private HashSource hashsource;
 
-	public MID(final String value, HashSource hsource) {
+	public MID(final String value, final HashSource hsource) {
 		int i = value.indexOf(".");
 		id = value.substring(0, i);
 		MID.check(id);
 		hashsource = hsource;
 	}
 
-	public MID(HashSource hsource) {
-		id = UUID.randomUUID().toString();
+	public MID(HashSource hsource, final String nprefix) {
+		id = nprefix + "_" + UUID.randomUUID().toString();
 		hashsource = hsource;
 	}
 
@@ -60,9 +60,16 @@ public final class MID {
 	}
 
 	public static void check(final String substring) {
-		if (substring.length() != 36) {
+		String prefixpart = substring.split("_")[0];
+		if (prefixpart.length() < 3) {
+			throw new IllegalArgumentException("prefix value length "
+					+ prefixpart.length() + ". Should at least three characters.");
+		}
+		
+		String idpart = substring.split("_")[1];
+		if (idpart.length() != 36) {
 			throw new IllegalArgumentException("id value length "
-					+ substring.length());
+					+ idpart.length());
 		}
 	}
 
