@@ -65,7 +65,7 @@ public final class RestClient implements CMService {
 		if (loggedin) {
 			JBean responsebean = response.getBean();
 			sessionid = responsebean.getValue("sessionid");
-			userid = new UserID(responsebean.getValue("user"));
+			userid = new UserID(responsebean.getValue("userid"));
 			this.username = email;
 			//
 			return sessionid;
@@ -212,7 +212,7 @@ public final class RestClient implements CMService {
 	}
 
 	public boolean isConnected() {
-		MURL murl = getURL("test", "test", false, new LinkedList<String>());
+		MURL murl = getURL("users", "test", false, new LinkedList<String>());
 		URLCaller urlcaller = new URLCaller(murl, new ClientProxySettings());
 		urlcaller.setTimeout(1000);
 
