@@ -175,9 +175,13 @@ public final class RestClient implements CMService {
 	public JBean read(MStringID id) {
 		JBean bean = getBean(id);
 		if (bean != null) {
-			JBean b = new JBean("object");
-			b.add("data").add(bean);
-			return b;
+			if (!bean.getName().equals("object") || bean.get("data") == null) {
+				JBean b = new JBean("object");
+				b.add("data").add(bean);
+				return b;
+			} else {
+				return bean;
+			}
 		} else {
 			List<String> params = new LinkedList<String>();
 			params.add(id.toString());

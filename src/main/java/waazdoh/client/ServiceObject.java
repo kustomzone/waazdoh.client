@@ -63,6 +63,7 @@ public final class ServiceObject implements HashSource {
 	}
 
 	public boolean load(MStringID oid) {
+		log.info("loading " + oid);
 		JBean response = env.getService().read(oid);
 		if (response != null && response.get("data").get(tagname) != null) {
 			id = new MID(oid, this);
@@ -109,6 +110,7 @@ public final class ServiceObject implements HashSource {
 	}
 
 	public boolean publish() {
+		log.info("publishing " + id);
 		save();
 		return env.getService().publish(id);
 	}
@@ -119,24 +121,38 @@ public final class ServiceObject implements HashSource {
 	}
 
 	public void save() {
+		log.info("possibly saving " + id);
+
 		if (!env.getUserID().equals(creatorid)) {
 			copyof = getID().getStringID();
 			id = new MID(this, prefix);
 			creatorid = env.getUserID();
 		}
 
-		if (!storedbean.equals(data.getBean())) {
+		JBean current = data.getBean();
+		current.setAttribute("id", id.toString());
+		if (!storedbean.equals(current)) {
+
+			log.info("" + id + " stored " + storedbean.toText());
+			log.info("" + id + " current " + current.toText());
+			log.info("" + id + " stored " + storedbean.getContentHash());
+			log.info("" + id + " current " + current.getContentHash());
+
 			modified();
-			JBean databean = data.getBean();
-			databean.setAttribute("id", id.toString());
+			JBean storing = data.getBean();
+			storing.setAttribute("id", id.toString());
+			log.info("" + id + " storing " + storing.toText());
 			//
-			storedbean = databean;
-			env.getService().addBean(getID().getStringID(), databean);
+			storedbean = storing;
+			log.info("adding bean" + id);
+
+			env.getService().addBean(id.getStringID(), storing);
 		}
 	}
 
 	public void modified() {
 		modifytime = System.currentTimeMillis();
+		log.info("modified " + id);
 		//
 		LinkedList<ServiceObjectListener> ls = new LinkedList<ServiceObjectListener>(
 				listeners);
