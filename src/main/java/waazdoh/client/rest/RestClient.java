@@ -261,7 +261,8 @@ public final class RestClient implements CMService {
 		urlcaller.setTimeout(1000);
 
 		byte[] responseBody = urlcaller.getResponseBody();
-		return parseResponse(responseBody) != null;
+		JBeanResponse responseBean = parseResponse(responseBody);
+		return responseBean != null && responseBean.isSuccess();
 	}
 
 	@Override
