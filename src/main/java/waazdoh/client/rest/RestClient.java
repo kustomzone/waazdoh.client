@@ -15,6 +15,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.xml.sax.SAXException;
 
@@ -27,6 +28,7 @@ import waazdoh.cutils.MStringID;
 import waazdoh.cutils.MURL;
 import waazdoh.cutils.UserID;
 import waazdoh.cutils.xml.JBean;
+import waazdoh.cutils.xml.XML;
 import waazdoh.service.CMService;
 
 public final class RestClient implements CMService {
@@ -50,16 +52,18 @@ public final class RestClient implements CMService {
 	}
 
 	@Override
-	public String requestAppLogin(final String email, String appname, MStringID appid) {
+	public String requestAppLogin(final String email, String appname,
+			MStringID appid) {
 		// @Path("/authenticateapp/{email}/{appid}/{appname}")
-		JBean request = new JBean("request");
-		request.addValue("email", email);
-		request.addValue("appid", appid.toString());
-		request.addValue("appname", appname);
 		//
 		String method = "authenticateapp";
+		Map<String, String> data = new HashMap<String, String>();
+		data.put("email", email);
+		data.put("appid", appid.toString());
+		data.put("appname", appname);
+		//
 		JBeanResponse response = post("users", method,
-				new LinkedList<String>(), request);
+				new LinkedList<String>(), data);
 		log.info("response " + response);
 		loggedin = response.isSuccess();
 		if (loggedin) {
@@ -92,7 +96,8 @@ public final class RestClient implements CMService {
 			sessionid = session;
 			List<String> params = new LinkedList<String>();
 			params.add(username);
-			JBeanResponse response = get("users", "checksession", true, params);
+			JBeanResponse response = getResponses("users", "checksession",
+					true, params);
 			log.info("checksession response " + response);
 			if (response.isSuccess()) {
 				String suserid = response.getBean().find("uid").getText();
@@ -138,62 +143,97 @@ public final class RestClient implements CMService {
 		params.add(sessionid.toString());
 		params.add(id.toString());
 		params.add("" + success);
-		JBeanResponse response = get("objects", "reportdownload", false, params);
+		JBeanResponse response = getResponses("objects", "reportdownload",
+				false, params);
 		return response;
 	}
 
 	@Override
 	public JBeanResponse getUser(UserID userid) {
-		JBeanResponse b = source.getBean(userid.toString());
+		JBean b = source.getBean(userid.toString());
 		if (b == null) {
 			List<String> params = new LinkedList<String>();
 			params.add(userid.toString());
-			b = get("users", "get", true, params);
-			//
-			source.addBean(userid.toString(), b);
+			JBeanResponse getresponse = getResponses("users", "get", true,
+					params);
+			if (getresponse.isSuccess()) {
+				source.addBean(userid.toString(), b);
+				JBeanResponse resp = JBeanResponse.getTrue();
+				resp.setBean(b);
+				return resp;
+			} else {
+				return JBeanResponse.getFalse();
+			}
+		} else {
+			JBeanResponse resp = JBeanResponse.getTrue();
+			resp.setBean(b);
+			return resp;
 		}
-
-		return b;
 	}
 
 	@Override
-	public JBeanResponse read(MStringID id) {
-		JBeanResponse bean = source.getBean(id.toString());
+	public JBean read(MStringID id) {
+		JBean bean = getBean(id);
 		if (bean != null) {
-			return bean;
+			JBean b = new JBean("object");
+			b.add("data").add(bean);
+			return b;
 		} else {
 			List<String> params = new LinkedList<String>();
 			params.add(id.toString());
-			JBeanResponse response = get("objects", "read", false, params);
-			if (response.isSuccess()) {
-				source.addBean(id.toString(), response);
+			JBean response = getBean("objects", "read", false, params);
+			if (response.get("object") != null) {
+				source.addBean(id.toString(), response.get("object"));
 			}
 			return response;
 		}
 	}
 
-	@Override
-	public JBeanResponse write(MStringID id, JBean b) {
-		// TODO
-		JBeanResponse resp = new JBeanResponse();
-		resp.setBean(b);
-		source.addBean(id.toString(), resp);
-		return resp;
+	private JBean getBean(MStringID id) {
+		return source.getBean(id.toString());
 	}
 
-	private JBeanResponse store(MStringID id, JBeanResponse beanresponse) {
+	@Override
+	public void addBean(MStringID id, JBean b) {
+		source.addBean(id.toString(), b);
+	}
+
+	private JBeanResponse store(MStringID id, JBean bean) {
 		List<String> params = new LinkedList<String>();
 		params.add(id.toString());
-		return post("objects", "write", params, beanresponse.getBean());
+		Map<String, String> data = new HashMap<String, String>();
+		//
+		data.put("data", bean.toXML().toString());
+		return post("objects", "write", params, data);
 	}
 
-	private JBeanResponse get(final String service, String method, boolean auth,
-			List<String> params) {
+	private JBeanResponse getResponses(final String service, String method,
+			boolean auth, List<String> params) {
+		byte[] responseBody = callService(service, method, auth, params);
+		return parseResponse(responseBody);
+	}
+
+	private byte[] callService(final String service, String method,
+			boolean auth, List<String> params) {
 		MURL murl = getURL(service, method, auth, params);
 		//
 		URLCaller urlcaller = new URLCaller(murl, new ClientProxySettings());
 		byte[] responseBody = urlcaller.getResponseBody();
-		return parseResponse(responseBody);
+		return responseBody;
+	}
+
+	private JBean getBean(String service, String method, boolean auth,
+			List<String> params) {
+		byte[] bytes = callService(service, method, auth, params);
+		try {
+			String string = new String(bytes);
+			// TODO parsing twice because xml data is escaped in the original.
+			JBean b = new JBean(new XML(string));
+			return new JBean(b.toXML());
+		} catch (SAXException e) {
+			log.error(e);
+			return null;
+		}
 	}
 
 	private JBeanResponse parseResponse(byte[] responseBody) {
@@ -207,7 +247,7 @@ public final class RestClient implements CMService {
 				return null;
 			}
 		} else {
-			return null;
+			return JBeanResponse.getError("Null response");
 		}
 	}
 
@@ -229,8 +269,8 @@ public final class RestClient implements CMService {
 	public boolean publish(MStringID id) {
 		List<String> params = new LinkedList<String>();
 		params.add(id.toString());
-		store(id, read(id));
-		return get("objects", "publish", true, params).isSuccess();
+		store(id, getBean(id));
+		return getResponses("objects", "publish", true, params).isSuccess();
 	}
 
 	private MURL getURL(final String service, String method, boolean doauth,
@@ -242,8 +282,8 @@ public final class RestClient implements CMService {
 		return getAuthURL(service, method, params, auth);
 	}
 
-	public MURL getAuthURL(final String service, String method, List<String> params,
-			String auth) {
+	public MURL getAuthURL(final String service, String method,
+			List<String> params, String auth) {
 		MURL murl = new MURL(url.getHost(), url.getPort());
 		murl.append(url.getPath());
 		murl.append("/" + service);
@@ -266,18 +306,18 @@ public final class RestClient implements CMService {
 		params.add("" + index);
 		params.add("" + i);
 		//
-		return get("objects", "search", false, params);
+		return getResponses("objects", "search", false, params);
 	}
 
 	private JBeanResponse post(final String service, String method,
-			List<String> params, JBean b) {
+			List<String> params, Map<String, String> data) {
 		String sbody = null;
 		try {
 			MURL mnurl = getURL(service, method, true, params);
 			URLCaller urlcaller = new URLCaller(mnurl,
 					new ClientProxySettings());
-			urlcaller.setPost(b.toXML().toString());
-			log.info("posting " + b.toXML() + " to " + mnurl);
+			urlcaller.setPostData(data);
+			log.info("posting " + data + " to " + mnurl);
 			byte[] responseBody = urlcaller.getResponseBody();
 			if (responseBody != null) {
 				sbody = new String(responseBody);
@@ -294,7 +334,7 @@ public final class RestClient implements CMService {
 
 	@Override
 	public HashMap<String, String> getBookmarkGroups() {
-		JBeanResponse ret = get("bookmarks", "listgroups", true, null);
+		JBeanResponse ret = getResponses("bookmarks", "listgroups", true, null);
 		if (ret.isSuccess()) {
 			HashMap<String, String> list = new HashMap<String, String>();
 
@@ -321,7 +361,7 @@ public final class RestClient implements CMService {
 	public JBeanResponse getBookmarkGroup(final String id) {
 		List<String> params = new LinkedList<String>();
 		params.add(id.toString());
-		return get("bookmarks", "getgroup", true, params);
+		return getResponses("bookmarks", "getgroup", true, params);
 	}
 
 	@Override

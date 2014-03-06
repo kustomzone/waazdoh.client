@@ -22,9 +22,9 @@ import waazdoh.cutils.xml.JBean;
 public interface CMService {
 	boolean setSession(final String username, String session);
 
-	JBeanResponse read(MStringID id);
+	JBean read(MStringID id);
 
-	JBeanResponse write(MStringID id, JBean b);
+	void addBean(MStringID id, JBean b);
 
 	boolean publish(MStringID id);
 

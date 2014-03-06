@@ -19,11 +19,11 @@ import waazdoh.client.MBinaryID;
 import waazdoh.client.MBinarySource;
 import waazdoh.client.MBinaryStorage;
 import waazdoh.cp2p.impl.handlers.ByteArraySource;
-import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MPreferences;
 import waazdoh.cutils.MStringID;
+import waazdoh.cutils.xml.JBean;
 import waazdoh.service.CMService;
 import waazdoh.service.ReportingService;
 
@@ -105,7 +105,7 @@ public final class P2PBinarySource implements MBinarySource {
 	}
 
 	@Override
-	public synchronized void addBean(final String id, JBeanResponse response) {
+	public synchronized void addBean(final String id, JBean response) {
 		beanstorage.addBean(id, response);
 	}
 
@@ -118,7 +118,7 @@ public final class P2PBinarySource implements MBinarySource {
 	}
 
 	@Override
-	public JBeanResponse getBean(final String id) {
+	public JBean getBean(final String id) {
 		return beanstorage.getBean(id);
 	}
 

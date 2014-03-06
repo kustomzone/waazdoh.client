@@ -19,7 +19,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import waazdoh.cutils.HashSource;
-import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MCRC;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MStringID;
@@ -28,6 +27,7 @@ import waazdoh.cutils.xml.JBean;
 import waazdoh.service.CMService;
 
 public final class Binary implements HashSource {
+	private static final String BEAN_TAG = "binary";
 	private static final int DEFAULT_BYTEARRAYSIZE = 1000;
 	private Byte[] bytes = new Byte[10];
 	private int bytesindex = 0;
@@ -192,8 +192,8 @@ public final class Binary implements HashSource {
 	// load(b);
 	// }
 	private void load(JBean b) {
-		if (b.get("binary") != null) {
-			b = b.get("binary");
+		if (b.get(BEAN_TAG) != null) {
+			b = b.get(BEAN_TAG);
 			id = new MBinaryID(b.getAttribute("id"));
 		}
 		//
@@ -206,10 +206,10 @@ public final class Binary implements HashSource {
 	}
 
 	private synchronized boolean loadFromService(MStringID pid) {
-		JBeanResponse b = service.read(pid);
-		if (b != null && b.isSuccess()) {
+		JBean b = service.read(pid);
+		if (b != null && (b.get("data") != null || b.get("binary") != null)) {
 			log.info("loading Binary " + b);
-			load(b.getBean().find("binary"));
+			load(b.find(BEAN_TAG));
 			return true;
 		} else {
 			log.info("Service read " + pid + " failed");
@@ -228,7 +228,7 @@ public final class Binary implements HashSource {
 		JBean bean = getBean();
 		bean.setAttribute("id", getID().toString());
 		//
-		service.write(getID(), bean);
+		service.addBean(getID(), bean);
 	}
 
 	public synchronized void fillWithNaN(int length) {
@@ -252,7 +252,7 @@ public final class Binary implements HashSource {
 	}
 
 	public JBean getBean() {
-		JBean b = new JBean("binary");
+		JBean b = new JBean(BEAN_TAG);
 		//
 		b.addValue("length", "" + length);
 		b.addValue("crc", "" + currentCRC().getValue());

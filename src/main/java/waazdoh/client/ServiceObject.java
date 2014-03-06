@@ -14,7 +14,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import waazdoh.cutils.HashSource;
-import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MID;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MStringID;
@@ -64,10 +63,10 @@ public final class ServiceObject implements HashSource {
 	}
 
 	public boolean load(MStringID oid) {
-		JBeanResponse response = env.getService().read(oid);
-		if (response != null && response.isSuccess()) {
+		JBean response = env.getService().read(oid);
+		if (response != null && response.get("data").get(tagname) != null) {
 			id = new MID(oid, this);
-			return parseBean(response.getBean());
+			return parseBean(response.get("data").get(tagname));
 		} else {
 			log.info("loading " + tagname + " bean failed " + oid);
 			return false;
@@ -109,9 +108,9 @@ public final class ServiceObject implements HashSource {
 		return modifytime;
 	}
 
-	public void publish() {
+	public boolean publish() {
 		save();
-		env.getService().publish(id);
+		return env.getService().publish(id);
 	}
 
 	@Override
@@ -119,7 +118,7 @@ public final class ServiceObject implements HashSource {
 		return data.getBean().getContentHash();
 	}
 
-	public boolean save() {
+	public void save() {
 		if (!env.getUserID().equals(creatorid)) {
 			copyof = getID().getStringID();
 			id = new MID(this, prefix);
@@ -132,11 +131,7 @@ public final class ServiceObject implements HashSource {
 			databean.setAttribute("id", id.toString());
 			//
 			storedbean = databean;
-			return env.getService().write(getID().getStringID(), databean)
-					.isSuccess();
-		}
-		{
-			return true;
+			env.getService().addBean(getID().getStringID(), databean);
 		}
 	}
 

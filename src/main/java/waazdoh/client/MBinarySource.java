@@ -13,8 +13,8 @@ package waazdoh.client;
 import java.io.File;
 import java.util.Set;
 
-import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MStringID;
+import waazdoh.cutils.xml.JBean;
 import waazdoh.service.CMService;
 import waazdoh.service.ReportingService;
 
@@ -33,9 +33,9 @@ public interface MBinarySource {
 
 	void clearMemory(int suggestedmemorytreshold);
 
-	JBeanResponse getBean(final String string);
+	JBean getBean(final String string);
 
-	void addBean(final String string, JBeanResponse response);
+	void addBean(final String string, JBean response);
 
 	String getInfoText();
 

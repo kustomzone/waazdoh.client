@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
@@ -33,7 +35,7 @@ public final class URLCaller {
 	private MURL url;
 	private Integer code;
 	private byte[] o;
-	private String post;
+	private Map<String, String> postdata;
 	private MLogger log;
 	private ProxySettings proxysettings;
 	private String password;
@@ -89,7 +91,7 @@ public final class URLCaller {
 	private byte[] doCall() {
 		try {
 			HttpMethodBase method;
-			if (post == null && postfile == null) {
+			if (postdata == null && postfile == null) {
 				method = new GetMethod(url.toString());
 			} else {
 				method = getPostMethod();
@@ -140,8 +142,16 @@ public final class URLCaller {
 		HttpMethodBase method;
 		NameValuePair[] parts;
 		PostMethod nmethod = new PostMethod(url.toString());
-		String spost = post.replace("+", "%2B");
-		parts = new NameValuePair[] { new NameValuePair("data", spost) };
+		nmethod.setRequestHeader("Content-Type",
+				"application/x-www-form-urlencoded");
+		//
+		parts = new NameValuePair[postdata.size()];
+		Set<String> postdatakeys = postdata.keySet();
+		int iparts = 0;
+		for (String postkey : postdatakeys) {
+			parts[iparts++] = new NameValuePair(postkey, postdata.get(postkey));
+		}
+
 		// StringPart part = new StringPart("data", spost);
 		// part.setCharSet("UTF-8");
 		// parts = new Part[] { part };
@@ -171,8 +181,8 @@ public final class URLCaller {
 		}
 	}
 
-	public void setPost(final String data) {
-		this.post = data;
+	public void setPostData(final Map<String, String> data) {
+		this.postdata = data;
 	}
 
 	public void setPost(final String filename, File f) {

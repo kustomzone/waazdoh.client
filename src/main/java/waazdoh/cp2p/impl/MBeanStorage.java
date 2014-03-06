@@ -21,7 +21,6 @@ import java.util.Set;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MPreferences;
 import waazdoh.cutils.MStringID;
@@ -39,7 +38,7 @@ public final class MBeanStorage {
 		file.mkdirs();
 	}
 
-	public JBeanResponse getBean(final String id) {
+	public JBean getBean(final String id) {
 		try {
 			File f = getFile(id);
 			if (f.exists()) {
@@ -55,10 +54,8 @@ public final class MBeanStorage {
 				br.close();
 				//
 				XML xml = new XML(sb.toString());
-				JBeanResponse resp = new JBeanResponse();
-				resp.setBean(new JBean(xml));
-				//
-				return resp;
+
+				return new JBean(xml);
 			} else {
 				return null;
 			}
@@ -76,13 +73,13 @@ public final class MBeanStorage {
 		return f;
 	}
 
-	public void addBean(final String id, JBeanResponse response) {
+	public void addBean(final String id, JBean response) {
 		try {
 			File f = getFile(id);
 			FileWriter fw;
 			fw = new FileWriter(f);
 			BufferedWriter bw = new BufferedWriter(fw);
-			bw.write(response.getBean().toXML().toString());
+			bw.write(response.toXML().toString());
 			bw.close();
 		} catch (IOException e) {
 			log.error(e);

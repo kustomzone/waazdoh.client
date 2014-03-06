@@ -23,6 +23,7 @@ import waazdoh.client.MBinaryStorage;
 import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MPreferences;
 import waazdoh.cutils.MStringID;
+import waazdoh.cutils.xml.JBean;
 import waazdoh.service.CMService;
 import waazdoh.service.ReportingService;
 
@@ -30,7 +31,7 @@ public final class TestPWaveSource implements MBinarySource {
 	private MPreferences preferences;
 	private MBinaryStorage storage;
 	private CMService service;
-	private Map<String, JBeanResponse> beans = new HashMap<String, JBeanResponse>();
+	private Map<String, JBean> beans = new HashMap<String, JBean>();
 
 	public TestPWaveSource(MPreferences p) {
 		this.preferences = p;
@@ -99,12 +100,12 @@ public final class TestPWaveSource implements MBinarySource {
 	}
 
 	@Override
-	public void addBean(final String id, JBeanResponse response) {
+	public void addBean(final String id, JBean response) {
 		beans.put(id, response);
 	}
 
 	@Override
-	public JBeanResponse getBean(final String id) {
+	public JBean getBean(final String id) {
 		return beans.get(id);
 	}
 

@@ -53,7 +53,8 @@ public final class StaticService implements CMService {
 	}
 
 	@Override
-	public String requestAppLogin(final String username, String appname, MStringID id) {
+	public String requestAppLogin(final String username, String appname,
+			MStringID id) {
 		return null;
 	}
 
@@ -74,15 +75,9 @@ public final class StaticService implements CMService {
 	}
 
 	@Override
-	public JBeanResponse read(MStringID id) {
+	public JBean read(MStringID id) {
 		JBean bean = data.get(id);
-		if (bean != null) {
-			JBeanResponse resp = JBeanResponse.getTrue();
-			resp.setBean(bean);
-			return resp;
-		} else {
-			return JBeanResponse.getFalse();
-		}
+		return bean;
 	}
 
 	@Override
@@ -104,9 +99,8 @@ public final class StaticService implements CMService {
 	}
 
 	@Override
-	public JBeanResponse write(MStringID id, JBean b) {
+	public void addBean(MStringID id, JBean b) {
 		data.put(id, b);
-		return JBeanResponse.getTrue();
 	}
 
 	@Override

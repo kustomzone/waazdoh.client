@@ -33,7 +33,7 @@ public final class ServiceMock implements CMService {
 	private Map<String, JBean> groups = new HashMap<String, JBean>();
 	private MBinarySource source;
 
-	private static Map<String, JBeanResponse> objects = new HashMap<String, JBeanResponse>();
+	private static Map<String, JBean> objects = new HashMap<String, JBean>();
 
 	public ServiceMock(MBinarySource source) throws SAXException {
 		MStringID gusersid = new MStringID();
@@ -83,21 +83,18 @@ public final class ServiceMock implements CMService {
 	}
 
 	@Override
-	public JBeanResponse read(MStringID id) {
-		JBeanResponse resp = source.getBean(id.toString());
-		if (resp == null) {
-			resp = ServiceMock.objects.get(id.toString());
+	public JBean read(MStringID id) {
+		JBean b = source.getBean(id.toString());
+		if (b == null) {
+			b = ServiceMock.objects.get(id.toString());
 		}
-		return resp;
+		return b;
 	}
 
 	@Override
-	public JBeanResponse write(MStringID id, JBean b) {
-		JBeanResponse res = JBeanResponse.getTrue();
-		res.setBean(b);
-		source.addBean(id.toString(), res);
-		ServiceMock.objects.put(id.toString(), res);
-		return JBeanResponse.getTrue();
+	public void addBean(MStringID id, JBean b) {
+		source.addBean(id.toString(), b);
+		ServiceMock.objects.put(id.toString(), b);
 	}
 
 	@Override
