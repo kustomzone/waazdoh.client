@@ -84,14 +84,18 @@ public final class ServiceMock implements CMService {
 
 	@Override
 	public JBean read(MStringID id) {
-		JBean b = source.getBean(id.toString());
-		if (b == null) {
-			b = ServiceMock.objects.get(id.toString());
+		if (id == null) {
+			return null;
+		} else {
+			JBean b = source.getBean(id.toString());
+			if (b == null) {
+				b = ServiceMock.objects.get(id.toString());
+			}
+			JBean ret = new JBean("object");
+			ret.add("data").add(b);
+			ret.addValue("success", true);
+			return ret;
 		}
-		JBean ret = new JBean("object");
-		ret.add("data").add(b);
-		ret.addValue("success", true);
-		return ret;
 	}
 
 	@Override
