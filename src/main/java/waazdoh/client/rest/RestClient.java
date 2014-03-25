@@ -258,7 +258,7 @@ public final class RestClient implements CMService {
 	public boolean isConnected() {
 		MURL murl = getURL("users", "test", false, new LinkedList<String>());
 		URLCaller urlcaller = new URLCaller(murl, new ClientProxySettings());
-		urlcaller.setTimeout(1000);
+		urlcaller.setTimeout(200);
 
 		byte[] responseBody = urlcaller.getResponseBody();
 		JBeanResponse responseBean = parseResponse(responseBody);
