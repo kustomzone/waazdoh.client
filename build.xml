@@ -15,11 +15,8 @@
 		<echo file="target/build.trig">Done</echo>
 
 		<ant target="runmvn">
-			<property name="args" value="compile" />
+			<property name="args" value="install" />
 		</ant>
-
-		<exec command="wget --delete-after  -t 3 -T 1  http://localhost:17000/shutdown" failonerror="false" failifexecutionfails="false" />
-		<exec command="killgrep DownloadService" failonerror="false" failifexecutionfails="false" />
 	</target>
 
 	<target name="build" depends="client.check.uptodate, waazdohclient_dobuild">
