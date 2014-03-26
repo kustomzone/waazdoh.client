@@ -296,6 +296,15 @@ public final class JBean implements Comparable<JBean> {
 		}
 	}
 
+	public double getDoubleValue(String aname) {
+		String s = getValue(aname);
+		if (s != null) {
+			return Double.parseDouble(s);
+		} else {
+			return 0;
+		}
+	}
+
 	public Boolean getBooleanValue(final String aname) {
 		String s = getValue(aname);
 		if (s != null) {
@@ -365,7 +374,7 @@ public final class JBean implements Comparable<JBean> {
 		return new UserID(getValue(string));
 	}
 
-	public void addValue(final String name, float value) {
+	public void addValue(final String name, double value) {
 		this.addValue(name, "" + value);
 	}
 
@@ -424,5 +433,4 @@ public final class JBean implements Comparable<JBean> {
 			return null;
 		}
 	}
-
 }
