@@ -99,8 +99,9 @@ public final class RestClient implements CMService {
 			JBeanResponse response = getResponses("users", "checksession",
 					true, params);
 			log.info("checksession response " + response);
-			if (response.isSuccess()) {
-				String suserid = response.getBean().find("uid").getText();
+			JBean buid = response.find("uid");
+			if (response.isSuccess() && buid !=null) {
+				String suserid = buid.getText();
 				if (suserid != null) {
 					userid = new UserID(suserid);
 					this.username = username;

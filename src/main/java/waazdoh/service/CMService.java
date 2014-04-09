@@ -54,4 +54,6 @@ public interface CMService {
 
 	boolean publish(MID id);
 
+	boolean isConnected();
+
 }

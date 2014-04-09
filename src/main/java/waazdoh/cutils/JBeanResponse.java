@@ -105,4 +105,8 @@ public final class JBeanResponse {
 			return serror == null;
 		}
 	}
+
+	public JBean find(String string) {
+		return getBean().find(string);
+	}
 }

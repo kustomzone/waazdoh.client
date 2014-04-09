@@ -85,7 +85,8 @@ public final class WClient {
 		}
 	}
 
-	public String requestAppLogin(final String email, String appname, MStringID id) {
+	public String requestAppLogin(final String email, String appname,
+			MStringID id) {
 		if (service.getSessionID() == null) {
 			String sessionid = service.requestAppLogin(email, appname, id);
 			if (sessionid != null) {
@@ -101,6 +102,10 @@ public final class WClient {
 	public void stop() {
 		running = false;
 		source.close();
+	}
+
+	public void addListener(WClientListener listener) {
+		listeners.add(listener);
 	}
 
 	private void loggedIn() {

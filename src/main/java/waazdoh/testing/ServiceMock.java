@@ -191,4 +191,9 @@ public final class ServiceMock implements CMService {
 		}
 		return ret;
 	}
+
+	@Override
+	public boolean isConnected() {
+		return true;
+	}
 }

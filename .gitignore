@@ -31,3 +31,4 @@ cc.properties
 bin
 .externalToolBuilders
 .settings
+/bin

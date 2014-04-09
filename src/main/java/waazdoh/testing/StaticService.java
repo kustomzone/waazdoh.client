@@ -37,6 +37,11 @@ public final class StaticService implements CMService {
 	}
 
 	@Override
+	public boolean isConnected() {
+		return true;
+	}
+
+	@Override
 	public JBeanResponse reportDownload(MStringID id, boolean success) {
 		// TODO Auto-generated method stub
 		return null;

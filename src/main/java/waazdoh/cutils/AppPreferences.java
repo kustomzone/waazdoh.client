@@ -20,8 +20,16 @@ public final class AppPreferences implements MPreferences {
 	private Preferences p;
 	private MLogger log = MLogger.getLogger(this);
 
+	public AppPreferences(String prefix) {
+		init(prefix);
+	}
+
 	public AppPreferences() {
 		String prefix = System.getProperty("waazdoh.prefix");
+		init(prefix);
+	}
+
+	private void init(String prefix) {
 		if (prefix == null) {
 			prefix = "default";
 		}
