@@ -155,6 +155,7 @@ public final class ServiceMock implements CMService {
 	public JBean requestAppLogin() {
 		JBean b = new JBean("applogin");
 		b.addValue("id", new MStringID().toString());
+		b.addValue("url", "mockurl");
 		return b;
 	}
 
@@ -210,8 +211,10 @@ public final class ServiceMock implements CMService {
 
 	@Override
 	public JBean checkAppLogin(MStringID id) {
-		// TODO Auto-generated method stub
-		return null;
+		JBean b = new JBean("mockapplogin");
+		b.addValue("id", id.toString());
+		b.addValue(session, session);
+		return b;
 	}
 
 }
