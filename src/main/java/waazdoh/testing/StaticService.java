@@ -26,6 +26,11 @@ public final class StaticService implements CMService {
 	private static Map<MStringID, JBean> data = new HashMap<MStringID, JBean>();
 
 	@Override
+	public boolean setSession(String session) {
+		return true;
+	}
+
+	@Override
 	public boolean setSession(final String username, String session) {
 		// TODO Auto-generated method stub
 		return true;
@@ -58,8 +63,7 @@ public final class StaticService implements CMService {
 	}
 
 	@Override
-	public String requestAppLogin(final String username, String appname,
-			MStringID id) {
+	public JBean requestAppLogin() {
 		return null;
 	}
 
@@ -134,4 +138,15 @@ public final class StaticService implements CMService {
 		return null;
 	}
 
+	@Override
+	public JBean acceptAppLogin(MStringID id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public JBean checkAppLogin(MStringID id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

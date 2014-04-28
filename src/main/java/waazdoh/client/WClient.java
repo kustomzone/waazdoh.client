@@ -4,10 +4,11 @@ import java.net.MalformedURLException;
 import java.util.HashSet;
 import java.util.Set;
 
-import waazdoh.client.rest.RestClient;
+import waazdoh.client.rest.RestServiceClient;
 import waazdoh.cutils.MPreferences;
 import waazdoh.cutils.MStringID;
 import waazdoh.cutils.UserID;
+import waazdoh.cutils.xml.JBean;
 import waazdoh.service.CMService;
 
 public final class WClient {
@@ -23,7 +24,7 @@ public final class WClient {
 			throws MalformedURLException {
 		this.preferences = p;
 		this.source = binarysource;
-		service = new RestClient(getServiceURL(), source);
+		service = new RestServiceClient(getServiceURL(), source);
 	}
 
 	public WClient(MPreferences p, MBinarySource binarysource,
@@ -71,9 +72,14 @@ public final class WClient {
 		return preferences;
 	}
 
-	public boolean setUsernameAndSession(final String username, String session) {
+	@Deprecated
+	public boolean setSession(final String username, final String session) {
+		return setSession(session);
+	}
+
+	public boolean setSession(final String session) {
 		if (!service.isLoggedIn()) {
-			if (service.setSession(username, session)) {
+			if (service.setSession(session)) {
 				source.setService(service);
 				loggedIn();
 				return true;
@@ -82,20 +88,6 @@ public final class WClient {
 			}
 		} else {
 			return true;
-		}
-	}
-
-	public String requestAppLogin(final String email, String appname,
-			MStringID id) {
-		if (service.getSessionID() == null) {
-			String sessionid = service.requestAppLogin(email, appname, id);
-			if (sessionid != null) {
-				loggedIn();
-			}
-			//
-			return sessionid;
-		} else {
-			return service.getSessionID();
 		}
 	}
 
@@ -116,4 +108,13 @@ public final class WClient {
 		}
 	}
 
+	public WClientAppLogin requestAppLogin() {
+		JBean b = getService().requestAppLogin();
+		return new WClientAppLogin(b);
+	}
+
+	public WClientAppLogin checkAppLogin(MStringID id) {
+		JBean b = getService().checkAppLogin(id);
+		return new WClientAppLogin(b);
+	}
 }

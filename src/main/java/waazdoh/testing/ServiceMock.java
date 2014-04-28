@@ -77,6 +77,12 @@ public final class ServiceMock implements CMService {
 	}
 
 	@Override
+	public boolean setSession(String session) {
+		createSession(session);
+		return true;
+	}
+
+	@Override
 	public boolean setSession(final String username, String session) {
 		createSession(username);
 		return true;
@@ -146,10 +152,10 @@ public final class ServiceMock implements CMService {
 	}
 
 	@Override
-	public String requestAppLogin(final String username, String appname,
-			MStringID appid) {
-		createSession(username);
-		return session;
+	public JBean requestAppLogin() {
+		JBean b = new JBean("applogin");
+		b.addValue("id", new MStringID().toString());
+		return b;
 	}
 
 	private void createSession(final String username) {
@@ -196,4 +202,16 @@ public final class ServiceMock implements CMService {
 	public boolean isConnected() {
 		return true;
 	}
+
+	@Override
+	public JBean acceptAppLogin(MStringID id) {
+		return JBeanResponse.getTrue().getBean();
+	}
+
+	@Override
+	public JBean checkAppLogin(MStringID id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -19,6 +19,7 @@ import java.util.Map;
 
 import org.xml.sax.SAXException;
 
+import sun.print.resources.serviceui;
 import waazdoh.client.MBinarySource;
 import waazdoh.client.URLCaller;
 import waazdoh.cutils.JBeanResponse;
@@ -31,7 +32,7 @@ import waazdoh.cutils.xml.JBean;
 import waazdoh.cutils.xml.XML;
 import waazdoh.service.CMService;
 
-public final class RestClient implements CMService {
+public final class RestServiceClient implements CMService {
 	private URL url;
 	private MLogger log = MLogger.getLogger(this);
 	private String sessionid;
@@ -40,7 +41,7 @@ public final class RestClient implements CMService {
 	private boolean loggedin;
 	private MBinarySource source;
 
-	public RestClient(final String localurl, MBinarySource source)
+	public RestServiceClient(final String localurl, MBinarySource source)
 			throws MalformedURLException {
 		this.url = new URL(localurl);
 		this.source = source;
@@ -52,32 +53,26 @@ public final class RestClient implements CMService {
 	}
 
 	@Override
-	public String requestAppLogin(final String email, String appname,
-			MStringID appid) {
-		// @Path("/authenticateapp/{email}/{appid}/{appname}")
+	public JBean requestAppLogin() {
+		String method = "requestapplogin";
 		//
-		String method = "authenticateapp";
-		Map<String, String> data = new HashMap<String, String>();
-		data.put("email", email);
-		data.put("appid", appid.toString());
-		data.put("appname", appname);
-		//
-		JBeanResponse response = post("users", method,
-				new LinkedList<String>(), data);
-		log.info("response " + response);
-		loggedin = response.isSuccess();
-		if (loggedin) {
-			JBean responsebean = response.getBean();
-			sessionid = responsebean.getValue("sessionid");
-			userid = new UserID(responsebean.getValue("userid"));
-			this.username = email;
-			//
-			return sessionid;
-		} else {
-			sessionid = null;
-			userid = null;
-			return null;
-		}
+		JBean response = getBean("users", method, false,
+				new LinkedList<String>());
+		return response;
+	}
+
+	@Override
+	public JBean acceptAppLogin(MStringID id) {
+		LinkedList<String> params = new LinkedList<String>();
+		params.add(id.toString());
+		return getBean("users", "acceptapp", true, params);
+	}
+
+	@Override
+	public JBean checkAppLogin(MStringID id) {
+		LinkedList<String> params = new LinkedList<String>();
+		params.add(id.toString());
+		return getBean("users", "checkapplogin", false, params);
 	}
 
 	@Override
@@ -91,20 +86,25 @@ public final class RestClient implements CMService {
 	}
 
 	@Override
-	public boolean setSession(final String username, String session) {
+	@Deprecated
+	public boolean setSession(String username, String session) {
+		return this.setSession(session);
+	}
+
+	@Override
+	public boolean setSession(String session) {
 		if (session != null && session.length() > 0) {
 			sessionid = session;
 			List<String> params = new LinkedList<String>();
-			params.add(username);
 			JBeanResponse response = getResponses("users", "checksession",
 					true, params);
 			log.info("checksession response " + response);
 			JBean buid = response.find("uid");
-			if (response.isSuccess() && buid !=null) {
+			if (response.isSuccess() && buid != null) {
 				String suserid = buid.getText();
 				if (suserid != null) {
 					userid = new UserID(suserid);
-					this.username = username;
+					this.username = response.find("username").getText();
 					this.loggedin = true;
 					return true;
 				} else {

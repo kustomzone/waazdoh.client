@@ -20,7 +20,10 @@ import waazdoh.cutils.UserID;
 import waazdoh.cutils.xml.JBean;
 
 public interface CMService {
-	boolean setSession(final String username, String session);
+	boolean setSession(String session);
+
+	@Deprecated
+	boolean setSession(String username, String session);
 
 	JBean read(MStringID id);
 
@@ -38,7 +41,11 @@ public interface CMService {
 
 	boolean isLoggedIn();
 
-	String requestAppLogin(final String username, String appname, MStringID id);
+	JBean requestAppLogin();
+
+	JBean checkAppLogin(MStringID id);
+
+	JBean acceptAppLogin(MStringID id);
 
 	String getSessionID();
 

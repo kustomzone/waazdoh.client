@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>waazdoh.client</artifactId>
 	<packaging>jar</packaging>
-	<version>1.1.1-SNAPSHOT</version>
+	<version>1.1.2-SNAPSHOT</version>
 	<name>waazdoh.client</name>
 	<url>http://maven.apache.org</url>
 	<groupId>waazdoh</groupId>
