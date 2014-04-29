@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.xml.sax.SAXException;
 
+import waazdoh.client.StringIDLocalPath;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MPreferences;
 import waazdoh.cutils.MStringID;
@@ -69,8 +70,18 @@ public final class MBeanStorage {
 	}
 
 	private File getFile(final String id) {
-		File f = new File(path + File.separator + id + ".xml");
+		File f = new File(getFilePath(id));
 		return f;
+	}
+
+	private String getFilePath(final String id) {
+		String filepath = new StringIDLocalPath(this.path, id).getPath();
+		File fpath = new File(filepath);
+		if (!fpath.isDirectory()) {
+			fpath.mkdirs();
+		}
+		//
+		return filepath + id + ".xml";
 	}
 
 	public void addBean(final String id, JBean response) {

@@ -1,5 +1,8 @@
 package waazdoh.cutils;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 public class MStringID {
@@ -7,7 +10,9 @@ public class MStringID {
 	private String sid;
 
 	public MStringID() {
-		sid = UUID.randomUUID().toString();
+		Date date = Calendar.getInstance().getTime();
+		SimpleDateFormat d = new SimpleDateFormat("yyyyMM");
+		sid = d.format(date) + UUID.randomUUID().toString();
 	}
 
 	public MStringID(final String sid) {

@@ -1,5 +1,6 @@
 package waazdoh.client;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.prefs.BackingStoreException;
@@ -19,7 +20,8 @@ public final class StaticTestPreferences implements MPreferences {
 		}
 		if (prefs.get(MPreferences.LOCAL_PATH, "").equals("")) {
 			prefs.put(MPreferences.LOCAL_PATH, System.getProperty("user.home")
-					+ "/waazdihclienttest/" + username + "/");
+					+ File.separator + "waazdohclienttest" + File.separator
+					+ username + File.separator);
 		}
 
 		prefs.putInt(MPreferences.NETWORK_MAX_DOWNLOADS, 8);

@@ -39,7 +39,6 @@ public final class MBinaryStorage {
 	private final String localpath;
 	private boolean running = true;
 	private final CMService service;
-	private boolean directorytree;
 
 	public MBinaryStorage(MPreferences p, CMService service) {
 		this.localpath = p.get(MPreferences.LOCAL_PATH, ".waazdoh");
@@ -64,13 +63,6 @@ public final class MBinaryStorage {
 			}
 		}, "Storage save binaries");
 		t.start();
-	}
-
-	public MBinaryStorage(MPreferences preferences, CMService service2,
-			boolean usedirectorytree) {
-		this.localpath = preferences.get(MPreferences.LOCAL_PATH, ".waazdoh");
-		this.directorytree = usedirectorytree;
-		this.service = service2;
 	}
 
 	public String getMemoryUserInfo() {
@@ -249,16 +241,8 @@ public final class MBinaryStorage {
 
 	private String getWavePath(MBinaryID mBinaryID) {
 		String sid = mBinaryID.toString();
-		String wavepath = this.localpath;
-		if (directorytree) {
-			int index = 0;
-			while (index <= 4) {
-				wavepath += File.separatorChar;
-				wavepath += sid.substring(index, index + 2);
-				index += 2;
-			}
-		}
-		wavepath += File.separatorChar;
+		String wavepath = new StringIDLocalPath(this.localpath, mBinaryID).getPath();
+		
 		//
 		File file = new File(wavepath);
 		file.mkdirs();

@@ -10,6 +10,9 @@
  ******************************************************************************/
 package waazdoh.cutils;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 public final class MID {
@@ -24,7 +27,10 @@ public final class MID {
 	}
 
 	public MID(HashSource hsource, final String nprefix) {
-		id = nprefix + "_" + UUID.randomUUID().toString();
+		Date date = Calendar.getInstance().getTime();
+		SimpleDateFormat d = new SimpleDateFormat("yyyyMM");
+
+		id = d.format(date) + nprefix + "_" + UUID.randomUUID().toString();
 		hashsource = hsource;
 	}
 
@@ -63,9 +69,10 @@ public final class MID {
 		String prefixpart = substring.split("_")[0];
 		if (prefixpart.length() < 3) {
 			throw new IllegalArgumentException("prefix value length "
-					+ prefixpart.length() + ". Should at least three characters.");
+					+ prefixpart.length()
+					+ ". Should at least three characters.");
 		}
-		
+
 		String idpart = substring.split("_")[1];
 		if (idpart.length() != 36) {
 			throw new IllegalArgumentException("id value length "
