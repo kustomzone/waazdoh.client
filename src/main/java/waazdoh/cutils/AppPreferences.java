@@ -25,11 +25,15 @@ public final class AppPreferences implements MPreferences {
 	}
 
 	public AppPreferences() {
-		String prefix = System.getProperty("waazdoh.prefix");
-		init(prefix);
+		init(null);
 	}
 
 	private void init(String prefix) {
+		String propertyprefix = System.getProperty("waazdoh.prefix");
+		if (prefix == null || propertyprefix != null) {
+			prefix = propertyprefix;
+		}
+
 		if (prefix == null) {
 			prefix = "default";
 		}
