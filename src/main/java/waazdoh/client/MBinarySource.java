@@ -45,7 +45,7 @@ public interface MBinarySource {
 
 	void setReportingService(ReportingService rservice);
 
-	Binary newBinary(final String string, String extension);
+	Binary newBinary(final String comment, String extension);
 
 	File getBinaryFile(Binary bin);
 

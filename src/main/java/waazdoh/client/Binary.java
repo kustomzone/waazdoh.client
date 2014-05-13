@@ -10,6 +10,7 @@
  ******************************************************************************/
 package waazdoh.client;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -447,5 +448,19 @@ public final class Binary implements HashSource {
 
 	public String getExtension() {
 		return extension;
+	}
+
+	public void importStream(InputStream stream) throws IOException {
+		BufferedInputStream bis = new BufferedInputStream(stream);
+		byte bs[] = new byte[1024];
+		while (true) {
+			int read = bis.read(bs);
+			if (read < 0) {
+				break;
+			}
+			add(bs, read);
+		}
+		bis.close();
+		setReady();
 	}
 }

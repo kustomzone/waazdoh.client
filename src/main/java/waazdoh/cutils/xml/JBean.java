@@ -10,6 +10,7 @@
  ******************************************************************************/
 package waazdoh.cutils.xml;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ public final class JBean implements Comparable<JBean> {
 	private Map<String, String> attributes = new HashMap<String, String>();
 	private MLogger log = MLogger.getLogger(this);
 	private JBean parent;
+	private List<String> doctypes;
 
 	public List<String> getChildNames() {
 		List<String> ret = new LinkedList<String>();
@@ -68,31 +70,54 @@ public final class JBean implements Comparable<JBean> {
 	}
 
 	public void toXML(int indent, StringBuffer sb) {
+		appendDoctypes(sb);
+		//
 		indent(indent, sb);
 		sb.append("<" + getName());
+		appendAttributes(sb);
+		//
+		if (text == null && getChildren().size() == 0) {
+			sb.append(" />\n");
+		} else {
+			sb.append(">");
+			if (text != null && getChildren().size() == 0) {
+				sb.append(text);
+			} else {
+				sb.append("\n");
+			}
+			//
+			List<JBean> children = new ArrayList<JBean>(getChildren());
+			java.util.Collections.sort(children);
+			for (JBean jbean : children) {
+				jbean.toXML(indent + 1, sb);
+			}
+			//
+			if (text == null) {
+				indent(indent, sb);
+			}
+			//
+			sb.append("</" + getName() + ">\n");
+		}
+	}
+
+	private void appendAttributes(StringBuffer sb) {
 		for (final String key : attributes.keySet()) {
 			String value = attributes.get(key);
-			sb.append(" " + key + "=\"" + value + "\"");
+			char q = '\"';
+			if (value.indexOf(q) >= 0) {
+				q = '\'';
+			}
+			sb.append(" " + key + "=" + q + value + q);
 		}
-		sb.append(">");
-		//
-		if (text != null && getChildren().size() == 0) {
-			sb.append(text);
-		} else {
-			sb.append("\n");
+	}
+
+	private void appendDoctypes(StringBuffer sb) {
+		if (doctypes != null) {
+			for (String line : doctypes) {
+				sb.append(line);
+				sb.append("\n");
+			}
 		}
-		//
-		List<JBean> children = new ArrayList<JBean>(getChildren());
-		java.util.Collections.sort(children);
-		for (JBean jbean : children) {
-			jbean.toXML(indent + 1, sb);
-		}
-		//
-		if (text == null) {
-			indent(indent, sb);
-		}
-		//
-		sb.append("</" + getName() + ">\n");
 	}
 
 	public String toText() {
@@ -120,15 +145,25 @@ public final class JBean implements Comparable<JBean> {
 					xml += st.nextToken() + "\n";
 				}
 			}
-			// xml = xml.replace("\n", "");
-			// xml = xml.replace("\t", "");
 			//
 			XMLReader r;
 			try {
+
 				r = XMLReaderFactory.createXMLReader();
 				r.setContentHandler(new JBeanContentHandler(this));
 				InputSource input = new InputSource(new StringReader(xml));
 				r.parse(input);
+				//
+				BufferedReader br = new BufferedReader(new StringReader(xml));
+				while (true) {
+					String line = br.readLine();
+					if (line == null) {
+						break;
+					}
+					if (line.indexOf("DOCTYPE") > 0) {
+						addDoctype(line);
+					}
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 				log.info("tried to parse " + oxml);
@@ -136,6 +171,13 @@ public final class JBean implements Comparable<JBean> {
 				throw new IllegalArgumentException(e);
 			}
 		}
+	}
+
+	private void addDoctype(String line) {
+		if (doctypes == null) {
+			doctypes = new LinkedList<String>();
+		}
+		doctypes.add(line);
 	}
 
 	private JBean() {
