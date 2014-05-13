@@ -97,10 +97,15 @@ public final class ServiceMock implements CMService {
 			if (b == null) {
 				b = ServiceMock.objects.get(id.toString());
 			}
-			JBean ret = new JBean("object");
-			ret.add("data").add(b);
-			ret.addValue("success", true);
-			return ret;
+
+			if (b != null) {
+				JBean ret = new JBean("object");
+				ret.add("data").add(b);
+				ret.addValue("success", true);
+				return ret;
+			} else {
+				return null;
+			}
 		}
 	}
 
