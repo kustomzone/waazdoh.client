@@ -45,7 +45,7 @@ public final class MessageEncoder extends MessageToByteEncoder<MMessageList> {
 
 	public int writeMessage(DataOutputStream dos, MMessage m)
 			throws IOException {
-		log.info("encoding " + m);
+		log.debug("encoding " + m);
 		//
 		byte bs[] = m.getAsBytes();
 		dos.writeInt(bs.length);

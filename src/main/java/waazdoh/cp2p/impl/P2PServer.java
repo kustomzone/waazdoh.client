@@ -322,7 +322,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 			StringTokenizer st = new StringTokenizer(slist, ",");
 			while (st.hasMoreTokens()) {
 				String server = st.nextToken();
-				for (int i = 0; i < 6; i++) {
+				for (int i = 0; i < 6; i++) {					
 					addNode(new MHost(server), TCPListener.DEFAULT_PORT - 5 + i);
 				}
 			}

@@ -171,7 +171,12 @@ public final class MMessage {
 	}
 
 	public MNodeID getLastHandler() {
-		return new MNodeID(getIDAttribute("lasthandler"));
+		MStringID idAttribute = getIDAttribute("lasthandler");
+		if (idAttribute != null) {
+			return new MNodeID(idAttribute);
+		} else {
+			return null;
+		}
 	}
 
 	public byte[] getAsBytes() {

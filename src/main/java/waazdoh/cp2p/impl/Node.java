@@ -121,26 +121,6 @@ public final class Node {
 		}
 	}
 
-	public void messagesAsResponse(MMessageList messages) throws NodeException {
-		log.info("Handling node response " + messages);
-		touch();
-		//
-		for (MMessage message : messages) {
-			if (this.id == null) {
-				this.id = message.getSentBy();
-			}
-		}
-		try {
-			List<MMessage> returnmessages = source.handle(messages);
-			synchronized (outgoingmessages) {
-				outgoingmessages.addAll(returnmessages);
-			}
-		} catch (Exception e) {
-			log.error(e);
-			throw (new NodeException(e));
-		}
-	}
-
 	public synchronized void clearMessages() {
 		outgoingmessages.clear();
 	}
@@ -149,7 +129,7 @@ public final class Node {
 		long maxpingdelay = getPingDelay();
 		if (System.currentTimeMillis() - lastping > maxpingdelay
 				&& tcpnode != null) {
-			log.info("should ping " + (System.currentTimeMillis() - lastping));
+			log.debug("should ping " + (System.currentTimeMillis() - lastping));
 			lastping = System.currentTimeMillis();
 			pingcount++;
 			return true;
@@ -201,7 +181,7 @@ public final class Node {
 		if (checknode != null) {
 			synchronized (checknode) {
 				if (checknode.isConnected() && getMessagesSize() > 0) {
-					log.info("node ok and has messages " + tcpnode);
+					log.debug("node ok and has messages " + tcpnode);
 					outputbytecount += checknode.sendMessages(getMessages());
 				}
 
@@ -219,6 +199,11 @@ public final class Node {
 
 			if (id == null) {
 				this.id = new MNodeID(messages.get(0).getAttribute("sentby"));
+				if (id.equals(source.getID())) {
+					log.info("Source and target nodes has a same id. Closing node.");
+					close();
+					return null;
+				}
 			}
 
 			List<MMessage> retmessages = source.handle(new MMessageList(

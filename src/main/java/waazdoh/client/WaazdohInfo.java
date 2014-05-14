@@ -1,7 +1,7 @@
 package waazdoh.client;
 
 public final class WaazdohInfo {
-	public final static String version = "0.2.3";
+	public final static String version = "1.1.4";
 	public static final int DOWNLOADER_MAX_REQUESTED_PIECELENGTH = 200000; // should
 																			// be
 																			// larger
