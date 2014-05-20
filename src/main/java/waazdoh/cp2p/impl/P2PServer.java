@@ -316,7 +316,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		if (tcplistener != null && dobind) {
 			tcplistener.addDefaultNodes();
 		}
-		String slist = p.get(MPreferences.SERVERLIST, null);
+		String slist = p.get(MPreferences.SERVERLIST, "");
 		log.info("got server list " + slist);
 		if (slist != null) {
 			StringTokenizer st = new StringTokenizer(slist, ",");
