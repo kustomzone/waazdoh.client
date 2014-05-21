@@ -208,8 +208,12 @@ public final class Node {
 
 			List<MMessage> retmessages = source.handle(new MMessageList(
 					messages));
-			synchronized (messages) {
-				messages.addAll(retmessages);
+			if (retmessages != null) {
+				synchronized (messages) {
+					messages.addAll(retmessages);
+				}
+			} else {
+				close();
 			}
 		}
 		return getMessages();

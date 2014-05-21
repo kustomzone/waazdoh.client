@@ -134,9 +134,14 @@ public final class TCPListener {
 			log.info("messageReceived " + ms);
 
 			MMessageList response = messager.handle(ms);
-			log.debug("sending back response " + response);
-			ctx.writeAndFlush(response).addListener(
-					ChannelFutureListener.CLOSE_ON_FAILURE);
+			if (response != null) {
+				log.debug("sending back response " + response);
+				ctx.writeAndFlush(response).addListener(
+						ChannelFutureListener.CLOSE_ON_FAILURE);
+			} else {
+				log.debug("closing " + ctx);
+				ctx.close();
+			}
 		}
 
 		@Override
