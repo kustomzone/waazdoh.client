@@ -174,7 +174,7 @@ public final class TCPNode {
 		trigger();
 	}
 
-	void messageReceived(List<MMessage> messages) {
+	void messagesReceived(List<MMessage> messages) {
 		log.info("got " + messages.size() + " messages");
 		touch();
 		MMessageList response = node.incomingMessages(messages);

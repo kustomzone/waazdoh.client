@@ -32,6 +32,7 @@ public final class Node {
 	private int outputbytecount;
 
 	private MMessageList outgoingmessages = new MMessageList();
+	private int receivedmessages;
 
 	public Node(MNodeID id, MHost host, int port, P2PServer nsource) {
 		this.id = id;
@@ -196,6 +197,7 @@ public final class Node {
 	public MMessageList incomingMessages(List<MMessage> messages) {
 		if (messages.size() > 0) {
 			updatePing();
+			receivedmessages += messages.size();
 
 			if (id == null) {
 				this.id = new MNodeID(messages.get(0).getAttribute("sentby"));
@@ -221,5 +223,18 @@ public final class Node {
 
 	private void updatePing() {
 		lastping = System.currentTimeMillis();
+	}
+
+	public int getReceivedMessages() {
+		return receivedmessages;
+	}
+
+	public boolean isConnected() {
+		return getReceivedMessages() > 0;
+	}
+
+	public void messageReceived() {
+		receivedmessages++;
+		log.info("Message received " + getReceivedMessages());
 	}
 }

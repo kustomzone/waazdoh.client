@@ -207,4 +207,12 @@ public final class P2PBinarySource implements MBinarySource {
 	public void setReportingService(ReportingService reporting) {
 		server.setReportingService(reporting);
 	}
+
+	public boolean isConnected() {
+		return server.isConnected();
+	}
+
+	public void waitForConnection() throws InterruptedException {
+		server.waitForConnection();
+	}
 }

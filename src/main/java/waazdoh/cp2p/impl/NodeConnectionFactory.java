@@ -116,7 +116,7 @@ public final class NodeConnectionFactory {
 		protected void channelRead0(ChannelHandlerContext ctx, MMessageList msgs)
 				throws Exception {
 			for (int i = 0; i < msgs.size(); i++) {
-				getNode(ctx).messageReceived(msgs);
+				getNode(ctx).messagesReceived(msgs);
 			}
 		}
 

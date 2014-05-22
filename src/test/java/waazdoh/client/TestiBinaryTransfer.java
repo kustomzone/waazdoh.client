@@ -12,27 +12,27 @@ import waazdoh.testing.ServiceMock;
 
 public final class TestiBinaryTransfer extends TestCase {
 
-	public void testTransfer10k() throws SAXException {
+	public void testTransfer10k() throws SAXException, InterruptedException {
 		testTransfer(10000);
 	}
 
-	public void testTransfer30k() throws SAXException {
+	public void testTransfer30k() throws SAXException, InterruptedException {
 		testTransfer(30000);
 	}
 
-	public void testTransfer75k() throws SAXException {
+	public void testTransfer75k() throws SAXException, InterruptedException {
 		testTransfer(75000);
 	}
 
-	public void testTransfer100k() throws SAXException {
+	public void testTransfer100k() throws SAXException, InterruptedException {
 		testTransfer(100000);
 	}
 
-	public void testTransfer300k() throws SAXException {
+	public void testTransfer300k() throws SAXException, InterruptedException {
 		testTransfer(300000);
 	}
 
-	public void testTransfer1M() throws SAXException {
+	public void testTransfer1M() throws SAXException, InterruptedException {
 		testTransfer(1000000);
 	}
 
@@ -41,11 +41,14 @@ public final class TestiBinaryTransfer extends TestCase {
 	 */
 
 	@Test
-	public void testTransfer(int time) throws SAXException {
+	public void testTransfer(int time) throws SAXException, InterruptedException {
 
 		String username1 = "test1" + Math.random();
-
 		P2PBinarySource source1 = getServiceSource(username1, true);
+		String username2 = "test2" + Math.random();
+		P2PBinarySource source2 = getServiceSource(username2, false);
+		source2.waitForConnection();
+		//
 		Binary b1 = source1.newBinary("test", "bin");
 		assertNotNull(b1);
 		//
@@ -62,9 +65,6 @@ public final class TestiBinaryTransfer extends TestCase {
 		assertNotNull(b1reload);
 		assertEquals(b1hasht, b1reload.getHash());
 
-		//
-		String username2 = "test2" + Math.random();
-		P2PBinarySource source2 = getServiceSource(username2, false);
 		//
 		Binary b2 = source2.getOrDownload(b1.getID());
 		assertNotNull(b2);
@@ -83,8 +83,8 @@ public final class TestiBinaryTransfer extends TestCase {
 		source2.close();
 	}
 
-	private P2PBinarySource getServiceSource(final String username1, boolean bind)
-			throws SAXException {
+	private P2PBinarySource getServiceSource(final String username1,
+			boolean bind) throws SAXException {
 		MPreferences p1 = new StaticTestPreferences(username1);
 		P2PBinarySource source1 = new P2PBinarySource(p1, bind);
 		ServiceMock service1 = new ServiceMock(source1);

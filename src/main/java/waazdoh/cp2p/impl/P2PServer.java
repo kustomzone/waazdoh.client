@@ -161,7 +161,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 						reboot();
 					} else {
 						sleep(dt - REBOOT_DELAY);
-					}
+					} 
 				}
 			}
 		}, "P2PServer checker");
@@ -358,9 +358,18 @@ public final class P2PServer implements MMessager, MMessageFactory,
 					notification.getSentCount() + 1);
 			synchronized (nodes) {
 				for (Node node : nodes) {
-					if (exceptions == null
-							|| !exceptions.contains(node.getID())) {
-						node.addMessage(notification, messageResponseListener);
+					if (node.isConnected()) {
+						if (exceptions == null
+								|| !exceptions.contains(node.getID())) {
+							node.addMessage(notification,
+									messageResponseListener);
+						} else {
+							log.debug("Not broadcasting to " + node
+									+ " because node is in exceptions list");
+						}
+					} else {
+						log.debug("not broadcasting to " + node
+								+ " node because it's not yet connected");
 					}
 				}
 				//
@@ -427,6 +436,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 				}
 				//
 				sentbynode.touch();
+				sentbynode.messageReceived();
 				//
 				log.info("handling message: " + message + " from " + sentbynode);
 				message.setLastHandler(networkid);
@@ -435,9 +445,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 			} else {
 				log.info("not handling message because networkid is equal with sentby "
 						+ message);
-				log.info("not handling message because networkid is equal with sentby "
-						+ getNode(sentby));
-
+				ret.add(getMessage("close"));
 			}
 		}
 
@@ -648,5 +656,26 @@ public final class P2PServer implements MMessager, MMessageFactory,
 
 		return canDownload();
 
+	}
+
+	@Override
+	public String toString() {
+		return "P2PServer[" + this.getInfoText() + "]";
+	}
+
+	public boolean isConnected() {
+		List<Node> ns = new LinkedList<Node>(this.nodes);
+		for (Node node : ns) {
+			if (node.isConnected()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public synchronized void waitForConnection() throws InterruptedException {
+		while(!isConnected()) {
+			this.wait(100);
+		}
 	}
 }
