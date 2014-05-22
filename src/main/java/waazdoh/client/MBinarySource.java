@@ -53,4 +53,8 @@ public interface MBinarySource {
 
 	Set<MStringID> getLocalObjectIDs();
 
+	void waitUntilReady();
+
+	boolean isReady();
+
 }

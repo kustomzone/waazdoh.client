@@ -47,7 +47,7 @@ public final class TestiBinaryTransfer extends TestCase {
 		P2PBinarySource source1 = getServiceSource(username1, true);
 		String username2 = "test2" + Math.random();
 		P2PBinarySource source2 = getServiceSource(username2, false);
-		source2.waitForConnection();
+		source2.waitUntilReady();
 		//
 		Binary b1 = source1.newBinary("test", "bin");
 		assertNotNull(b1);

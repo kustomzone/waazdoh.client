@@ -20,7 +20,6 @@ import waazdoh.client.Binary;
 import waazdoh.client.MBinaryID;
 import waazdoh.client.MBinarySource;
 import waazdoh.client.MBinaryStorage;
-import waazdoh.cutils.JBeanResponse;
 import waazdoh.cutils.MPreferences;
 import waazdoh.cutils.MStringID;
 import waazdoh.cutils.xml.JBean;
@@ -142,5 +141,15 @@ public final class TestPWaveSource implements MBinarySource {
 	@Override
 	public boolean isRunning() {
 		return true;
+	}
+
+	@Override
+	public boolean isReady() {
+		return true;
+	}
+
+	@Override
+	public void waitUntilReady() {
+		//
 	}
 }
