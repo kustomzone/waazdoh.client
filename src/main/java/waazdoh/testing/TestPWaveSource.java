@@ -135,7 +135,7 @@ public final class TestPWaveSource implements MBinarySource {
 
 	@Override
 	public void saveWaves() {
-		storage.saveWaves();
+		storage.saveBinaries();
 	}
 
 	@Override

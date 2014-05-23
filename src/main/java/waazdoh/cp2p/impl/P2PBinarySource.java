@@ -189,7 +189,7 @@ public final class P2PBinarySource implements MBinarySource {
 
 	@Override
 	public void saveWaves() {
-		storage.saveWaves();
+		storage.saveBinaries();
 	}
 
 	@Override

@@ -49,7 +49,7 @@ public final class MBinaryStorage {
 			public void run() {
 				while (isRunning()) {
 					try {
-						saveWaves();
+						saveBinaries();
 						synchronized (streams) {
 							streams.wait(6000);
 						}
@@ -112,7 +112,7 @@ public final class MBinaryStorage {
 	}
 
 	public void clearFromMemory(int time, MID binaryid) {
-		saveWaves();
+		saveBinaries();
 		Binary persistentStream = findStream(binaryid.getStringID());
 		log.info("clear from memory " + persistentStream + " time:" + time);
 		if (persistentStream != null) {
@@ -140,7 +140,7 @@ public final class MBinaryStorage {
 		}
 	}
 
-	public void saveWaves() {
+	public void saveBinaries() {
 		synchronized (streams) {
 			// log.info("save waves " + streams);
 			Collection<Binary> lwaves = streams;
@@ -269,7 +269,7 @@ public final class MBinaryStorage {
 
 	public void clearMemory(int suggestedmemorytreshold) {
 		synchronized (streams) {
-			saveWaves();
+			saveBinaries();
 
 			List<Binary> bis = this.streams;
 			List<Binary> nbis = new LinkedList<Binary>();
