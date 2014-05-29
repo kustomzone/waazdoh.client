@@ -103,7 +103,12 @@ public final class NodeConnectionFactory {
 		public void channelUnregistered(ChannelHandlerContext ctx)
 				throws Exception {
 			super.channelUnregistered(ctx);
-			getNode(ctx).channelUnregistered(ctx.channel());
+			TCPNode node = getNode(ctx);
+			if (node != null) {
+				node.channelUnregistered(ctx.channel());
+			} else {
+				log.info("unknown node unregisterd " + ctx);
+			}
 		}
 
 		@Override
