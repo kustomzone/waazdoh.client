@@ -444,7 +444,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 				handle(message, lasthandler != null ? lasthandler : sentbynode);
 			} else {
 				log.info("not handling message because networkid is equal with sentby "
-						+ message);
+						+ message.getID());
 				ret.add(getMessage("close"));
 			}
 		}
