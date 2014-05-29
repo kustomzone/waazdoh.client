@@ -45,7 +45,7 @@ public final class MLogger {
 
 	private Logger getLog() {
 		if (log == null) {
-			log = Logger.getLogger("" + o);
+			log = Logger.getLogger(o.getClass().getName());
 			// o = "" + o;
 		}
 		return log;
