@@ -123,7 +123,11 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 							|| count > WaazdohInfo.RESPONSECOUNT_DOWNLOADTRIGGER) {
 						Download download = nodeconnection
 								.getDownload(streamid);
-						download.messageReceived(n, message);
+						if (download != null) {
+							download.messageReceived(n, message);
+						} else {
+							log.debug("unknown download " + streamid);
+						}
 					}
 
 					// node.addMessage(message);
