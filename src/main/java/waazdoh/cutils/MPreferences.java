@@ -19,6 +19,7 @@ public interface MPreferences {
 	static final String SERVERLIST = "server.list";
 	static final String NETWORK_MAX_DOWNLOADS = "network.downloads.max";
 	static final String MEMORY_MAX_USAGE = "memory.max";
+	static final String PREFERENCES_SESSION = "user.session";
 
 	String get(final String name, String defaultvalue);
 
