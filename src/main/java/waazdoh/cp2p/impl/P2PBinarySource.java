@@ -42,8 +42,6 @@ public final class P2PBinarySource implements MBinarySource {
 	}
 
 	public P2PBinarySource(MPreferences p, boolean bind2) {
-		MLoggerMessage w = new MLoggerMessage();
-		//
 		this.server = new P2PServer(p, bind2, new ByteArraySource() {
 			@Override
 			public byte[] get(MBinaryID streamid) {
