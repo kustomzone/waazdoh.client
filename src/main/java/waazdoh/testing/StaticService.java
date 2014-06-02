@@ -31,12 +31,6 @@ public final class StaticService implements CMService {
 	}
 
 	@Override
-	public boolean setSession(final String username, String session) {
-		// TODO Auto-generated method stub
-		return true;
-	}
-
-	@Override
 	public String getInfoText() {
 		return "staticservice:" + data;
 	}

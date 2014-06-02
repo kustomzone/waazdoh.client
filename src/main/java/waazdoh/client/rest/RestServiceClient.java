@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.xml.sax.SAXException;
 
-import sun.print.resources.serviceui;
 import waazdoh.client.MBinarySource;
 import waazdoh.client.URLCaller;
 import waazdoh.cutils.JBeanResponse;
@@ -83,12 +82,6 @@ public final class RestServiceClient implements CMService {
 	@Override
 	public boolean isLoggedIn() {
 		return loggedin;
-	}
-
-	@Override
-	@Deprecated
-	public boolean setSession(String username, String session) {
-		return this.setSession(session);
 	}
 
 	@Override

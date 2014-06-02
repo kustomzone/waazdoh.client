@@ -27,7 +27,7 @@ import waazdoh.cutils.xml.XML;
 import waazdoh.service.CMService;
 
 public final class ServiceMock implements CMService {
-	private String username;
+	final private String username;
 	private String session;
 	private UserID userid;
 	private Map<String, JBean> groups = new HashMap<String, JBean>();
@@ -35,7 +35,9 @@ public final class ServiceMock implements CMService {
 
 	private static Map<String, JBean> objects = new HashMap<String, JBean>();
 
-	public ServiceMock(MBinarySource source) throws SAXException {
+	public ServiceMock(String username, MBinarySource source)
+			throws SAXException {
+		this.username = username;
 		MStringID gusersid = new MStringID();
 		this.source = source;
 		//
@@ -77,15 +79,14 @@ public final class ServiceMock implements CMService {
 	}
 
 	@Override
-	public boolean setSession(String session) {
-		createSession(session);
-		return true;
-	}
-
-	@Override
-	public boolean setSession(final String username, String session) {
-		createSession(username);
-		return true;
+	public boolean setSession(String nsession) {
+		createSession();
+		if (nsession == null || nsession.length() == 0) {
+			return false;
+		} else {
+			this.session = nsession;
+			return true;
+		}
 	}
 
 	@Override
@@ -164,10 +165,9 @@ public final class ServiceMock implements CMService {
 		return b;
 	}
 
-	private void createSession(final String username) {
+	private void createSession() {
 		session = new MStringID().toString();
 		userid = new UserID(new MStringID().toString());
-		this.username = username;
 	}
 
 	@Override
@@ -218,7 +218,7 @@ public final class ServiceMock implements CMService {
 	public JBean checkAppLogin(MStringID id) {
 		JBean b = new JBean("mockapplogin");
 		b.addValue("id", id.toString());
-		b.addValue(session, session);
+		b.addValue("sessionid", session);
 		return b;
 	}
 

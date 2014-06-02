@@ -22,9 +22,6 @@ import waazdoh.cutils.xml.JBean;
 public interface CMService {
 	boolean setSession(String session);
 
-	@Deprecated
-	boolean setSession(String username, String session);
-
 	JBean read(MStringID id);
 
 	void addBean(MStringID id, JBean b);

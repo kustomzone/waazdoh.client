@@ -41,7 +41,8 @@ public final class TestiBinaryTransfer extends TestCase {
 	 */
 
 	@Test
-	public void testTransfer(int time) throws SAXException, InterruptedException {
+	public void testTransfer(int time) throws SAXException,
+			InterruptedException {
 
 		String username1 = "test1" + Math.random();
 		P2PBinarySource source1 = getServiceSource(username1, true);
@@ -87,9 +88,9 @@ public final class TestiBinaryTransfer extends TestCase {
 			boolean bind) throws SAXException {
 		MPreferences p1 = new StaticTestPreferences(username1);
 		P2PBinarySource source1 = new P2PBinarySource(p1, bind);
-		ServiceMock service1 = new ServiceMock(source1);
+		ServiceMock service1 = new ServiceMock(username1, source1);
 		source1.setService(service1);
-		service1.setSession(username1, "" + new MStringID());
+		service1.setSession("" + new MStringID());
 		return source1;
 	}
 
