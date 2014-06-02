@@ -31,15 +31,16 @@ public final class ServiceMock implements CMService {
 	private String session;
 	private UserID userid;
 	private Map<String, JBean> groups = new HashMap<String, JBean>();
-	private MBinarySource source;
+	final private MBinarySource source;
 
 	private static Map<String, JBean> objects = new HashMap<String, JBean>();
 
-	public ServiceMock(String username, MBinarySource source)
+	public ServiceMock(String username, MBinarySource nsource)
 			throws SAXException {
 		this.username = username;
 		MStringID gusersid = new MStringID();
-		this.source = source;
+		this.source = nsource;
+		nsource.setService(this);
 		//
 		String gname = "users";
 		addBGroup(gusersid.toString(), gname);
@@ -80,11 +81,11 @@ public final class ServiceMock implements CMService {
 
 	@Override
 	public boolean setSession(String nsession) {
-		createSession();
 		if (nsession == null || nsession.length() == 0) {
 			return false;
 		} else {
 			this.session = nsession;
+			createUserID();
 			return true;
 		}
 	}
@@ -167,6 +168,10 @@ public final class ServiceMock implements CMService {
 
 	private void createSession() {
 		session = new MStringID().toString();
+		createUserID();
+	}
+
+	private void createUserID() {
 		userid = new UserID(new MStringID().toString());
 	}
 
@@ -216,6 +221,8 @@ public final class ServiceMock implements CMService {
 
 	@Override
 	public JBean checkAppLogin(MStringID id) {
+		createSession();
+		//
 		JBean b = new JBean("mockapplogin");
 		b.addValue("id", id.toString());
 		b.addValue("sessionid", session);

@@ -9,7 +9,6 @@
 	<groupId>waazdoh</groupId>
 
 	<properties>
-		<cxf.version>2.4.2</cxf.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8
 		</project.reporting.outputEncoding>
@@ -79,11 +78,11 @@
 					</formats>
 				</configuration>
 				<dependencies>
-					<dependency>
-						<groupId>org.ow2.asm</groupId>
-						<artifactId>asm</artifactId>
-						<version>[5.0.0,)</version>
-					</dependency>
+		<dependency>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm</artifactId>
+			<version>[5.0.0,)</version>
+		</dependency>
 				</dependencies>
 			</plugin>
 
