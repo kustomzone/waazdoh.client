@@ -128,9 +128,9 @@ public final class TCPListener {
 	}
 
 	class MServerHandler extends SimpleChannelInboundHandler<MMessageList> {
-
-		protected void channelRead0(ChannelHandlerContext ctx, MMessageList ms)
-				throws Exception {
+		@Override
+		protected void messageReceived(ChannelHandlerContext ctx,
+				MMessageList ms) throws Exception {
 			log.info("messageReceived " + ms);
 
 			MMessageList response = messager.handle(ms);

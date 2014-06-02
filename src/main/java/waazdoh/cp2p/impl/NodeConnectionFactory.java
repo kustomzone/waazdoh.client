@@ -100,26 +100,14 @@ public final class NodeConnectionFactory {
 		}
 
 		@Override
-		public void channelUnregistered(ChannelHandlerContext ctx)
-				throws Exception {
-			super.channelUnregistered(ctx);
-			TCPNode node = getNode(ctx);
-			if (node != null) {
-				node.channelUnregistered(ctx.channel());
-			} else {
-				log.info("unknown node unregisterd " + ctx);
-			}
-		}
-
-		@Override
 		public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
 				throws Exception {
 			getNode(ctx).channelException(ctx, cause);
 		}
 
 		@Override
-		protected void channelRead0(ChannelHandlerContext ctx, MMessageList msgs)
-				throws Exception {
+		protected void messageReceived(ChannelHandlerContext ctx,
+				MMessageList msgs) throws Exception {
 			for (int i = 0; i < msgs.size(); i++) {
 				getNode(ctx).messagesReceived(msgs);
 			}

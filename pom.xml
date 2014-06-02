@@ -11,7 +11,8 @@
 	<properties>
 		<cxf.version>2.4.2</cxf.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<project.reporting.outputEncoding>UTF-8
+		</project.reporting.outputEncoding>
 	</properties>
 
 	<distributionManagement>
@@ -77,6 +78,13 @@
 						<format>xml</format>
 					</formats>
 				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.ow2.asm</groupId>
+						<artifactId>asm</artifactId>
+						<version>[5.0.0,)</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 
 			<plugin>
@@ -99,15 +107,6 @@
 					<xmlOutput>true</xmlOutput>
 				</configuration>
 			</plugin>
-
-
-			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>wagon-maven-plugin</artifactId> 
-				<version>1.0-beta-4</version> <executions> <execution> <id>upload-javadoc</id> 
-				<phase>deploy</phase> <goals> <goal>upload</goal> </goals> <configuration> 
-				<fromDir>local.dir</fromDir> <includes> * </includes> <excludes>pom.xml</excludes> 
-				<url>scp://maven.waazdoh.com:/tmp</url> <toDir>mavenwaazdoh/repository</toDir> 
-				</configuration> </execution> </executions> </plugin> -->
-
 		</plugins>
 
 		<extensions>
@@ -132,21 +131,22 @@
 		<dependency>
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
-			<version>3.1</version>
+			<version>[3.1,)</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.jcraft</groupId>
 			<artifactId>jzlib</artifactId>
-			<version>1.1.2</version>
+			<version>[1.1.2,)</version>
 		</dependency>
 
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-all</artifactId> <!-- Use 'netty-all' for 4.0 or above -->
-			<version>4.0.9.Final</version>
+			<version>[4.0.9,)</version>
 			<scope>compile</scope>
 		</dependency>
+
 	</dependencies>
 	<repositories>
 		<!-- Repository needed to include the jboss netty library -->
