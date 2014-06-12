@@ -82,12 +82,13 @@ public final class MBinaryStorage {
 		return running;
 	}
 
-	public void addNewWave(Binary fs) {
+	public void addNewBinary(Binary fs) {
 		synchronized (streams) {
 			if (findStream(fs.getID()) != null) {
 				throw new RuntimeException("Binary " + fs + " already added");
 			} else {
 				log.info("adding binary " + fs);
+				log.info("current memory usage " + getMemoryUserInfo());
 				streams.add(fs);
 				streams.notifyAll();
 			}
@@ -142,11 +143,10 @@ public final class MBinaryStorage {
 
 	public void saveBinaries() {
 		synchronized (streams) {
-			// log.info("save waves " + streams);
-			Collection<Binary> lwaves = streams;
-			for (Binary mWave : lwaves) {
+			Collection<Binary> lbinaries = streams;
+			for (Binary bin : lbinaries) {
 				try {
-					saveBinary(mWave);
+					saveBinary(bin);
 				} catch (IOException e) {
 					e.printStackTrace();
 					log.error(e);
@@ -157,19 +157,15 @@ public final class MBinaryStorage {
 
 	private void saveBinary(Binary fs) throws FileNotFoundException {
 		synchronized (streams) {
-			MCRC persistentWaveCRC = getPersistentWaveTimestamp(fs.getID());
+			MCRC persistentBinaryCRC = getPersistentBinaryTimestamp(fs.getID());
 			MCRC fscrc = fs.getCRC();
-			if ((persistentWaveCRC == null || !persistentWaveCRC.equals(fscrc))
-					&& fs.isReady()) {
+			if ((persistentBinaryCRC == null || !persistentBinaryCRC
+					.equals(fscrc)) && fs.isReady()) {
 				String datapath = getDataPath(fs);
-				log.info("saving wave datapath:" + datapath);
+				log.info("saving binary datapath:" + datapath);
 				fs.save(new BufferedOutputStream(new FileOutputStream(datapath)));
 				crcs.put(fs.getID(), fs.getCRC());
-			} else {
-				// log.info("not saving " + fs + " current persistent: "+
-				// persistentWaveCRC + " isReady:" + fs.isReady());
-			}
-		}
+			}		}
 	}
 
 	public Binary reload(Binary binary) {
@@ -188,7 +184,7 @@ public final class MBinaryStorage {
 			bin = new Binary(streamid, service);
 			if (bin.isOK()) {
 				String datapath = getDataPath(bin);
-				log.info("loading persistent wave " + streamid + " datapath:"
+				log.info("loading persistent binary " + streamid + " datapath:"
 						+ datapath);
 				File f = new File(datapath);
 				if (f.exists()) {
@@ -217,7 +213,7 @@ public final class MBinaryStorage {
 		return new File(getDataPath(bin));
 	}
 
-	private MCRC getPersistentWaveTimestamp(MBinaryID mBinaryID) {
+	private MCRC getPersistentBinaryTimestamp(MBinaryID mBinaryID) {
 		return crcs.get(mBinaryID);
 	}
 
@@ -234,20 +230,21 @@ public final class MBinaryStorage {
 	}
 
 	private String getDataPath(Binary bin) {
-		String datapath = getWavePath(bin.getID()) + bin.getID() + "."
+		String datapath = getBinaryPath(bin.getID()) + bin.getID() + "."
 				+ bin.getExtension();
 		return datapath;
 	}
 
-	private String getWavePath(MBinaryID mBinaryID) {
+	private String getBinaryPath(MBinaryID mBinaryID) {
 		String sid = mBinaryID.toString();
-		String wavepath = new StringIDLocalPath(this.localpath, mBinaryID).getPath();
-		
+		String binarypath = new StringIDLocalPath(this.localpath, mBinaryID)
+				.getPath();
+
 		//
-		File file = new File(wavepath);
+		File file = new File(binarypath);
 		file.mkdirs();
 		//
-		return wavepath;
+		return binarypath;
 	}
 
 	@Override

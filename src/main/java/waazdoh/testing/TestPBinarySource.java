@@ -26,13 +26,13 @@ import waazdoh.cutils.xml.JBean;
 import waazdoh.service.CMService;
 import waazdoh.service.ReportingService;
 
-public final class TestPWaveSource implements MBinarySource {
+public final class TestPBinarySource implements MBinarySource {
 	private MPreferences preferences;
 	private MBinaryStorage storage;
 	private CMService service;
 	private Map<String, JBean> beans = new HashMap<String, JBean>();
 
-	public TestPWaveSource(MPreferences p) {
+	public TestPBinarySource(MPreferences p) {
 		this.preferences = p;
 	}
 
@@ -52,7 +52,7 @@ public final class TestPWaveSource implements MBinarySource {
 	}
 
 	public void addBinary(Binary stream) {
-		storage.addNewWave(stream);
+		storage.addNewBinary(stream);
 	}
 
 	@Override
@@ -117,7 +117,7 @@ public final class TestPWaveSource implements MBinarySource {
 		Binary b = storage.getBinary(samplesid);
 		if (b == null) {
 			b = new Binary(samplesid, service);
-			storage.addNewWave(b);
+			storage.addNewBinary(b);
 		}
 		return b;
 	}
@@ -134,7 +134,7 @@ public final class TestPWaveSource implements MBinarySource {
 	}
 
 	@Override
-	public void saveWaves() {
+	public void saveBinaries() {
 		storage.saveBinaries();
 	}
 

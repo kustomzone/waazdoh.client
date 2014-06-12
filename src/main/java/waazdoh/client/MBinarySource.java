@@ -19,7 +19,7 @@ import waazdoh.service.CMService;
 import waazdoh.service.ReportingService;
 
 public interface MBinarySource {
-	void saveWaves();
+	void saveBinaries();
 
 	void close();
 

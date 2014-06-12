@@ -18,22 +18,22 @@ public class StringIDLocalPath {
 	}
 
 	public String getPath() {
-		String wavepath = "" + localpath;
+		String spath = "" + localpath;
 		String sid = id.toString();
 		// creating a directory tree
 		// first four characters are likely a year.
 		int index = 0;
 		int indexjump = 4;
 		while (index <= 4) {
-			wavepath += File.separatorChar;
-			wavepath += sid.substring(index, index + indexjump);
+			spath += File.separatorChar;
+			spath += sid.substring(index, index + indexjump);
 			index += indexjump;
 			if (indexjump > 2) {
 				indexjump = 2;
 			}
 		}
 
-		wavepath += File.separatorChar;
-		return wavepath;
+		spath += File.separatorChar;
+		return spath;
 	}
 }

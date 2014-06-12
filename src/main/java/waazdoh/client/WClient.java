@@ -72,11 +72,6 @@ public final class WClient {
 		return preferences;
 	}
 
-	@Deprecated
-	public boolean setSession(final String username, final String session) {
-		return setSession(session);
-	}
-
 	public boolean setSession(final String session) {
 		if (!service.isLoggedIn()) {
 			if (service.setSession(session)) {
@@ -115,6 +110,10 @@ public final class WClient {
 
 	public WClientAppLogin checkAppLogin(MStringID id) {
 		JBean b = getService().checkAppLogin(id);
-		return new WClientAppLogin(b);
+		WClientAppLogin applogin = new WClientAppLogin(b);
+		if (applogin.getSessionId() != null) {
+			setSession(applogin.getSessionId());
+		}
+		return applogin;
 	}
 }

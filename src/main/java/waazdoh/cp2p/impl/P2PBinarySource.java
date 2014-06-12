@@ -88,7 +88,7 @@ public final class P2PBinarySource implements MBinarySource {
 
 	@Override
 	public String toString() {
-		return "P2PWaveSource[" + server + "]";
+		return "P2PBinarySource[" + server + "]";
 	}
 
 	@Override
@@ -170,7 +170,7 @@ public final class P2PBinarySource implements MBinarySource {
 		bin.addListener(new BinaryListener() {
 			@Override
 			public void ready(Binary binary) {
-				saveWaves();
+				saveBinaries();
 			}
 		});
 		server.addDownload(bin);
@@ -182,11 +182,11 @@ public final class P2PBinarySource implements MBinarySource {
 	}
 
 	private synchronized void addBinary(Binary stream) {
-		storage.addNewWave(stream);
+		storage.addNewBinary(stream);
 	}
 
 	@Override
-	public void saveWaves() {
+	public void saveBinaries() {
 		storage.saveBinaries();
 	}
 
