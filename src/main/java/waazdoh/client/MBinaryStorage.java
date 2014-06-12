@@ -65,7 +65,7 @@ public final class MBinaryStorage {
 		t.start();
 	}
 
-	public String getMemoryUserInfo() {
+	public String getMemoryUsageInfo() {
 		synchronized (streams) {
 			String info = "streams:" + streams.size();
 
@@ -88,7 +88,7 @@ public final class MBinaryStorage {
 				throw new RuntimeException("Binary " + fs + " already added");
 			} else {
 				log.info("adding binary " + fs);
-				log.info("current memory usage " + getMemoryUserInfo());
+				log.info("current memory usage " + getMemoryUsageInfo());
 				streams.add(fs);
 				streams.notifyAll();
 			}
@@ -286,6 +286,7 @@ public final class MBinaryStorage {
 
 	public Binary newBinary(final String comment, String extension) {
 		synchronized (streams) {
+			log.info("Adding a new binary. memory usage:" + getMemoryUsageInfo());
 			Binary b = new Binary(service, comment, extension);
 			this.streams.add(b);
 			return b;

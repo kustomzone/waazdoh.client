@@ -443,8 +443,8 @@ public final class P2PServer implements MMessager, MMessageFactory,
 				//
 				handle(message, lasthandler != null ? lasthandler : sentbynode);
 			} else {
-				log.info("not handling message because networkid is equal with sentby "
-						+ message.getID());
+				log.debug("not handling message because networkid is equal with sentby "
+						+ message.getSentBy());
 				ret.add(getMessage("close"));
 			}
 		}
@@ -591,7 +591,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	public void addDownload(Binary bs) {
 		synchronized (downloads) {
 			if (downloads.get(bs.getID()) == null) {
-				log.info("adding download " + bs);
+				log.info("adding download " + bs + " memory:" + getMemoryUserInfo());
 				downloads.put(bs.getID(), new Download(bs, this));
 			}
 		}

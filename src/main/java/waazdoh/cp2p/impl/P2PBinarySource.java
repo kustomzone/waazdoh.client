@@ -70,7 +70,7 @@ public final class P2PBinarySource implements MBinarySource {
 	@Override
 	public String getMemoryUsageInfo() {
 		String info = "";
-		info += "storage:[" + storage.getMemoryUserInfo() + "]";
+		info += "storage:[" + storage.getMemoryUsageInfo() + "]";
 		info += "server:[" + server.getMemoryUserInfo() + "]";
 		return info;
 	}
