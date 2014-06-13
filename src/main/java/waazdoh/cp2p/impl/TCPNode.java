@@ -54,7 +54,7 @@ public final class TCPNode {
 		if (isConnected()) {
 			if (smessages.size() > 0) {
 				log.debug("writing messages " + smessages);
-
+				
 				channel.writeAndFlush(smessages).addListener(
 						ChannelFutureListener.CLOSE_ON_FAILURE); //
 				int bytecount = 0;

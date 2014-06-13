@@ -64,16 +64,16 @@ public final class Node {
 	}
 
 	public void addMessage(MMessage b) {
-		if (this.outgoingmessages.size() < MAX_MESSAGES_COUNT
-				&& !findMessage(b)) {
-			synchronized (outgoingmessages) {
+		synchronized (outgoingmessages) {
+			if (this.outgoingmessages.size() < MAX_MESSAGES_COUNT
+					&& !findMessage(b)) {
 				log.info("addMessage " + b);
 				b.setLastHandler(source.getID());
 				this.outgoingmessages.add(b);
+				source.notifyNewMessages();
+			} else {
+				log.info("Message queue full. Not sending message." + b);
 			}
-			source.notifyNewMessages();
-		} else {
-			log.info("Message queue full. Not sending message." + b);
 		}
 	}
 

@@ -102,10 +102,14 @@ public final class Download implements Runnable, MessageResponseListener,
 	}
 
 	public synchronized boolean isReady() {
-		if (!hasBeenReady) {
-			hasBeenReady = bin.isReady();
+		if (sentstarts.size() > 0) {
+			return false;
+		} else {
+			if (!hasBeenReady) {
+				hasBeenReady = bin.isReady();
+			}
+			return hasBeenReady;
 		}
-		return hasBeenReady;
 	}
 
 	private void resetSentStarts() {
@@ -168,6 +172,7 @@ public final class Download implements Runnable, MessageResponseListener,
 	private void handleResponse(Node n, MMessage b) {
 		if (b.getName().equals("stream") && !isReady()) {
 			MStringID sid = b.getIDAttribute("streamid");
+
 			if (sid != null && getID().equals(sid)) {
 				log.info("response " + b);
 
