@@ -299,6 +299,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 				}
 			}
 		});
+		node.pingSent();
 	}
 
 	private Iterator<Node> getNodesIterator() {

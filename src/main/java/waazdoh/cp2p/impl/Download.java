@@ -98,7 +98,7 @@ public final class Download implements Runnable, MessageResponseListener,
 		this.endtime = System.currentTimeMillis();
 		this.speedinfo = "Has downloaded " + countbytes + " bytes in "
 				+ (endtime - starttime) + " msecs" + "("
-				+ (1000.0f * bin.length() / (endtime - starttime)) + " f/sec)";
+				+ (1000.0f * bin.length() / (endtime - starttime)) + " B/s)";
 	}
 
 	public synchronized boolean isReady() {

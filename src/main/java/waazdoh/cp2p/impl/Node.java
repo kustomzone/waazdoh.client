@@ -33,6 +33,7 @@ public final class Node {
 
 	private MMessageList outgoingmessages = new MMessageList();
 	private int receivedmessages;
+	private long currentpingdelay;
 
 	public Node(MNodeID id, MHost host, int port, P2PServer nsource) {
 		this.id = id;
@@ -79,7 +80,7 @@ public final class Node {
 	private boolean findMessage(MMessage b) {
 		for (MMessage m : outgoingmessages) {
 			if (m.getID().equals(b.getID())) {
-				throw new RuntimeException("message already on outgoing list");
+				return true;
 			}
 		}
 		return false;
@@ -130,7 +131,8 @@ public final class Node {
 		long maxpingdelay = getPingDelay();
 		if (System.currentTimeMillis() - lastping > maxpingdelay
 				&& tcpnode != null) {
-			log.debug("should ping " + (System.currentTimeMillis() - lastping));
+			log.debug("should ping " + (System.currentTimeMillis() - lastping)
+					+ " > " + maxpingdelay);
 			lastping = System.currentTimeMillis();
 			pingcount++;
 			return true;
@@ -140,12 +142,10 @@ public final class Node {
 	}
 
 	private long getPingDelay() {
-		int pingspeedup = 10 - pingcount;
-		if (pingspeedup < 1) {
-			pingspeedup = 1;
+		if (this.currentpingdelay < 10) {
+			currentpingdelay = 10;
 		}
-		long maxpingdelay = MAX_PINGDELAY / pingspeedup;
-		return maxpingdelay;
+		return this.currentpingdelay;
 	}
 
 	public void touch() {
@@ -235,6 +235,17 @@ public final class Node {
 
 	public void messageReceived() {
 		receivedmessages++;
-		log.info("Message received " + getReceivedMessages());
+
+		this.currentpingdelay /= 2;
+
+		log.info("Message received " + getReceivedMessages()
+				+ " current ping delay:" + this.currentpingdelay + "ms");
+	}
+
+	public void pingSent() {
+		this.currentpingdelay = getPingDelay() * 2;
+		if (currentpingdelay > Node.MAX_PINGDELAY) {
+			currentpingdelay = Node.MAX_PINGDELAY;
+		}
 	}
 }
