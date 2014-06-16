@@ -175,7 +175,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		try {
 			log.info("rebooting server "
 					+ (REBOOT_DELAY - System.currentTimeMillis()));
-			close();
+			shutdown();
 			startNetwork();
 		} catch (Exception e) {
 			log.error(e);
@@ -394,35 +394,39 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	public void close() {
 		log.info("closing server");
 		if (!isClosed()) {
-			if (getID() != null) {
-				broadcastMessage(new MMessage("close", getID()));
-				//
-			}
-			closed = true;
-
-			LinkedList<Node> ns = new LinkedList<Node>(nodes);
-			for (Node n : ns) {
-				n.close();
-			}
-
-			if (tcplistener != null) {
-				tcplistener.close();
-				tcplistener = null;
-			}
-			synchronized (nodes) {
-				nodes.notifyAll();
-			}
-			log.info("closing nodes");
-			synchronized (nodes) {
-				for (Node node : nodes) {
-					node.close();
-				}
-			}
+			shutdown();
 			nodes = null;
-
 			log.info("closing done");
 		} else {
 			log.info("already closed");
+		}
+	}
+
+	private void shutdown() {
+		log.info("shutting down");
+		if (getID() != null) {
+			broadcastMessage(new MMessage("close", getID()));
+			//
+		}
+		closed = true;
+
+		LinkedList<Node> ns = new LinkedList<Node>(nodes);
+		for (Node n : ns) {
+			n.close();
+		}
+
+		if (tcplistener != null) {
+			tcplistener.close();
+			tcplistener = null;
+		}
+		synchronized (nodes) {
+			nodes.notifyAll();
+		}
+		log.info("closing nodes");
+		synchronized (nodes) {
+			for (Node node : nodes) {
+				node.close();
+			}
 		}
 	}
 
