@@ -89,7 +89,7 @@ public final class TestiBinaryTransfer extends TestCase {
 		MPreferences p1 = new StaticTestPreferences(username1);
 		P2PBinarySource source1 = new P2PBinarySource(p1, bind);
 		ServiceMock service1 = new ServiceMock(username1, source1);
-		source1.setService(service1);
+
 		service1.setSession("" + new MStringID());
 		return source1;
 	}

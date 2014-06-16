@@ -89,7 +89,8 @@ public final class Node {
 	public void addMessage(MMessage message,
 			MessageResponseListener messageResponseListener) {
 		if (message != null) {
-			source.addResponseListener(message.getID(), messageResponseListener);
+			MessageID messageid = message.getID();
+			source.addResponseListener(messageid, messageResponseListener);
 			addMessage(message);
 		}
 	}
@@ -169,6 +170,7 @@ public final class Node {
 			tcpnode.close();
 			tcpnode = null;
 		}
+		source = null;
 	}
 
 	public void addInfoTo(MMessage message) {
@@ -194,13 +196,16 @@ public final class Node {
 		}
 	}
 
-	public MMessageList incomingMessages(List<MMessage> messages) {
-		if (messages.size() > 0) {
+	public MMessageList incomingMessages(List<MMessage> incomingmessages) {
+		if (incomingmessages.size() > 0) {
 			updatePing();
-			receivedmessages += messages.size();
+			receivedmessages += incomingmessages.size();
+
+			log.info("incoming message size " + incomingmessages.size());
 
 			if (id == null) {
-				this.id = new MNodeID(messages.get(0).getAttribute("sentby"));
+				this.id = new MNodeID(incomingmessages.get(0).getAttribute(
+						"sentby"));
 				if (id.equals(source.getID())) {
 					log.info("Source and target nodes has a same id. Closing node.");
 					close();
@@ -209,10 +214,10 @@ public final class Node {
 			}
 
 			List<MMessage> retmessages = source.handle(new MMessageList(
-					messages));
+					incomingmessages));
 			if (retmessages != null) {
-				synchronized (messages) {
-					messages.addAll(retmessages);
+				synchronized (outgoingmessages) {
+					outgoingmessages.addAll(retmessages);
 				}
 			} else {
 				close();
@@ -230,7 +235,11 @@ public final class Node {
 	}
 
 	public boolean isConnected() {
-		return getReceivedMessages() > 0;
+		return getReceivedMessages() > 0 && !isClosed();
+	}
+
+	private boolean isClosed() {
+		return source == null;
 	}
 
 	public void messageReceived() {

@@ -55,7 +55,7 @@ public final class TCPListener {
 			EventLoopGroup bossGroup = new NioEventLoopGroup(); // (1)
 			EventLoopGroup workerGroup = new NioEventLoopGroup();
 
-			final ServerBootstrap bootstrap = new ServerBootstrap();
+			bootstrap = new ServerBootstrap();
 			bootstrap.group(bossGroup, workerGroup)
 					.channel(NioServerSocketChannel.class)
 					.childHandler(new ChannelInitializer<SocketChannel>() {
@@ -119,7 +119,16 @@ public final class TCPListener {
 			//
 			if (bind != null) {
 				bind.channel().disconnect();
-				bind.channel().closeFuture().sync();
+				bind.channel().closeFuture().sync().awaitUninterruptibly()
+						.addListener(new ChannelFutureListener() {
+
+							@Override
+							public void operationComplete(ChannelFuture arg0)
+									throws Exception {
+								log.info("close operation complete " + arg0
+										+ " " + TCPListener.this);
+							}
+						});
 			}
 		} catch (InterruptedException e) {
 			log.error(e);
@@ -132,14 +141,17 @@ public final class TCPListener {
 		protected void messageReceived(ChannelHandlerContext ctx,
 				MMessageList ms) throws Exception {
 			log.info("messageReceived " + ms);
-
-			MMessageList response = messager.handle(ms);
-			if (response != null) {
-				log.debug("sending back response " + response);
-				ctx.writeAndFlush(response).addListener(
-						ChannelFutureListener.CLOSE_ON_FAILURE);
+			if (!closed) {
+				MMessageList response = messager.handle(ms);
+				if (response != null) {
+					log.debug("sending back response " + response);
+					ctx.writeAndFlush(response).addListener(
+							ChannelFutureListener.CLOSE_ON_FAILURE);
+				} else {
+					log.debug("closing " + ctx);
+					ctx.close();
+				}
 			} else {
-				log.debug("closing " + ctx);
 				ctx.close();
 			}
 		}

@@ -54,7 +54,7 @@ public final class TCPNode {
 		if (isConnected()) {
 			if (smessages.size() > 0) {
 				log.debug("writing messages " + smessages);
-				
+
 				channel.writeAndFlush(smessages).addListener(
 						ChannelFutureListener.CLOSE_ON_FAILURE); //
 				int bytecount = 0;
@@ -175,7 +175,7 @@ public final class TCPNode {
 	}
 
 	void messagesReceived(List<MMessage> messages) {
-		log.info("got " + messages.size() + " messages");
+		log.debug("got " + messages.size() + " messages");
 		touch();
 		MMessageList response = node.incomingMessages(messages);
 		sendMessages(response);
@@ -185,7 +185,12 @@ public final class TCPNode {
 		if (channel != null) {
 			synchronized (this) {
 				log.info("closing channel " + channel);
-				channel.disconnect();
+				try {
+					channel.disconnect().sync();
+				} catch (InterruptedException e) {
+					log.error(e);
+				}
+				//
 				channel.close();
 				channel = null;
 				if (connectionwaiter != null) {

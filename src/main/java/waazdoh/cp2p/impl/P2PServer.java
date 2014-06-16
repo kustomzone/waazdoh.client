@@ -23,7 +23,6 @@ import java.util.StringTokenizer;
 import waazdoh.client.Binary;
 import waazdoh.cp2p.impl.handlers.ByteArraySource;
 import waazdoh.cp2p.impl.handlers.PingHandler;
-import waazdoh.cp2p.impl.handlers.StreamHandler;
 import waazdoh.cp2p.impl.handlers.WhoHasHandler;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MPreferences;
@@ -83,22 +82,27 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	}
 
 	public String getInfoText() {
-		String s = "nodes:" + nodes.size() + " downloads:" + downloads.size();
-		s += " " + tcplistener + " messagereceived:"
-				+ (System.currentTimeMillis() - lastmessagereceived)
-				+ "ms ago ";
-		long dtime = System.currentTimeMillis() - bytecountstart;
-		if (dtime > 0) {
-			s += " I:" + (inputbytecount * 1000 / dtime);
-			s += " O:" + (outputbytecount * 1000 / dtime);
+		if (nodes != null) {
+			String s = "nodes:" + nodes.size() + " downloads:"
+					+ downloads.size();
+			s += " " + tcplistener + " messagereceived:"
+					+ (System.currentTimeMillis() - lastmessagereceived)
+					+ "ms ago ";
+			long dtime = System.currentTimeMillis() - bytecountstart;
+			if (dtime > 0) {
+				s += " I:" + (inputbytecount * 1000 / dtime);
+				s += " O:" + (outputbytecount * 1000 / dtime);
+			}
+			//
+			if (dtime > 10 * 1000) {
+				bytecountstart = System.currentTimeMillis();
+				inputbytecount = 0;
+				outputbytecount = 0;
+			}
+			return s;
+		} else {
+			return "closed";
 		}
-		//
-		if (dtime > 10 * 1000) {
-			bytecountstart = System.currentTimeMillis();
-			inputbytecount = 0;
-			outputbytecount = 0;
-		}
-		return s;
 	}
 
 	public String getMemoryUserInfo() {
@@ -120,7 +124,6 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	private void initHandlers() {
 		handlers.put("ping", new PingHandler());
 		handlers.put("whohas", new WhoHasHandler(bytesource, this));
-		handlers.put("stream", new StreamHandler(this));
 		handlers.put("connectednode", new ConnectedNodeHandler(this));
 		handlers.put("newnode", new NewNodeHandler(this));
 		//
@@ -161,7 +164,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 						reboot();
 					} else {
 						sleep(dt - REBOOT_DELAY);
-					} 
+					}
 				}
 			}
 		}, "P2PServer checker");
@@ -170,7 +173,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 
 	private void reboot() {
 		try {
-			log.info("rebootin server "
+			log.info("rebooting server "
 					+ (REBOOT_DELAY - System.currentTimeMillis()));
 			close();
 			startNetwork();
@@ -180,6 +183,8 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	}
 
 	public void startNetwork() {
+		log.info("Starting network");
+		//
 		lastmessagereceived = System.currentTimeMillis();
 		closed = false;
 		if (networkid == null) {
@@ -401,6 +406,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 
 		if (tcplistener != null) {
 			tcplistener.close();
+			tcplistener = null;
 		}
 		synchronized (nodes) {
 			nodes.notifyAll();
@@ -411,52 +417,64 @@ public final class P2PServer implements MMessager, MMessageFactory,
 				node.close();
 			}
 		}
+		nodes = null;
+
 		log.info("closing done");
 	}
 
 	@Override
 	public MMessageList handle(MMessageList messages) {
-		lastmessagereceived = System.currentTimeMillis();
-		//
-		MMessageList ret;
-		ret = new MMessageList();
-		//
-		Node sentbynode = null; // should be same node for every message
-		Node lasthandler = null;
-		for (MMessage message : messages) {
-			MNodeID lasthandlerid = message.getLastHandler();
-			lasthandler = getNode(lasthandlerid);
+		if (!isClosed()) {
+			lastmessagereceived = System.currentTimeMillis();
+			//
+			MMessageList ret;
+			ret = new MMessageList();
+			//
+			Node sentbynode = null; // should be same node for every message
+			Node lasthandler = null;
+			for (MMessage message : messages) {
+				MNodeID lasthandlerid = message.getLastHandler();
+				lasthandler = getNode(lasthandlerid);
 
-			MNodeID sentby = message.getSentBy();
-			if (!networkid.equals(sentby)) {
-				//
-				sentbynode = getNode(sentby);
-				if (sentbynode == null) {
-					sentbynode = new Node(sentby, this);
-					addNode(this, sentbynode);
+				MNodeID sentby = message.getSentBy();
+				if (!networkid.equals(sentby)) {
+					//
+					sentbynode = getNode(sentby);
+					if (sentbynode == null) {
+						sentbynode = new Node(sentby, this);
+						addNode(this, sentbynode);
+					}
+					//
+					sentbynode.touch();
+					sentbynode.messageReceived();
+					//
+					log.info("handling message: " + message + " from "
+							+ sentbynode);
+					message.setLastHandler(networkid);
+					//
+					handle(message, lasthandler != null ? lasthandler
+							: sentbynode);
+				} else {
+					log.debug("not handling message because networkid is equal with sentby "
+							+ message.getSentBy());
+					ret.add(getMessage("close"));
 				}
-				//
-				sentbynode.touch();
-				sentbynode.messageReceived();
-				//
-				log.info("handling message: " + message + " from " + sentbynode);
-				message.setLastHandler(networkid);
-				//
-				handle(message, lasthandler != null ? lasthandler : sentbynode);
-			} else {
-				log.debug("not handling message because networkid is equal with sentby "
-						+ message.getSentBy());
-				ret.add(getMessage("close"));
 			}
-		}
 
-		if (lasthandler != null) {
-			ret = lasthandler.getMessages();
-		} else if (sentbynode != null) {
-			ret = sentbynode.getMessages();
+			if (lasthandler != null) {
+				ret = lasthandler.getMessages();
+			} else if (sentbynode != null) {
+				ret = sentbynode.getMessages();
+			}
+			log.info("" + messages.size() + " handled and returning " + ret);
+			return ret;
+		} else {
+			return null;
 		}
-		log.info("" + messages.size() + " handled and returning " + ret);
-		return ret;
+	}
+
+	private boolean isClosed() {
+		return nodes == null;
 	}
 
 	public void handle(MMessage message, Node node) {
@@ -479,29 +497,27 @@ public final class P2PServer implements MMessager, MMessageFactory,
 			}
 			//
 			MessageID responseto = message.getResponseTo();
-			MNodeID to = message.getTo("to");
-			if (to == null || to.equals(getID())) {
-				if (handler != null) {
-					handler.handle(message, node);
-				} else if (responseto == null) {
-					log.info("unknown message " + message);
-				}
+			MessageResponseListener responselistener = getResponseListener(responseto);
+			if (responselistener != null) {
+				responselistener.messageReceived(node, message);
+				removeResponseListener(responseto);
 			} else {
-				Node tonode = getNode(to);
-				log.info("redirecting message to " + tonode);
-				if (tonode != null) {
-					node.addInfoTo(message);
-					tonode.addMessage(message);
+				MNodeID to = message.getTo("to");
+				if (to == null || to.equals(getID())) {
+					if (handler != null) {
+						handler.handle(message, node);
+					} else {
+						log.error("unknown message " + message);
+					}
 				} else {
-					log.info("message recieved in wrong node " + message);
-				}
-			}
-			//
-			if (responseto != null) {
-				MessageResponseListener responselistener = getResponseListener(responseto);
-				if (responselistener != null) {
-					responselistener.messageReceived(node, message);
-					removeResponseListener(responseto);
+					Node tonode = getNode(to);
+					log.info("redirecting message to " + tonode);
+					if (tonode != null) {
+						node.addInfoTo(message);
+						tonode.addMessage(message);
+					} else {
+						log.error("message received in wrong node " + message);
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -592,7 +608,8 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	public void addDownload(Binary bs) {
 		synchronized (downloads) {
 			if (downloads.get(bs.getID()) == null) {
-				log.info("adding download " + bs + " memory:" + getMemoryUserInfo());
+				log.info("adding download " + bs + " memory:"
+						+ getMemoryUserInfo());
 				downloads.put(bs.getID(), new Download(bs, this));
 			}
 		}
@@ -665,17 +682,19 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	}
 
 	public boolean isConnected() {
-		List<Node> ns = new LinkedList<Node>(this.nodes);
-		for (Node node : ns) {
-			if (node.isConnected()) {
-				return true;
+		if (nodes != null) {
+			List<Node> ns = new LinkedList<Node>(this.nodes);
+			for (Node node : ns) {
+				if (node.isConnected()) {
+					return true;
+				}
 			}
 		}
 		return false;
 	}
 
 	public synchronized void waitForConnection() throws InterruptedException {
-		while(!isConnected()) {
+		while (!isConnected()) {
 			this.wait(100);
 		}
 	}
