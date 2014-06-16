@@ -67,7 +67,10 @@ public final class Node {
 		synchronized (outgoingmessages) {
 			if (this.outgoingmessages.size() < MAX_MESSAGES_COUNT
 					&& !findMessage(b)) {
-				log.info("addMessage " + b);
+				if (isConnected()) {
+					// Not logging before if we are connected
+					log.info("addMessage " + b);
+				}
 				b.setLastHandler(source.getID());
 				this.outgoingmessages.add(b);
 				source.notifyNewMessages();

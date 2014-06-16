@@ -60,6 +60,7 @@ public final class TestBinaryTransfer extends TestCase {
 		Binary b1 = source1.newBinary("test", "bin");
 		assertNotNull(b1);
 		//
+		log.info("adding bytes");
 		for (int i = 0; i < binarysize; i++) {
 			b1.add((byte) (i & 0xff));
 		}

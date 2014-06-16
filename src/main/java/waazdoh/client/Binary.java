@@ -342,8 +342,6 @@ public final class Binary implements HashSource {
 	public synchronized void resetCRC() {
 		if (crc != null) {
 			crc = null;
-			//
-			log.debug("resetCRC " + id);
 		}
 		timestamp = System.currentTimeMillis();
 	}
@@ -373,6 +371,11 @@ public final class Binary implements HashSource {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode();
 	}
 
 	public void setReady() {
