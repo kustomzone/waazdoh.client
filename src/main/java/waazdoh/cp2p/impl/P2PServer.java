@@ -410,11 +410,13 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		}
 		closed = true;
 
+		log.info("closing nodes");
 		LinkedList<Node> ns = new LinkedList<Node>(nodes);
 		for (Node n : ns) {
 			n.close();
 		}
 
+		log.info("closing tcplistener " + tcplistener);
 		if (tcplistener != null) {
 			tcplistener.close();
 			tcplistener = null;
@@ -422,12 +424,16 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		synchronized (nodes) {
 			nodes.notifyAll();
 		}
-		log.info("closing nodes");
-		synchronized (nodes) {
-			for (Node node : nodes) {
-				node.close();
-			}
+		log.info("closing nodes again");
+		ns = new LinkedList<>(nodes);
+		nodes = new LinkedList<Node>();
+
+		//
+		for (Node node : ns) {
+			node.close();
 		}
+		//
+		log.info("shutdown complete");
 	}
 
 	@Override
