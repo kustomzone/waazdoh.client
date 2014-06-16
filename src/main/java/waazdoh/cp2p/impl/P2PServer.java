@@ -27,6 +27,7 @@ import waazdoh.cp2p.impl.handlers.WhoHasHandler;
 import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MPreferences;
 import waazdoh.cutils.MStringID;
+import waazdoh.cutils.MTimedFlag;
 import waazdoh.cutils.xml.JBean;
 import waazdoh.service.ReportingService;
 
@@ -707,9 +708,15 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		return false;
 	}
 
-	public synchronized void waitForConnection() throws InterruptedException {
+	public synchronized void waitForConnection(int maxwaittime)
+			throws InterruptedException {
+		MTimedFlag timer = new MTimedFlag(maxwaittime);
 		while (!isConnected()) {
 			this.wait(100);
+			if (timer.isTriggered()) {
+				throw new RuntimeException("Maximum time to wait reached "
+						+ timer);
+			}
 		}
 	}
 }

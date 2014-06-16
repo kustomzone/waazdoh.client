@@ -214,7 +214,8 @@ public final class P2PBinarySource implements MBinarySource {
 	@Override
 	public void waitUntilReady() {
 		try {
-			server.waitForConnection();
+			server.waitForConnection(preferences.getInteger(
+					"waazdoh.maxtime.waituntilready", 120000));
 		} catch (InterruptedException e) {
 			log.error(e);
 		}
