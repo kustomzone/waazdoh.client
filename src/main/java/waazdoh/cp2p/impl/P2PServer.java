@@ -125,7 +125,6 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	private void initHandlers() {
 		handlers.put("ping", new PingHandler());
 		handlers.put("whohas", new WhoHasHandler(bytesource, this));
-		handlers.put("connectednode", new ConnectedNodeHandler(this));
 		handlers.put("newnode", new NewNodeHandler(this));
 		//
 		for (MMessageHandler handler : handlers.values()) {
