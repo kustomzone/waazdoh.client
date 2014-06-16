@@ -78,11 +78,11 @@
 					</formats>
 				</configuration>
 				<dependencies>
-		<dependency>
-			<groupId>org.ow2.asm</groupId>
-			<artifactId>asm</artifactId>
-			<version>[5.0.0,)</version>
-		</dependency>
+					<dependency>
+						<groupId>org.ow2.asm</groupId>
+						<artifactId>asm</artifactId>
+						<version>[5.0.0,)</version>
+					</dependency>
 				</dependencies>
 			</plugin>
 
@@ -144,6 +144,12 @@
 			<artifactId>netty-all</artifactId> <!-- Use 'netty-all' for 4.0 or above -->
 			<version>[4.0.9,)</version>
 			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm</artifactId>
+			<version>[5.0.0,)</version>
 		</dependency>
 
 	</dependencies>
