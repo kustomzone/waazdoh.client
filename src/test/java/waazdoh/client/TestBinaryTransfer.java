@@ -48,11 +48,12 @@ public final class TestBinaryTransfer extends TestCase {
 		log.info("test transferm " + binarysize);
 		//
 		String username1 = "test1" + Math.random();
-		log.info("service with " + username1);
+		log.info("service1 with " + username1);
 		P2PBinarySource source1 = getServiceSource(username1, true);
 		String username2 = "test2" + Math.random();
-		log.info("service with " + username2);
+		log.info("service2 with " + username2);
 		P2PBinarySource source2 = getServiceSource(username2, false);
+		log.info("wait service2 " + source2);
 		source2.waitUntilReady();
 
 		log.info("creating binary");
@@ -95,6 +96,8 @@ public final class TestBinaryTransfer extends TestCase {
 		log.info("closing");
 		source1.close();
 		source2.close();
+		//
+		
 	}
 
 	private P2PBinarySource getServiceSource(final String username1,

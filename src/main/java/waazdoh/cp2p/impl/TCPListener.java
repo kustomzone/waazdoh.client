@@ -127,13 +127,19 @@ public final class TCPListener {
 									throws Exception {
 								log.info("close operation complete " + arg0
 										+ " " + TCPListener.this);
+								bind = null;
+								bootstrap = null;
 							}
 						});
 			}
+			//
+			while (bind != null) {
+				wait(200);
+			}
+			log.info("closing complete");
 		} catch (InterruptedException e) {
 			log.error(e);
 		}
-		bind = null;
 	}
 
 	class MServerHandler extends SimpleChannelInboundHandler<MMessageList> {
