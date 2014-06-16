@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.xml.sax.SAXException;
 
+import waazdoh.cutils.MLogger;
 import waazdoh.cutils.MStringID;
 import waazdoh.cutils.xml.JBean;
 import waazdoh.cutils.xml.XML;
@@ -204,7 +205,7 @@ public final class MMessage {
 			bytecount = byteArray.length;
 			return byteArray;
 		} catch (IOException e) {
-			e.printStackTrace();
+			MLogger.getLogger(this).error(e);
 			return null;
 		}
 	}

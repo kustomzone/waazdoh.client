@@ -165,7 +165,6 @@ public final class JBean implements Comparable<JBean> {
 					}
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
 				log.info("tried to parse " + oxml);
 				log.error(e);
 				throw new IllegalArgumentException(e);

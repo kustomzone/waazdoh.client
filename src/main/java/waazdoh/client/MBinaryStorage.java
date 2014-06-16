@@ -54,7 +54,6 @@ public final class MBinaryStorage {
 							streams.wait(6000);
 						}
 					} catch (InterruptedException e) {
-						e.printStackTrace();
 						log.error(e);
 					} catch (Exception e) {
 						log.error(e);
@@ -148,7 +147,6 @@ public final class MBinaryStorage {
 				try {
 					saveBinary(bin);
 				} catch (IOException e) {
-					e.printStackTrace();
 					log.error(e);
 				}
 			}
@@ -165,7 +163,8 @@ public final class MBinaryStorage {
 				log.info("saving binary datapath:" + datapath);
 				fs.save(new BufferedOutputStream(new FileOutputStream(datapath)));
 				crcs.put(fs.getID(), fs.getCRC());
-			}		}
+			}
+		}
 	}
 
 	public Binary reload(Binary binary) {
@@ -222,7 +221,6 @@ public final class MBinaryStorage {
 			try {
 				return loadPersistentStream(streamid);
 			} catch (IOException e) {
-				e.printStackTrace();
 				log.error(e);
 				return null;
 			}
@@ -286,7 +284,8 @@ public final class MBinaryStorage {
 
 	public Binary newBinary(final String comment, String extension) {
 		synchronized (streams) {
-			log.info("Adding a new binary. memory usage:" + getMemoryUsageInfo());
+			log.info("Adding a new binary. memory usage:"
+					+ getMemoryUsageInfo());
 			Binary b = new Binary(service, comment, extension);
 			this.streams.add(b);
 			return b;

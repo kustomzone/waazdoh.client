@@ -46,7 +46,7 @@ public final class MTimedFlag {
 				try {
 					wait(delaytime / 10);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					MLogger.getLogger(this).error(e);
 				}
 			}
 		}

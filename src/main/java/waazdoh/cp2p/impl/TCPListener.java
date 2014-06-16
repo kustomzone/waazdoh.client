@@ -84,7 +84,7 @@ public final class TCPListener {
 					}
 				}
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				log.error(e);
 			}
 
 			log.info("listening " + port + " messager:" + this.messager);

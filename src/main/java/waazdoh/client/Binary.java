@@ -114,7 +114,7 @@ public final class Binary implements HashSource {
 			crc = null;
 			return true;
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error(e);
 			return false;
 		}
 	}
@@ -163,8 +163,7 @@ public final class Binary implements HashSource {
 				try {
 					this.wait(10000);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
-					log.info("" + e);
+					log.error(e);
 				}
 			}
 		}
@@ -275,7 +274,6 @@ public final class Binary implements HashSource {
 			return true;
 		} catch (IOException e) {
 			log.error(e);
-			e.printStackTrace();
 			return false;
 		}
 	}

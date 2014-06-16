@@ -140,7 +140,6 @@ public final class P2PServer implements MMessager, MMessageFactory,
 				}
 				this.wait(time);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
 				log.error(e);
 			}
 		}

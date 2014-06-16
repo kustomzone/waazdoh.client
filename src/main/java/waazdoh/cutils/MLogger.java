@@ -52,9 +52,7 @@ public final class MLogger {
 	}
 
 	public void error(Exception e) {
-		e.printStackTrace();
 		getLog().severe(e.toString());
-		e.printStackTrace(getWriter());
 	}
 
 	private PrintWriter getWriter() {
@@ -77,7 +75,6 @@ public final class MLogger {
 	}
 
 	public void error(Throwable cause) {
-		cause.printStackTrace();
 		getLog().severe(cause.toString());
 	}
 
