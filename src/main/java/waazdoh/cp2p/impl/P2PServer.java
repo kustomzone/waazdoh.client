@@ -165,6 +165,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 						sleep(dt - REBOOT_DELAY);
 					}
 				}
+				log.info("Reboot checker out");
 			}
 		}, "P2PServer checker");
 		t.start();
@@ -182,22 +183,25 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	}
 
 	public void startNetwork() {
-		log.info("Starting network");
-		//
-		lastmessagereceived = System.currentTimeMillis();
-		closed = false;
-		if (networkid == null) {
-			networkid = new MStringID();
-		}
-		//
-		if (dobind) {
-			tcplistener = new TCPListener(tg, this, p);
-			tcplistener.start();
-		}
+		if (!isClosed()) {
+			log.info("Starting network");
+			//
+			lastmessagereceived = System.currentTimeMillis();
+			if (networkid == null) {
+				networkid = new MStringID();
+			}
+			//
+			if (dobind) {
+				tcplistener = new TCPListener(tg, this, p);
+				tcplistener.start();
+			}
 
-		addDefaultNodes();
-		//
-		startMessageSendLoops();
+			addDefaultNodes();
+			//
+			startMessageSendLoops();
+		} else {
+			log.info("Not starting the network. Closed.");
+		}
 	}
 
 	public Node addNode(MHost string, int i) {
@@ -393,6 +397,8 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	public void close() {
 		log.info("closing server");
 		if (!isClosed()) {
+			closed = true;
+			//
 			shutdown();
 			nodes = null;
 			log.info("closing done");
@@ -407,7 +413,6 @@ public final class P2PServer implements MMessager, MMessageFactory,
 			broadcastMessage(new MMessage("close", getID()));
 			//
 		}
-		closed = true;
 
 		log.info("closing nodes");
 		LinkedList<Node> ns = new LinkedList<Node>(nodes);
@@ -487,7 +492,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	}
 
 	private boolean isClosed() {
-		return nodes == null;
+		return closed;
 	}
 
 	public void handle(MMessage message, Node node) {
@@ -709,7 +714,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	public synchronized void waitForConnection(int maxwaittime)
 			throws InterruptedException {
 		MTimedFlag timer = new MTimedFlag(maxwaittime);
-		while (!isConnected()) {
+		while (isRunning() && !isConnected()) {
 			this.wait(100);
 			if (timer.isTriggered()) {
 				throw new RuntimeException("Maximum time to wait reached "
