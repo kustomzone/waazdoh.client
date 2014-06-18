@@ -12,7 +12,7 @@ package waazdoh.cp2p.impl;
 
 import java.util.List;
 
-import waazdoh.cutils.MLogger;
+import waazdoh.util.MLogger;
 
 public final class Node {
 	private static final long MAX_DIE_TIME = 30100;

@@ -1,7 +1,7 @@
 package waazdoh.client;
 
-import waazdoh.cutils.MStringID;
-import waazdoh.cutils.xml.JBean;
+import waazdoh.util.MStringID;
+import waazdoh.util.xml.JBean;
 
 public class WClientAppLogin {
 

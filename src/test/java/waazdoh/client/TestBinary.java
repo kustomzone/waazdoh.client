@@ -1,9 +1,10 @@
 package waazdoh.client;
 
 import junit.framework.TestCase;
-import waazdoh.cutils.MCRC;
-import waazdoh.cutils.MLogger;
+import waazdoh.client.model.Binary;
 import waazdoh.testing.StaticService;
+import waazdoh.util.MCRC;
+import waazdoh.util.MLogger;
 
 public final class TestBinary extends TestCase {
 	private MLogger log = MLogger.getLogger(this);

@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import waazdoh.cutils.MPreferences;
+import waazdoh.util.MPreferences;
 
 public final class StaticTestPreferences implements MPreferences {
 	private String username;

@@ -21,12 +21,12 @@ import java.util.Set;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.client.StringIDLocalPath;
-import waazdoh.cutils.MLogger;
-import waazdoh.cutils.MPreferences;
-import waazdoh.cutils.MStringID;
-import waazdoh.cutils.xml.JBean;
-import waazdoh.cutils.xml.XML;
+import waazdoh.client.model.StringIDLocalPath;
+import waazdoh.util.MLogger;
+import waazdoh.util.MPreferences;
+import waazdoh.util.MStringID;
+import waazdoh.util.xml.JBean;
+import waazdoh.util.xml.XML;
 
 public final class MBeanStorage {
 	private MLogger log = MLogger.getLogger(this);

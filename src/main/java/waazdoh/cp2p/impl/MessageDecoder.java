@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.cutils.MLogger;
+import waazdoh.util.MLogger;
 
 public final class MessageDecoder extends ByteToMessageDecoder {
 	private MLogger log = MLogger.getLogger(this);

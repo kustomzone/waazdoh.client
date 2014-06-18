@@ -17,14 +17,14 @@ import java.util.Map;
 import org.xml.sax.SAXException;
 
 import waazdoh.client.MBinarySource;
-import waazdoh.cutils.JBeanResponse;
-import waazdoh.cutils.MID;
-import waazdoh.cutils.MStringID;
-import waazdoh.cutils.MURL;
-import waazdoh.cutils.UserID;
-import waazdoh.cutils.xml.JBean;
-import waazdoh.cutils.xml.XML;
+import waazdoh.client.model.MID;
+import waazdoh.client.model.UserID;
 import waazdoh.service.CMService;
+import waazdoh.util.JBeanResponse;
+import waazdoh.util.MStringID;
+import waazdoh.util.MURL;
+import waazdoh.util.xml.JBean;
+import waazdoh.util.xml.XML;
 
 public final class ServiceMock implements CMService {
 	final private String username;

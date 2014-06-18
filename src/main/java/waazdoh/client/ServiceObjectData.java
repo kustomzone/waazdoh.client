@@ -1,6 +1,6 @@
 package waazdoh.client;
 
-import waazdoh.cutils.xml.JBean;
+import waazdoh.util.xml.JBean;
 
 public interface ServiceObjectData {
 

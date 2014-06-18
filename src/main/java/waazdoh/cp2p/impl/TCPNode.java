@@ -17,9 +17,9 @@ import io.netty.channel.ChannelHandlerContext;
 import java.net.ConnectException;
 import java.util.List;
 
-import waazdoh.cutils.MLogger;
-import waazdoh.cutils.MTimedFlag;
-import waazdoh.cutils.xml.JBean;
+import waazdoh.util.MLogger;
+import waazdoh.util.MTimedFlag;
+import waazdoh.util.xml.JBean;
 
 public final class TCPNode {
 	private static final long MAX_GIVEUP_TIME = 6000;

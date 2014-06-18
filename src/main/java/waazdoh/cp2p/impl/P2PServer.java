@@ -20,16 +20,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import waazdoh.client.Binary;
+import waazdoh.client.model.Binary;
 import waazdoh.cp2p.impl.handlers.ByteArraySource;
 import waazdoh.cp2p.impl.handlers.PingHandler;
 import waazdoh.cp2p.impl.handlers.WhoHasHandler;
-import waazdoh.cutils.MLogger;
-import waazdoh.cutils.MPreferences;
-import waazdoh.cutils.MStringID;
-import waazdoh.cutils.MTimedFlag;
-import waazdoh.cutils.xml.JBean;
 import waazdoh.service.ReportingService;
+import waazdoh.util.MLogger;
+import waazdoh.util.MPreferences;
+import waazdoh.util.MStringID;
+import waazdoh.util.MTimedFlag;
+import waazdoh.util.xml.JBean;
 
 public final class P2PServer implements MMessager, MMessageFactory,
 		MNodeConnection {

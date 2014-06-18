@@ -13,19 +13,19 @@ package waazdoh.cp2p.impl;
 import java.io.File;
 import java.util.Set;
 
-import waazdoh.client.Binary;
-import waazdoh.client.BinaryListener;
-import waazdoh.client.MBinaryID;
 import waazdoh.client.MBinarySource;
 import waazdoh.client.MBinaryStorage;
+import waazdoh.client.model.Binary;
+import waazdoh.client.model.BinaryListener;
+import waazdoh.client.model.MBinaryID;
+import waazdoh.client.model.MID;
 import waazdoh.cp2p.impl.handlers.ByteArraySource;
-import waazdoh.cutils.MID;
-import waazdoh.cutils.MLogger;
-import waazdoh.cutils.MPreferences;
-import waazdoh.cutils.MStringID;
-import waazdoh.cutils.xml.JBean;
 import waazdoh.service.CMService;
 import waazdoh.service.ReportingService;
+import waazdoh.util.MLogger;
+import waazdoh.util.MPreferences;
+import waazdoh.util.MStringID;
+import waazdoh.util.xml.JBean;
 
 public final class P2PBinarySource implements MBinarySource {
 	P2PServer server;

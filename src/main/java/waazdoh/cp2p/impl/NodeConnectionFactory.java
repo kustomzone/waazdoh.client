@@ -29,7 +29,7 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
-import waazdoh.cutils.MLogger;
+import waazdoh.util.MLogger;
 
 public final class NodeConnectionFactory {
 

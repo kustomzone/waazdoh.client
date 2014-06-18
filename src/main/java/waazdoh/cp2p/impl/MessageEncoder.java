@@ -18,7 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import waazdoh.cutils.MLogger;
+import waazdoh.util.MLogger;
 
 public final class MessageEncoder extends MessageToByteEncoder<MMessageList> {
 	private MLogger log = MLogger.getLogger(this);

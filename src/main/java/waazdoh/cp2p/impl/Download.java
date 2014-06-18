@@ -14,13 +14,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import waazdoh.client.Binary;
-import waazdoh.client.MBinaryID;
-import waazdoh.client.WaazdohInfo;
-import waazdoh.cutils.MLogger;
-import waazdoh.cutils.MStringID;
-import waazdoh.cutils.MTimedFlag;
-import waazdoh.cutils.xml.JBean;
+import waazdoh.client.model.Binary;
+import waazdoh.client.model.MBinaryID;
+import waazdoh.client.model.WaazdohInfo;
+import waazdoh.util.MLogger;
+import waazdoh.util.MStringID;
+import waazdoh.util.MTimedFlag;
+import waazdoh.util.xml.JBean;
 
 public final class Download implements Runnable, MessageResponseListener,
 		SourceListener {

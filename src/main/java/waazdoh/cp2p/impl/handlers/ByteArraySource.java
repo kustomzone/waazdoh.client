@@ -10,7 +10,7 @@
  ******************************************************************************/
 package waazdoh.cp2p.impl.handlers;
 
-import waazdoh.client.MBinaryID;
+import waazdoh.client.model.MBinaryID;
 
 public interface ByteArraySource {
 

@@ -16,8 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import waazdoh.client.MBinaryID;
-import waazdoh.client.WaazdohInfo;
+import waazdoh.client.model.MBinaryID;
+import waazdoh.client.model.MID;
+import waazdoh.client.model.WaazdohInfo;
 import waazdoh.cp2p.impl.Download;
 import waazdoh.cp2p.impl.MMessage;
 import waazdoh.cp2p.impl.MNodeConnection;
@@ -25,10 +26,9 @@ import waazdoh.cp2p.impl.MNodeID;
 import waazdoh.cp2p.impl.MessageResponseListener;
 import waazdoh.cp2p.impl.Node;
 import waazdoh.cp2p.impl.SimpleMessageHandler;
-import waazdoh.cutils.MID;
-import waazdoh.cutils.MLogger;
-import waazdoh.cutils.MStringID;
-import waazdoh.cutils.xml.JBean;
+import waazdoh.util.MLogger;
+import waazdoh.util.MStringID;
+import waazdoh.util.xml.JBean;
 
 public final class WhoHasHandler extends SimpleMessageHandler {
 	private int maxResponseWaitTime = WaazdohInfo.MAX_RESPONSE_WAIT_TIME;

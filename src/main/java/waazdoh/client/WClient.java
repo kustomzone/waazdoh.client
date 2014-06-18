@@ -4,12 +4,13 @@ import java.net.MalformedURLException;
 import java.util.HashSet;
 import java.util.Set;
 
+import waazdoh.client.model.UserID;
+import waazdoh.client.model.WBookmarks;
 import waazdoh.client.rest.RestServiceClient;
-import waazdoh.cutils.MPreferences;
-import waazdoh.cutils.MStringID;
-import waazdoh.cutils.UserID;
-import waazdoh.cutils.xml.JBean;
 import waazdoh.service.CMService;
+import waazdoh.util.MPreferences;
+import waazdoh.util.MStringID;
+import waazdoh.util.xml.JBean;
 
 public final class WClient {
 	private CMService service;

@@ -14,7 +14,7 @@ import waazdoh.cp2p.impl.MMessage;
 import waazdoh.cp2p.impl.MessageResponseListener;
 import waazdoh.cp2p.impl.Node;
 import waazdoh.cp2p.impl.SimpleMessageHandler;
-import waazdoh.cutils.MLogger;
+import waazdoh.util.MLogger;
 
 public final class PingHandler extends SimpleMessageHandler {
 	private MLogger log = MLogger.getLogger(this);

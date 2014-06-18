@@ -10,7 +10,7 @@
  ******************************************************************************/
 package waazdoh.service;
 
-import waazdoh.cutils.MStringID;
+import waazdoh.util.MStringID;
 
 public interface ReportingService {
 

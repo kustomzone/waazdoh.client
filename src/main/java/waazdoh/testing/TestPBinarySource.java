@@ -16,15 +16,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import waazdoh.client.Binary;
-import waazdoh.client.MBinaryID;
 import waazdoh.client.MBinarySource;
 import waazdoh.client.MBinaryStorage;
-import waazdoh.cutils.MPreferences;
-import waazdoh.cutils.MStringID;
-import waazdoh.cutils.xml.JBean;
+import waazdoh.client.model.Binary;
+import waazdoh.client.model.MBinaryID;
 import waazdoh.service.CMService;
 import waazdoh.service.ReportingService;
+import waazdoh.util.MPreferences;
+import waazdoh.util.MStringID;
+import waazdoh.util.xml.JBean;
 
 public final class TestPBinarySource implements MBinarySource {
 	private MPreferences preferences;

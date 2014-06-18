@@ -13,10 +13,12 @@ package waazdoh.client;
 import java.io.File;
 import java.util.Set;
 
-import waazdoh.cutils.MStringID;
-import waazdoh.cutils.xml.JBean;
+import waazdoh.client.model.Binary;
+import waazdoh.client.model.MBinaryID;
 import waazdoh.service.CMService;
 import waazdoh.service.ReportingService;
+import waazdoh.util.MStringID;
+import waazdoh.util.xml.JBean;
 
 public interface MBinarySource {
 	void saveBinaries();

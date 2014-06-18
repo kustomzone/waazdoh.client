@@ -24,12 +24,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import waazdoh.cutils.MCRC;
-import waazdoh.cutils.MID;
-import waazdoh.cutils.MLogger;
-import waazdoh.cutils.MPreferences;
-import waazdoh.cutils.MStringID;
+import waazdoh.client.model.Binary;
+import waazdoh.client.model.MBinaryID;
+import waazdoh.client.model.MID;
+import waazdoh.client.model.StringIDLocalPath;
 import waazdoh.service.CMService;
+import waazdoh.util.MCRC;
+import waazdoh.util.MLogger;
+import waazdoh.util.MPreferences;
+import waazdoh.util.MStringID;
 
 public final class MBinaryStorage {
 	private List<Binary> streams = new LinkedList<Binary>();

@@ -24,8 +24,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.compression.JZlibDecoder;
 import io.netty.handler.codec.compression.JZlibEncoder;
-import waazdoh.cutils.MLogger;
-import waazdoh.cutils.MPreferences;
+import waazdoh.util.MLogger;
+import waazdoh.util.MPreferences;
 
 public final class TCPListener {
 	public static final int DEFAULT_PORT = 7900;

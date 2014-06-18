@@ -5,11 +5,12 @@ import junit.framework.TestCase;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
+import waazdoh.client.model.Binary;
 import waazdoh.cp2p.impl.P2PBinarySource;
-import waazdoh.cutils.MLogger;
-import waazdoh.cutils.MPreferences;
-import waazdoh.cutils.MStringID;
 import waazdoh.testing.ServiceMock;
+import waazdoh.util.MLogger;
+import waazdoh.util.MPreferences;
+import waazdoh.util.MStringID;
 
 public final class TestBinaryTransfer extends TestCase {
 	private MLogger log = MLogger.getLogger(this);

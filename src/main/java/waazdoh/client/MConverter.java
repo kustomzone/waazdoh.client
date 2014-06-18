@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import waazdoh.cutils.MLogger;
+import waazdoh.util.MLogger;
 
 public final class MConverter {
 	private byte[] bytes;
