@@ -84,7 +84,7 @@ public final class TestBinaryTransfer extends TestCase {
 		log.info("wait until ready");
 
 		long st = System.currentTimeMillis();
-		while (!b2.isReady() && (System.currentTimeMillis() - st) < 20000) {
+		while (!b2.isReady() && (System.currentTimeMillis() - st) < 60000) {
 			doWait(100);
 		}
 
