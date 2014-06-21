@@ -11,7 +11,6 @@
 package waazdoh.client.model;
 
 import waazdoh.util.MLogger;
-import waazdoh.util.xml.JBean;
 
 public final class WUser {
 

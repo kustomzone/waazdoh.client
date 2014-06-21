@@ -8,16 +8,18 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.client.rest;
+package waazdoh.cp2p.messaging;
 
-import org.apache.commons.httpclient.HttpClient;
+import waazdoh.cp2p.network.MHost;
+import waazdoh.cp2p.network.Node;
 
-import waazdoh.util.ProxySettings;
+public interface MMessager {
 
-public final class ClientProxySettings implements ProxySettings {
-	@Override
-	public void handle(HttpClient httpClient) {
-		// TODO Auto-generated method stub
+	MMessage getMessage(final String string);
 
-	}
+	void broadcastMessage(MMessage b);
+
+	MMessageList handle(MMessageList ms);
+
+	Node addNode(MHost mHost, int nport);
 }

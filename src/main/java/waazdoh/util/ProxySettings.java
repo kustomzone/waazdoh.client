@@ -8,16 +8,11 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.client.rest;
+package waazdoh.util;
 
 import org.apache.commons.httpclient.HttpClient;
 
-import waazdoh.util.ProxySettings;
+public interface ProxySettings {
 
-public final class ClientProxySettings implements ProxySettings {
-	@Override
-	public void handle(HttpClient httpClient) {
-		// TODO Auto-generated method stub
-
-	}
+	void handle(HttpClient httpClient);
 }

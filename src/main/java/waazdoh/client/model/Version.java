@@ -10,19 +10,37 @@
  ******************************************************************************/
 package waazdoh.client.model;
 
+import java.util.UUID;
 
-public final class WBookmark {
+public final class Version {
 	private String id;
-	private String oid;
-	private String created;
 
-	public WBookmark(JBean bbookmark) {
-		id = bbookmark.getValue("bookmarkid");
-		oid = bbookmark.getValue("objectid");
-		created = bbookmark.getValue("created");
+	public Version() {
+		this.id = UUID.randomUUID().toString();
 	}
 
-	public String getObjectID() {
-		return oid;
+	public Version(final String substring) {
+		MID.check(substring);
+		this.id = substring;
+	}
+
+	@Override
+	public int hashCode() {
+		return id.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Version) {
+			Version b = (Version) obj;
+			return id.equals(b.id);
+		} else {
+			return true;
+		}
+	}
+
+	@Override
+	public String toString() {
+		return "" + id;
 	}
 }

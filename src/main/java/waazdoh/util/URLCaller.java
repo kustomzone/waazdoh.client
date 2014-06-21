@@ -28,8 +28,6 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
 
-import waazdoh.client.ProxySettings;
-
 public final class URLCaller {
 	private MURL url;
 	private Integer code;

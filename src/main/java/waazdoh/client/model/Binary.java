@@ -24,7 +24,6 @@ import waazdoh.util.HashSource;
 import waazdoh.util.MCRC;
 import waazdoh.util.MLogger;
 import waazdoh.util.MStringID;
-import waazdoh.util.xml.JBean;
 
 public final class Binary implements HashSource {
 	private static final String BEAN_TAG = "binary";

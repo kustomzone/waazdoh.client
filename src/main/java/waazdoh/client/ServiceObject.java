@@ -13,12 +13,12 @@ package waazdoh.client;
 import java.util.LinkedList;
 import java.util.List;
 
+import waazdoh.client.model.JBean;
 import waazdoh.client.model.MID;
 import waazdoh.client.model.UserID;
 import waazdoh.util.HashSource;
 import waazdoh.util.MLogger;
 import waazdoh.util.MStringID;
-import waazdoh.util.xml.JBean;
 
 public final class ServiceObject implements HashSource {
 	private UserID creatorid;

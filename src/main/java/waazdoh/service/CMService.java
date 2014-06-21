@@ -12,12 +12,12 @@ package waazdoh.service;
 
 import java.util.Map;
 
+import waazdoh.client.model.JBean;
+import waazdoh.client.model.JBeanResponse;
 import waazdoh.client.model.MID;
 import waazdoh.client.model.UserID;
-import waazdoh.util.JBeanResponse;
 import waazdoh.util.MStringID;
 import waazdoh.util.MURL;
-import waazdoh.util.xml.JBean;
 
 public interface CMService {
 	boolean setSession(String session);

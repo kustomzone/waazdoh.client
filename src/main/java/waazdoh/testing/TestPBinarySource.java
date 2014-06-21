@@ -19,12 +19,12 @@ import java.util.Set;
 import waazdoh.client.MBinarySource;
 import waazdoh.client.MBinaryStorage;
 import waazdoh.client.model.Binary;
+import waazdoh.client.model.JBean;
 import waazdoh.client.model.MBinaryID;
 import waazdoh.service.CMService;
 import waazdoh.service.ReportingService;
 import waazdoh.util.MPreferences;
 import waazdoh.util.MStringID;
-import waazdoh.util.xml.JBean;
 
 public final class TestPBinarySource implements MBinarySource {
 	private MPreferences preferences;

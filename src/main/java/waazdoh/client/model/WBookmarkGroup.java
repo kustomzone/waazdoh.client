@@ -14,9 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import waazdoh.service.CMService;
-import waazdoh.util.JBeanResponse;
 import waazdoh.util.MLogger;
-import waazdoh.util.xml.JBean;
 
 public final class WBookmarkGroup {
 	private CMService service;

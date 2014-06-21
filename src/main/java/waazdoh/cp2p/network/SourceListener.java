@@ -8,16 +8,10 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.client.rest;
+package waazdoh.cp2p.network;
 
-import org.apache.commons.httpclient.HttpClient;
+public interface SourceListener {
+	void nodeAdded(Node n);
 
-import waazdoh.util.ProxySettings;
-
-public final class ClientProxySettings implements ProxySettings {
-	@Override
-	public void handle(HttpClient httpClient) {
-		// TODO Auto-generated method stub
-
-	}
+	boolean isDone();
 }

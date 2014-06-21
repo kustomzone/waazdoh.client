@@ -8,16 +8,14 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.client.rest;
+package waazdoh.cp2p;
 
-import org.apache.commons.httpclient.HttpClient;
+import waazdoh.client.model.MBinaryID;
 
-import waazdoh.util.ProxySettings;
+public interface ByteArraySource {
 
-public final class ClientProxySettings implements ProxySettings {
-	@Override
-	public void handle(HttpClient httpClient) {
-		// TODO Auto-generated method stub
+	byte[] get(MBinaryID streamid);
 
-	}
+	void addDownload(MBinaryID streamid);
+
 }

@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.xml.sax.SAXException;
 
 import waazdoh.client.model.Binary;
-import waazdoh.cp2p.impl.P2PBinarySource;
+import waazdoh.cp2p.P2PBinarySource;
 import waazdoh.testing.ServiceMock;
 import waazdoh.util.MLogger;
 import waazdoh.util.MPreferences;
