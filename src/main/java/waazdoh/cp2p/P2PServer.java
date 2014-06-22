@@ -20,23 +20,22 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import waazdoh.client.binaries.ReportingService;
 import waazdoh.client.model.Binary;
 import waazdoh.client.model.JBean;
+import waazdoh.cp2p.common.MHost;
+import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MMessageFactory;
 import waazdoh.cp2p.messaging.MMessageHandler;
 import waazdoh.cp2p.messaging.MMessageList;
-import waazdoh.cp2p.messaging.MMessager;
 import waazdoh.cp2p.messaging.MessageID;
 import waazdoh.cp2p.messaging.MessageResponseListener;
-import waazdoh.cp2p.network.MHost;
+import waazdoh.cp2p.network.MMessager;
 import waazdoh.cp2p.network.MNodeConnection;
-import waazdoh.cp2p.network.MNodeID;
-import waazdoh.cp2p.network.NewNodeHandler;
 import waazdoh.cp2p.network.Node;
 import waazdoh.cp2p.network.SourceListener;
 import waazdoh.cp2p.network.TCPListener;
-import waazdoh.service.ReportingService;
 import waazdoh.util.MLogger;
 import waazdoh.util.MPreferences;
 import waazdoh.util.MStringID;
@@ -135,8 +134,16 @@ public final class P2PServer implements MMessager, MMessageFactory,
 
 	private void initHandlers() {
 		handlers.put("ping", new PingHandler());
-		handlers.put("whohas", new WhoHasHandler(bytesource, this));
-		handlers.put("newnode", new NewNodeHandler(this));
+		WhoHasHandler whohashandler = new WhoHasHandler(bytesource, this);
+		whohashandler.addListener((streamid, count) -> {
+			Download download = getDownload(streamid);
+			if (download == null) {
+				this.bytesource.addDownload(streamid);
+			} else {
+				log.info("already downloading " + download);
+			}
+		});
+		handlers.put("whohas", whohashandler);
 		//
 		for (MMessageHandler handler : handlers.values()) {
 			handler.setFactory(this);
@@ -336,8 +343,17 @@ public final class P2PServer implements MMessager, MMessageFactory,
 
 	private void addDefaultNodes() {
 		if (tcplistener != null && dobind) {
-			tcplistener.addDefaultNodes();
+			int port = tcplistener.getPort();
+			for (int i = 0; i < 10; i++) {
+				int nport = port - 5 + i;
+				if (nport == port) {
+					//
+				} else {
+					addNode(new MHost("localhost"), nport);
+				}
+			}
 		}
+		//
 		String slist = p.get(MPreferences.SERVERLIST, "");
 		log.info("got server list " + slist);
 		if (slist != null) {
@@ -624,7 +640,6 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		return networkid;
 	}
 
-	@Override
 	public Download getDownload(MStringID streamid) {
 		return downloads.get(streamid);
 	}

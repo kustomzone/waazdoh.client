@@ -8,7 +8,7 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.client.rest;
+package waazdoh.service.rest;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -19,12 +19,12 @@ import java.util.Map;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.client.MBinarySource;
+import waazdoh.client.binaries.MBinarySource;
+import waazdoh.client.model.CMService;
 import waazdoh.client.model.JBean;
 import waazdoh.client.model.JBeanResponse;
 import waazdoh.client.model.MID;
 import waazdoh.client.model.UserID;
-import waazdoh.service.CMService;
 import waazdoh.util.MLogger;
 import waazdoh.util.MStringID;
 import waazdoh.util.MURL;

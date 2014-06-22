@@ -1,4 +1,4 @@
-package waazdoh.cp2p.network;
+package waazdoh.cp2p.common;
 
 import waazdoh.util.MStringID;
 

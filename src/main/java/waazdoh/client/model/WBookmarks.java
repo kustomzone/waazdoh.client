@@ -15,8 +15,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import waazdoh.service.CMService;
-
 public final class WBookmarks {
 	private List<BookmarksListener> listeners = new LinkedList<BookmarksListener>();
 	private Map<String, WBookmarkGroup> groups = new HashMap<String, WBookmarkGroup>();

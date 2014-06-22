@@ -16,13 +16,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import waazdoh.client.MBinarySource;
-import waazdoh.client.MBinaryStorage;
+import waazdoh.client.binaries.MBinarySource;
+import waazdoh.client.binaries.MBinaryStorage;
+import waazdoh.client.binaries.ReportingService;
 import waazdoh.client.model.Binary;
+import waazdoh.client.model.CMService;
 import waazdoh.client.model.JBean;
 import waazdoh.client.model.MBinaryID;
-import waazdoh.service.CMService;
-import waazdoh.service.ReportingService;
 import waazdoh.util.MPreferences;
 import waazdoh.util.MStringID;
 

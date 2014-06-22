@@ -8,14 +8,10 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.service;
+package waazdoh.client.model;
 
 import java.util.Map;
 
-import waazdoh.client.model.JBean;
-import waazdoh.client.model.JBeanResponse;
-import waazdoh.client.model.MID;
-import waazdoh.client.model.UserID;
 import waazdoh.util.MStringID;
 import waazdoh.util.MURL;
 

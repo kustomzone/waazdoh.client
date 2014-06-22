@@ -4,11 +4,12 @@ import java.net.MalformedURLException;
 import java.util.HashSet;
 import java.util.Set;
 
+import waazdoh.client.binaries.MBinarySource;
+import waazdoh.client.model.CMService;
 import waazdoh.client.model.JBean;
 import waazdoh.client.model.UserID;
 import waazdoh.client.model.WBookmarks;
-import waazdoh.client.rest.RestServiceClient;
-import waazdoh.service.CMService;
+import waazdoh.service.rest.RestServiceClient;
 import waazdoh.util.MPreferences;
 import waazdoh.util.MStringID;
 

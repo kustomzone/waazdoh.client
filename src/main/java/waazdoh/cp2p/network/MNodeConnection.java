@@ -12,7 +12,8 @@ package waazdoh.cp2p.network;
 
 import java.util.Set;
 
-import waazdoh.cp2p.Download;
+import waazdoh.cp2p.common.MHost;
+import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MessageResponseListener;
 import waazdoh.util.MStringID;
@@ -30,13 +31,13 @@ public interface MNodeConnection {
 
 	Node getNode(MNodeID throughtid);
 
+	Node addNode(MHost mHost, int nport);
+
 	void broadcastMessage(MMessage childb,
 			MessageResponseListener messageResponseListener,
 			Set<MNodeID> exceptions);
 
 	MStringID getID();
-
-	Download getDownload(MStringID streamid);
 
 	void reportDownload(MStringID id, boolean ready);
 

@@ -29,6 +29,7 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
+import waazdoh.cp2p.common.MHost;
 import waazdoh.cp2p.messaging.MMessageList;
 import waazdoh.cp2p.messaging.MessageDecoder;
 import waazdoh.cp2p.messaging.MessageEncoder;

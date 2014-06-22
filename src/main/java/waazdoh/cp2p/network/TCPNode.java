@@ -18,6 +18,7 @@ import java.net.ConnectException;
 import java.util.List;
 
 import waazdoh.client.model.JBean;
+import waazdoh.cp2p.common.MHost;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MMessageList;
 import waazdoh.util.MLogger;

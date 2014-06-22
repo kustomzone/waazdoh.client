@@ -16,12 +16,13 @@ import java.util.Map;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.client.MBinarySource;
+import waazdoh.client.binaries.MBinarySource;
+import waazdoh.client.model.CMService;
 import waazdoh.client.model.JBean;
 import waazdoh.client.model.JBeanResponse;
 import waazdoh.client.model.MID;
 import waazdoh.client.model.UserID;
-import waazdoh.service.CMService;
+import waazdoh.util.MLogger;
 import waazdoh.util.MStringID;
 import waazdoh.util.MURL;
 import waazdoh.util.xml.XML;
@@ -73,8 +74,7 @@ public final class ServiceMock implements CMService {
 		try {
 			r.setBean(new JBean(new XML(sxml)));
 		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			MLogger.getLogger(this).error(e);
 		}
 		return r;
 	}

@@ -13,11 +13,11 @@ package waazdoh.testing;
 import java.util.HashMap;
 import java.util.Map;
 
+import waazdoh.client.model.CMService;
 import waazdoh.client.model.JBean;
 import waazdoh.client.model.JBeanResponse;
 import waazdoh.client.model.MID;
 import waazdoh.client.model.UserID;
-import waazdoh.service.CMService;
 import waazdoh.util.MStringID;
 import waazdoh.util.MURL;
 

@@ -8,16 +8,15 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.client;
+package waazdoh.client.binaries;
 
 import java.io.File;
 import java.util.Set;
 
 import waazdoh.client.model.Binary;
+import waazdoh.client.model.CMService;
 import waazdoh.client.model.JBean;
 import waazdoh.client.model.MBinaryID;
-import waazdoh.service.CMService;
-import waazdoh.service.ReportingService;
 import waazdoh.util.MStringID;
 
 public interface MBinarySource {

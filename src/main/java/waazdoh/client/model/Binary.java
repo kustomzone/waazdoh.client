@@ -19,7 +19,6 @@ import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
 
-import waazdoh.service.CMService;
 import waazdoh.util.HashSource;
 import waazdoh.util.MCRC;
 import waazdoh.util.MLogger;

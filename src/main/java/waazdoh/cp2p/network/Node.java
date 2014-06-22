@@ -12,7 +12,8 @@ package waazdoh.cp2p.network;
 
 import java.util.List;
 
-import waazdoh.cp2p.P2PServer;
+import waazdoh.cp2p.common.MHost;
+import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MMessageList;
 import waazdoh.util.MLogger;
@@ -26,10 +27,9 @@ public final class Node {
 	//
 	private MLogger log = MLogger.getLogger(this);
 	private long lastping;
-	private P2PServer source;
+	private MMessager source;
 	private long touch;
 	private int warning;
-	private int pingcount = 0;
 
 	private TCPNode tcpnode;
 	private int outputbytecount;
@@ -38,7 +38,7 @@ public final class Node {
 	private int receivedmessages;
 	private long currentpingdelay;
 
-	public Node(MNodeID id, MHost host, int port, P2PServer nsource) {
+	public Node(MNodeID id, MHost host, int port, MMessager nsource) {
 		this.id = id;
 		tcpnode = new TCPNode(host, port, this);
 		this.source = nsource;
@@ -51,7 +51,7 @@ public final class Node {
 	 * touch(); }
 	 */
 
-	public Node(MNodeID id2, P2PServer source) {
+	public Node(MNodeID id2, MMessager source) {
 		this.id = id2;
 		this.source = source;
 		touch();
@@ -63,7 +63,8 @@ public final class Node {
 
 	@Override
 	public String toString() {
-		return "Node[" + tcpnode + "][" + getID() + "]";
+		return "Node[" + tcpnode + "][" + getID() + "][" + outputbytecount
+				+ "B]";
 	}
 
 	public void addMessage(MMessage b) {
@@ -133,7 +134,6 @@ public final class Node {
 			log.debug("should ping " + (System.currentTimeMillis() - lastping)
 					+ " > " + maxpingdelay);
 			lastping = System.currentTimeMillis();
-			pingcount++;
 			return true;
 		} else {
 			return false;

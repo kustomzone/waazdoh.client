@@ -23,7 +23,7 @@ import java.util.Set;
 import org.xml.sax.SAXException;
 
 import waazdoh.client.model.JBean;
-import waazdoh.cp2p.network.MNodeID;
+import waazdoh.cp2p.common.MNodeID;
 import waazdoh.util.MLogger;
 import waazdoh.util.MStringID;
 import waazdoh.util.xml.XML;

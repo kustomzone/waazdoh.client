@@ -27,7 +27,6 @@ import io.netty.handler.codec.compression.JZlibEncoder;
 import waazdoh.cp2p.P2PServer;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MMessageList;
-import waazdoh.cp2p.messaging.MMessager;
 import waazdoh.cp2p.messaging.MessageDecoder;
 import waazdoh.cp2p.messaging.MessageEncoder;
 import waazdoh.util.MLogger;
@@ -176,14 +175,7 @@ public final class TCPListener {
 		}
 	}
 
-	public void addDefaultNodes() {
-		for (int i = 0; i < 10; i++) {
-			int nport = port - 5 + i;
-			if (nport == this.port) {
-				//
-			} else {
-				messager.addNode(new MHost("localhost"), nport);
-			}
-		}
+	public int getPort() {
+		return port;
 	}
 }

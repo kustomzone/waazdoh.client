@@ -13,7 +13,6 @@ package waazdoh.client.model;
 import java.util.LinkedList;
 import java.util.List;
 
-import waazdoh.service.CMService;
 import waazdoh.util.MLogger;
 
 public final class WBookmarkGroup {

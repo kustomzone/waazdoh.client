@@ -8,7 +8,7 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.cp2p.network;
+package waazdoh.cp2p.common;
 
 public final class MHost {
 	private String host;

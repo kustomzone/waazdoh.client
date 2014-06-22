@@ -8,12 +8,27 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.service;
+package waazdoh.cp2p.network;
 
+import waazdoh.cp2p.messaging.MMessage;
+import waazdoh.cp2p.messaging.MMessageList;
+import waazdoh.cp2p.messaging.MessageID;
+import waazdoh.cp2p.messaging.MessageResponseListener;
 import waazdoh.util.MStringID;
 
-public interface ReportingService {
+public interface MMessager {
 
-	void reportDownload(MStringID id, boolean success);
+	MMessage getMessage(final String string);
+
+	void broadcastMessage(MMessage b);
+
+	MMessageList handle(MMessageList ms);
+
+	void notifyNewMessages();
+
+	void addResponseListener(MessageID id,
+			MessageResponseListener responseListener);
+
+	MStringID getID();
 
 }

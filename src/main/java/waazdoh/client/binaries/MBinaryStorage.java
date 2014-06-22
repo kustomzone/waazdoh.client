@@ -8,7 +8,7 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.client;
+package waazdoh.client.binaries;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -25,10 +25,10 @@ import java.util.List;
 import java.util.Map;
 
 import waazdoh.client.model.Binary;
+import waazdoh.client.model.CMService;
 import waazdoh.client.model.MBinaryID;
 import waazdoh.client.model.MID;
 import waazdoh.client.model.StringIDLocalPath;
-import waazdoh.service.CMService;
 import waazdoh.util.MCRC;
 import waazdoh.util.MLogger;
 import waazdoh.util.MPreferences;

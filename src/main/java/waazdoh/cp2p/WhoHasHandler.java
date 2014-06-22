@@ -12,6 +12,7 @@ package waazdoh.cp2p;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,11 +21,11 @@ import waazdoh.client.model.JBean;
 import waazdoh.client.model.MBinaryID;
 import waazdoh.client.model.MID;
 import waazdoh.client.model.WaazdohInfo;
+import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MessageResponseListener;
 import waazdoh.cp2p.messaging.SimpleMessageHandler;
 import waazdoh.cp2p.network.MNodeConnection;
-import waazdoh.cp2p.network.MNodeID;
 import waazdoh.cp2p.network.Node;
 import waazdoh.util.MLogger;
 import waazdoh.util.MStringID;
@@ -41,6 +42,7 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 	//
 	private Map<MID, MNodeID> whohas = new HashMap<MID, MNodeID>();
 	private Map<MStringID, Integer> responsecount = new HashMap<MStringID, Integer>();
+	private List<WhoHasListener> listeners = new LinkedList<WhoHasListener>();
 
 	private boolean downloadeverything;
 
@@ -102,6 +104,8 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 				source.addDownload(streamid);
 			}
 			//
+			final List<WhoHasListener> listeners = this.listeners;
+
 			MNodeID knownwhohas = whohas.get(streamid);
 			MessageResponseListener responselistener = new MessageResponseListener() {
 				private long st = System.currentTimeMillis();
@@ -119,16 +123,8 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 
 					if (downloadeverything
 							|| count > WaazdohInfo.RESPONSECOUNT_DOWNLOADTRIGGER) {
-						Download download = nodeconnection
-								.getDownload(streamid);
-						if (download != null) {
-							download.messageReceived(message);
-						} else {
-							log.debug("unknown download " + streamid);
-						}
+						fireBinaryRequested(streamid, count);
 					}
-
-					// node.addMessage(message);
 				}
 
 				@Override
@@ -154,5 +150,15 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 
 	public void downloadEveryThing(boolean b) {
 		this.downloadeverything = b;
+	}
+
+	private void fireBinaryRequested(MBinaryID streamid, Integer count) {
+		for (WhoHasListener whoHasListener : listeners) {
+			whoHasListener.binaryRequested(streamid, count);
+		}
+	}
+
+	public void addListener(WhoHasListener listener) {
+		this.listeners.add(listener);
 	}
 }
