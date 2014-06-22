@@ -76,6 +76,7 @@ public final class Node {
 				}
 				b.setLastHandler(source.getID());
 				this.outgoingmessages.add(b);
+				source.addResponseListener(b.getID(), b.getResponseListener());
 				source.notifyNewMessages();
 			} else {
 				log.info("Message queue full. Not sending message." + b);

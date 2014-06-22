@@ -128,6 +128,7 @@ public final class Download implements Runnable, MessageResponseListener,
 				MMessage whoHasMessage = getWhoHasMessage();
 				log.info("whohas to node[" + n + "] " + whoHasMessage);
 				whoHasMessage.addResponseListener(this);
+				n.addMessage(whoHasMessage);
 			} else {
 				sendWhoHasMessage();
 			}
@@ -209,7 +210,7 @@ public final class Download implements Runnable, MessageResponseListener,
 				}
 				//
 				String sthrough = b.getAttribute("through");
-				Node lasthandlernode = source.getNode(b.getLastHandler());
+				Node lasthandlernode = source.getNode(b.getSentBy());
 				if (sthrough != null) {
 					MNodeID throughid = new MNodeID(sthrough);
 					sendWhoHasMessage(source.getNode(throughid));

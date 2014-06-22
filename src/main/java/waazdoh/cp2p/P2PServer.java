@@ -598,7 +598,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 
 	}
 
-	private void addResponseListener(MessageID id,
+	public void addResponseListener(MessageID id,
 			MessageResponseListener messageResponseListener) {
 		synchronized (responselisteners) {
 			if (messageResponseListener != null) {

@@ -239,7 +239,7 @@ public final class MMessage {
 		responselistener = messageResponseListener;
 	}
 
-	public MessageResponseListener getResponseListeners() {
+	public MessageResponseListener getResponseListener() {
 		return responselistener;
 	}
 }
