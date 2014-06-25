@@ -110,4 +110,8 @@ public final class StaticTestPreferences implements MPreferences {
 	public String get(final String string) {
 		return getPrefs().get(string, "");
 	}
+
+	public static void resetPorts() {
+		ports = new LinkedList<Integer>();
+	}
 }
