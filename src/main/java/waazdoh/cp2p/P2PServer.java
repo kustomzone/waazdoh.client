@@ -304,8 +304,8 @@ public final class P2PServer implements MMessager, MMessageFactory,
 			addDefaultNodes();
 			if (nodes.size() == 0) {
 				int maxwaittime = 5000;
-				log.info("nodes size still zero. Waiting "
-						+ maxwaittime + "msec");
+				log.info("nodes size still zero. Waiting " + maxwaittime
+						+ "msec");
 				waitForConnection(maxwaittime);
 			}
 		}
@@ -357,9 +357,13 @@ public final class P2PServer implements MMessager, MMessageFactory,
 			while (st.hasMoreTokens()) {
 				String server = st.nextToken();
 				int indexOf = server.indexOf(':');
-				String host = server.substring(0, indexOf);
-				int port = Integer.parseInt(server.substring(indexOf + 1));
-				addNode(new MHost(host), port);
+				if (indexOf > 0) {
+					String host = server.substring(0, indexOf);
+					int port = Integer.parseInt(server.substring(indexOf + 1));
+					addNode(new MHost(host), port);
+				} else {
+					log.info("invalid value " + server);
+				}
 			}
 		}
 	}
