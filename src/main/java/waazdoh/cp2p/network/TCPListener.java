@@ -24,7 +24,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.compression.JZlibDecoder;
 import io.netty.handler.codec.compression.JZlibEncoder;
-import waazdoh.cp2p.P2PServer;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MMessageList;
 import waazdoh.cp2p.messaging.MessageDecoder;
@@ -35,7 +34,7 @@ import waazdoh.util.MPreferences;
 public final class TCPListener {
 	public static final int DEFAULT_PORT = 7900;
 
-	private int port = DEFAULT_PORT;
+	private int port;
 	//
 	private MLogger log = MLogger.getLogger(this);
 	private MMessager messager;
@@ -78,11 +77,11 @@ public final class TCPListener {
 					}).option(ChannelOption.SO_BACKLOG, 128) // (5)
 					.childOption(ChannelOption.SO_KEEPALIVE, true); // (6);
 			//
-			port = preferences.getInteger(P2PServer.PREFERENCES_PORT,
+			port = preferences.getInteger(MPreferences.NETWORK_SERVER_PORT,
 					DEFAULT_PORT);
 			//
 			try {
-				while (bind == null && port < 65000) {
+				while (!closed && bind == null && port < 65000) {
 					startListening(bootstrap);
 					if (bind == null) {
 						port++;
@@ -110,7 +109,7 @@ public final class TCPListener {
 			}
 		});
 		t.start();
-		while (t.isAlive() && bind == null) {
+		while (!closed && t.isAlive() && bind == null) {
 			synchronized (t) {
 				t.wait(100);
 			}
@@ -147,6 +146,10 @@ public final class TCPListener {
 		}
 	}
 
+	public void startClosing() {
+		closed = true;
+	}
+
 	class MServerHandler extends SimpleChannelInboundHandler<MMessageList> {
 		@Override
 		protected void messageReceived(ChannelHandlerContext ctx,
@@ -159,7 +162,7 @@ public final class TCPListener {
 					ctx.writeAndFlush(response).addListener(
 							ChannelFutureListener.CLOSE_ON_FAILURE);
 				} else {
-					log.debug("closing " + ctx);
+					log.info("Response null for " + ms + ". Closing " + ctx);
 					ctx.close();
 				}
 			} else {
@@ -178,4 +181,5 @@ public final class TCPListener {
 	public int getPort() {
 		return port;
 	}
+
 }

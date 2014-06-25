@@ -47,8 +47,6 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	private static final int MAX_SENTCOUNT = 2;
 	private static final long REBOOT_DELAY = 120000;
 	//
-	public static final String PREFERENCES_PORT = "p2pserver.port";
-	//
 	private MLogger log = MLogger.getLogger(this);
 	private final Map<MStringID, Download> downloads = new HashMap<MStringID, Download>();
 	MStringID networkid;
@@ -289,11 +287,9 @@ public final class P2PServer implements MMessager, MMessageFactory,
 				}
 			}
 			synchronized (nodes) {
-				if (nodes.size() == 0) {
-					addDefaultNodes();
-				}
-				//
 				try {
+					checkDefaultNodes();
+					//
 					nodes.wait(100 + (int) (Math.random() * 100 * nodes.size() * MESSAGESENDLOOP_COUNT));
 				} catch (InterruptedException e) {
 					log.error(e);
@@ -301,6 +297,18 @@ public final class P2PServer implements MMessager, MMessageFactory,
 			}
 		}
 		log.info("server thread shutting down");
+	}
+
+	private void checkDefaultNodes() throws InterruptedException {
+		if (nodes.size() == 0) {
+			addDefaultNodes();
+			if (nodes.size() == 0) {
+				int maxwaittime = 5000;
+				log.info("nodes size still zero. Waiting "
+						+ maxwaittime + "msec");
+				waitForConnection(maxwaittime);
+			}
+		}
 	}
 
 	private void sendPing(Node node) {
@@ -342,27 +350,16 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	}
 
 	private void addDefaultNodes() {
-		if (tcplistener != null && dobind) {
-			int port = tcplistener.getPort();
-			for (int i = 0; i < 10; i++) {
-				int nport = port - 5 + i;
-				if (nport == port) {
-					//
-				} else {
-					addNode(new MHost("localhost"), nport);
-				}
-			}
-		}
-		//
 		String slist = p.get(MPreferences.SERVERLIST, "");
 		log.info("got server list " + slist);
 		if (slist != null) {
 			StringTokenizer st = new StringTokenizer(slist, ",");
 			while (st.hasMoreTokens()) {
 				String server = st.nextToken();
-				for (int i = 0; i < 6; i++) {
-					addNode(new MHost(server), TCPListener.DEFAULT_PORT - 5 + i);
-				}
+				int indexOf = server.indexOf(':');
+				String host = server.substring(0, indexOf);
+				int port = Integer.parseInt(server.substring(indexOf + 1));
+				addNode(new MHost(host), port);
 			}
 		}
 	}
@@ -391,6 +388,10 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	public void broadcastMessage(MMessage notification,
 			MessageResponseListener messageResponseListener,
 			Set<MNodeID> exceptions) {
+		if (nodes == null) {
+			return;
+		}
+		//
 		if (notification.getSentCount() <= MAX_SENTCOUNT) {
 			notification.addAttribute("sentcount",
 					notification.getSentCount() + 1);
@@ -426,48 +427,69 @@ public final class P2PServer implements MMessager, MMessageFactory,
 
 	public void close() {
 		log.info("closing server");
-		if (!isClosed()) {
-			closed = true;
-			//
-			shutdown();
-			nodes = null;
-			log.info("closing done");
-		} else {
-			log.info("already closed");
+		startClosing();
+		//
+		shutdown();
+		nodes = null;
+		log.info("closing done");
+	}
+
+	public void startClosing() {
+		log.info("starting closing");
+		closed = true;
+		broadcastClose();
+		if (tcplistener != null) {
+			tcplistener.startClosing();
+		}
+
+		for (Download d : downloads.values()) {
+			d.stop();
 		}
 	}
 
 	private void shutdown() {
 		log.info("shutting down");
-		if (getID() != null) {
-			broadcastMessage(new MMessage("close", getID()));
-			//
-		}
-
-		log.info("closing nodes");
-		LinkedList<Node> ns = new LinkedList<Node>(nodes);
-		for (Node n : ns) {
-			n.close();
-		}
+		shutdownNodes();
 
 		log.info("closing tcplistener " + tcplistener);
 		if (tcplistener != null) {
 			tcplistener.close();
 			tcplistener = null;
 		}
-		synchronized (nodes) {
-			nodes.notifyAll();
-		}
-		log.info("closing nodes again");
-		ns = new LinkedList<>(nodes);
-		nodes = new LinkedList<Node>();
-
 		//
-		for (Node node : ns) {
-			node.close();
+		if (nodes != null) {
+			synchronized (nodes) {
+				nodes.notifyAll();
+			}
+			log.info("closing nodes again");
+			List<Node> ns = new LinkedList<>(nodes);
+			nodes = new LinkedList<Node>();
+
+			//
+			for (Node node : ns) {
+				node.close();
+			}
 		}
 		//
 		log.info("shutdown complete");
+	}
+
+	private void shutdownNodes() {
+		broadcastClose();
+
+		log.info("closing nodes");
+		if (nodes != null) {
+			List<Node> ns = new LinkedList<Node>(nodes);
+			for (Node n : ns) {
+				n.close();
+			}
+		}
+	}
+
+	private void broadcastClose() {
+		if (getID() != null) {
+			broadcastMessage(new MMessage("close", getID()));
+		}
 	}
 
 	@Override
@@ -517,6 +539,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 			log.info("" + messages.size() + " handled and returning " + ret);
 			return ret;
 		} else {
+			log.info("Closed. Not handling message, returning null");
 			return null;
 		}
 	}
@@ -556,6 +579,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 						MMessage returnmessage = handler.handle(message);
 						if (returnmessage != null) {
 							node.addMessage(returnmessage);
+							addResponseListener(returnmessage);
 						}
 					} else {
 						log.error("unknown message " + message);
@@ -612,6 +636,13 @@ public final class P2PServer implements MMessager, MMessageFactory,
 			responselisteners.remove(id);
 		}
 
+	}
+
+	private void addResponseListener(MMessage returnmessage) {
+		MessageResponseListener l = returnmessage.getResponseListener();
+		if (l != null) {
+			addResponseListener(returnmessage.getID(), l);
+		}
 	}
 
 	public void addResponseListener(MessageID id,
@@ -728,7 +759,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 
 	@Override
 	public String toString() {
-		return "P2PServer[" + this.getInfoText() + "]";
+		return "P2PServer[" + getID() + " " + this.getInfoText() + "]";
 	}
 
 	public boolean isConnected() {

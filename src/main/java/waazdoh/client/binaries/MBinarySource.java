@@ -58,4 +58,6 @@ public interface MBinarySource {
 
 	boolean isReady();
 
+	void startClosing();
+
 }

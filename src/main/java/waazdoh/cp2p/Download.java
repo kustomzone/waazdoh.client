@@ -72,8 +72,9 @@ public final class Download implements Runnable, MessageResponseListener,
 	@Override
 	public void run() {
 		this.starttime = System.currentTimeMillis();
-		flag = new MTimedFlag(10000);
+		flag = new MTimedFlag(WaazdohInfo.DOWNLOAD_RESET_DELAY);
 		while (!isReady() && source.isRunning() && !giveupflag.isTriggered()) {
+			log.info("reset download");
 			flag.reset();
 			resetSentStarts();
 			sendWhoHasMessage();
@@ -83,7 +84,7 @@ public final class Download implements Runnable, MessageResponseListener,
 		//
 		source.removeDownload(getID());
 		updateSpeedInfo();
-		log.info("Download DONE! " + speedinfo + " source:"
+		log.info("Download DONE " + isReady() + " " + speedinfo + " source:"
 				+ source.isRunning() + " ready:" + isReady() + " giveup: "
 				+ giveupflag);
 		//
@@ -119,6 +120,7 @@ public final class Download implements Runnable, MessageResponseListener,
 	}
 
 	private void resetSentStarts() {
+		log.info("resetting sent needed pieces");
 		sentstarts = new HashMap<Integer, Download.NeededStart>();
 	}
 
@@ -127,8 +129,13 @@ public final class Download implements Runnable, MessageResponseListener,
 			if (n != null) {
 				MMessage whoHasMessage = getWhoHasMessage();
 				log.info("whohas to node[" + n + "] " + whoHasMessage);
-				whoHasMessage.addResponseListener(this);
-				n.addMessage(whoHasMessage);
+				if (whoHasMessage != null) {
+					whoHasMessage.addResponseListener(this);
+					n.addMessage(whoHasMessage);
+				} else {
+					log.info("Got null WhoHasMessage. is ready?(" + isReady()
+							+ ") isDone?(" + isDone() + ")");
+				}
 			} else {
 				sendWhoHasMessage();
 			}

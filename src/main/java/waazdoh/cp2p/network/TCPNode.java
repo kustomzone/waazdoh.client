@@ -11,6 +11,7 @@
 package waazdoh.cp2p.network;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -135,24 +136,6 @@ public final class TCPNode {
 		}
 	}
 
-	public void channelConnected() {
-		if (!closed) {
-			log.info("channel connected " + channel);
-			//
-			sendMessages(node.getMessages());
-		} else {
-			channel.close();
-		}
-	}
-
-	public void channelClosed() {
-		if (shouldGiveUp()) {
-			offline = true;
-		}
-
-		trigger();
-	}
-
 	public void trigger() {
 		if (connectionwaiter != null) {
 			connectionwaiter.trigger();
@@ -185,16 +168,21 @@ public final class TCPNode {
 	}
 
 	private void closeChannel() {
-		if (channel != null) {
+		Channel cc = this.channel;
+		if (cc != null) {
 			synchronized (this) {
-				log.info("closing channel " + channel);
+				log.info("closing channel " + cc);
 				try {
-					channel.disconnect().sync();
+					cc.disconnect();
+					this.wait(100);
+					ChannelFuture closefuture = cc.close();
+					if (closefuture != null) {
+						closefuture.sync();
+					}
 				} catch (InterruptedException e) {
 					log.error(e);
 				}
 				//
-				channel.close();
 				channel = null;
 				if (connectionwaiter != null) {
 					connectionwaiter.trigger();

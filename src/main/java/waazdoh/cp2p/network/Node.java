@@ -195,7 +195,9 @@ public final class Node {
 	}
 
 	public MMessageList incomingMessages(List<MMessage> incomingmessages) {
-		if (incomingmessages.size() > 0) {
+		if (source == null) {
+			close();
+		} else if (incomingmessages.size() > 0) {
 			updatePing();
 			receivedmessages += incomingmessages.size();
 

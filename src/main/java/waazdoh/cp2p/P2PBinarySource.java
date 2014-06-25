@@ -198,6 +198,11 @@ public final class P2PBinarySource implements MBinarySource {
 		server.close();
 	}
 
+	@Override
+	public void startClosing() {
+		server.startClosing();
+	}
+
 	public void setDownloadEverything(boolean b) {
 		server.setDownloadEverything(b);
 	}

@@ -154,7 +154,7 @@ public final class ServiceObject implements HashSource {
 		modifytime = System.currentTimeMillis();
 		log.info("modified " + id);
 		//
-		LinkedList<ServiceObjectListener> ls = new LinkedList<ServiceObjectListener>(
+		List<ServiceObjectListener> ls = new LinkedList<ServiceObjectListener>(
 				listeners);
 		for (ServiceObjectListener trackListener : ls) {
 			trackListener.modified();

@@ -62,14 +62,14 @@ public final class RestServiceClient implements CMService {
 
 	@Override
 	public JBean acceptAppLogin(MStringID id) {
-		LinkedList<String> params = new LinkedList<String>();
+		List<String>params = new LinkedList<String>();
 		params.add(id.toString());
 		return getBean("users", "acceptapp", true, params);
 	}
 
 	@Override
 	public JBean checkAppLogin(MStringID id) {
-		LinkedList<String> params = new LinkedList<String>();
+		List<String>params = new LinkedList<String>();
 		params.add(id.toString());
 		return getBean("users", "checkapplogin", false, params);
 	}
@@ -121,13 +121,13 @@ public final class RestServiceClient implements CMService {
 
 	@Override
 	public MURL getURL(final String service, String type, MID id) {
-		LinkedList<String> params = new LinkedList<String>();
+		List<String>params = new LinkedList<String>();
 		params.add("" + id);
 		return getAnonymousURL(service, type, params);
 	}
 
 	private MURL getAnonymousURL(final String service, String string,
-			LinkedList<String> params) {
+			List<String>params) {
 		return getAuthURL(service, string, params, null);
 	}
 

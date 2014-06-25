@@ -99,6 +99,12 @@ public final class TestPBinarySource implements MBinarySource {
 	}
 
 	@Override
+	public void startClosing() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
 	public void addBean(final String id, JBean response) {
 		beans.put(id, response);
 	}
