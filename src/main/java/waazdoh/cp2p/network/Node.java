@@ -157,7 +157,7 @@ public final class Node {
 
 	public boolean shouldDie() {
 		return (System.currentTimeMillis() - touch) > MAX_DIE_TIME
-				|| warning > WARNING_TRESHOLD;
+				|| warning > WARNING_TRESHOLD || isClosed();
 	}
 
 	public void close() {
@@ -235,7 +235,7 @@ public final class Node {
 	}
 
 	public boolean isConnected() {
-		return getReceivedMessages() > 0 && !isClosed();
+		return getReceivedMessages() > 0 && !isClosed() && getID() != null;
 	}
 
 	private boolean isClosed() {

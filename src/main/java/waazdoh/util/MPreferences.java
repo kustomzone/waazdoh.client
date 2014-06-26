@@ -21,6 +21,8 @@ public interface MPreferences {
 	static final String NETWORK_MAX_DOWNLOADS = "network.downloads.max";
 	static final String MEMORY_MAX_USAGE = "memory.max";
 	static final String PREFERENCES_SESSION = "user.session";
+	//
+	static final int NETWORK_MAX_DOWNLOADS_DEFAULT = 8;
 
 	//
 

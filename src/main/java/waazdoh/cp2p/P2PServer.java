@@ -223,20 +223,21 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	public Node addNode(MHost string, int i) {
 		log.info("addnode " + string + " " + i);
 		Node n = new Node(null, string, i, this);
-		addNode(this, n);
+		addNode(n);
 		return n;
 	}
 
 	Node addNode(MNodeID nodeid, MHost host, int port) {
 		Node n = new Node(nodeid, host, port, this);
-		addNode(this, n);
+		addNode(n);
 		return n;
 	}
 
-	public void addNode(P2PServer p2pServer, Node n) {
+	public void addNode(Node n) {
 		log.info("adding node " + n);
 		synchronized (nodes) {
 			nodes.add(n);
+			log.info("node added " + n);
 		}
 		//
 		Set<SourceListener> listeners = sourcelisteners;
@@ -286,13 +287,16 @@ public final class P2PServer implements MMessager, MMessageFactory,
 					node.check();
 				}
 			}
-			synchronized (nodes) {
-				try {
-					checkDefaultNodes();
-					//
-					nodes.wait(100 + (int) (Math.random() * 100 * nodes.size() * MESSAGESENDLOOP_COUNT));
-				} catch (InterruptedException e) {
-					log.error(e);
+			if (nodes != null) {
+				synchronized (nodes) {
+					try {
+						checkDefaultNodes();
+						//
+						nodes.wait(100 + (int) (Math.random() * 100
+								* nodes.size() * MESSAGESENDLOOP_COUNT));
+					} catch (InterruptedException e) {
+						log.error(e);
+					}
 				}
 			}
 		}
@@ -516,7 +520,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 					sentbynode = getNode(sentby);
 					if (sentbynode == null) {
 						sentbynode = new Node(sentby, this);
-						addNode(this, sentbynode);
+						addNode(sentbynode);
 					}
 					//
 					sentbynode.touch();
@@ -706,7 +710,8 @@ public final class P2PServer implements MMessager, MMessageFactory,
 
 	public boolean canDownload() {
 		return downloads.size() < p.getInteger(
-				MPreferences.NETWORK_MAX_DOWNLOADS, 8);
+				MPreferences.NETWORK_MAX_DOWNLOADS,
+				MPreferences.NETWORK_MAX_DOWNLOADS_DEFAULT);
 	}
 
 	public void clearMemory(int suggestedmemorytreshold) {
@@ -778,15 +783,24 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		return false;
 	}
 
-	public synchronized void waitForConnection(int maxwaittime)
-			throws InterruptedException {
+	public void waitForConnection(int maxwaittime) throws InterruptedException {
 		MTimedFlag timer = new MTimedFlag(maxwaittime);
 		while (isRunning() && !isConnected()) {
-			this.wait(100);
-			if (timer.isTriggered()) {
-				throw new RuntimeException("Maximum time to wait reached "
-						+ timer);
+			synchronized (nodes) {
+				nodes.wait(100);
+				if (timer.isTriggered()) {
+					log.info("waitForConnection failed. Returning.");
+					return;
+				}
 			}
 		}
+	}
+
+	public int getPort() {
+		return tcplistener.getPort();
+	}
+
+	public MPreferences getPreferences() {
+		return p;
 	}
 }

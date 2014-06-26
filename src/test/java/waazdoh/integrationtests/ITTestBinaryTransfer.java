@@ -1,4 +1,4 @@
-package waazdoh.client;
+package waazdoh.integrationtests;
 
 import junit.framework.TestCase;
 
