@@ -55,7 +55,7 @@ public final class TCPListener {
 	}
 
 	public void start() {
-		if (!closed) {
+		if (!isClosed()) {
 			EventLoopGroup bossGroup = new NioEventLoopGroup(); // (1)
 			EventLoopGroup workerGroup = new NioEventLoopGroup();
 
@@ -66,13 +66,20 @@ public final class TCPListener {
 						@Override
 						protected void initChannel(SocketChannel ch)
 								throws Exception {
-							log.info("initChannel " + ch);
-							ChannelPipeline pipe = ch.pipeline();
-							pipe.addLast("zipencoder", new JZlibEncoder());
-							pipe.addLast("zipdecoder", new JZlibDecoder());
-							pipe.addLast("messageencoder", new MessageEncoder());
-							pipe.addLast("messagedecoder", new MessageDecoder());
-							pipe.addLast("server", new MServerHandler());
+							if (!isClosed()) {
+								log.info("initChannel " + ch);
+								ChannelPipeline pipe = ch.pipeline();
+								pipe.addLast("zipencoder", new JZlibEncoder());
+								pipe.addLast("zipdecoder", new JZlibDecoder());
+								pipe.addLast("messageencoder",
+										new MessageEncoder());
+								pipe.addLast("messagedecoder",
+										new MessageDecoder());
+								pipe.addLast("server", new MServerHandler());
+							} else {
+								log.info("InitChannel on closed listener. Closing channel.");
+								ch.close();
+							}
 						}
 					}).option(ChannelOption.SO_BACKLOG, 128) // (5)
 					.childOption(ChannelOption.SO_KEEPALIVE, true); // (6);
@@ -81,7 +88,7 @@ public final class TCPListener {
 					DEFAULT_PORT);
 			//
 			try {
-				while (!closed && bind == null && port < 65000) {
+				while (!isClosed() && bind == null && port < 65000) {
 					startListening(bootstrap);
 					if (bind == null) {
 						port++;
@@ -109,11 +116,15 @@ public final class TCPListener {
 			}
 		});
 		t.start();
-		while (!closed && t.isAlive() && bind == null) {
+		while (!isClosed() && t.isAlive() && bind == null) {
 			synchronized (t) {
 				t.wait(100);
 			}
 		}
+	}
+
+	private boolean isClosed() {
+		return closed;
 	}
 
 	public synchronized void close() {

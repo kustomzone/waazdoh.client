@@ -162,10 +162,8 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	}
 
 	public void setDownloadEverything(boolean b) {
-		if (b) {
-			WhoHasHandler handler = (WhoHasHandler) handlers.get("whohas");
-			handler.downloadEveryThing(true);
-		}
+		WhoHasHandler handler = (WhoHasHandler) handlers.get("whohas");
+		handler.downloadEveryThing(b);
 	}
 
 	private void runChecker() {
@@ -445,7 +443,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	public void startClosing() {
 		log.info("starting closing");
 		closed = true;
-		broadcastClose();
+
 		if (tcplistener != null) {
 			tcplistener.startClosing();
 		}
@@ -483,20 +481,12 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	}
 
 	private void shutdownNodes() {
-		broadcastClose();
-
 		log.info("closing nodes");
 		if (nodes != null) {
 			List<Node> ns = new LinkedList<Node>(nodes);
 			for (Node n : ns) {
 				n.close();
 			}
-		}
-	}
-
-	private void broadcastClose() {
-		if (getID() != null) {
-			broadcastMessage(new MMessage("close", getID()));
 		}
 	}
 
