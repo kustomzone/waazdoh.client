@@ -37,6 +37,7 @@ public final class Node {
 	private MMessageList outgoingmessages = new MMessageList();
 	private int receivedmessages;
 	private long currentpingdelay;
+	private boolean closed;
 
 	public Node(MNodeID id, MHost host, int port, MMessager nsource) {
 		this.id = id;
@@ -68,21 +69,29 @@ public final class Node {
 	}
 
 	public void addMessage(MMessage b) {
-		synchronized (outgoingmessages) {
-			if (this.outgoingmessages.size() < MAX_MESSAGES_COUNT
-					&& !findMessage(b)) {
-				if (isConnected()) {
-					// Not logging before if we are connected
-					log.info("addMessage " + b);
-				}
-				b.setLastHandler(source.getID());
-				this.outgoingmessages.add(b);
-				source.addResponseListener(b.getID(), b.getResponseListener());
-				source.notifyNewMessages();
-			} else {
-				log.info("Message queue full. Not sending message." + b);
-			}
+		if (this.outgoingmessages.size() > MAX_MESSAGES_COUNT) {
+			log.info("Message queue full. Not sending message." + b);
+		} else if (findMessage(b)) {
+			log.info("Message already added to queue");
+		} else if (isClosed()) {
+			log.info("Node closed. Not adding message.");
+		} else {
+			addMessageToQueue(b);
 		}
+	}
+
+	private void addMessageToQueue(MMessage b) {
+		synchronized (outgoingmessages) {
+			if (isConnected()) {
+				// Not logging before if we are connected
+				log.info("addMessage " + b);
+			}
+			b.setLastHandler(source.getID());
+			this.outgoingmessages.add(b);
+		}
+		//
+		source.addResponseListener(b.getID(), b.getResponseListener());
+		source.notifyNewMessages();
 	}
 
 	private boolean findMessage(MMessage b) {
@@ -129,9 +138,10 @@ public final class Node {
 
 	public synchronized boolean checkPing() {
 		long maxpingdelay = getPingDelay();
-		if (System.currentTimeMillis() - lastping > maxpingdelay
+		if (outgoingmessages.size() == 0
+				&& System.currentTimeMillis() - lastping > maxpingdelay
 				&& tcpnode != null) {
-			log.debug("should ping " + (System.currentTimeMillis() - lastping)
+			log.info("should ping " + (System.currentTimeMillis() - lastping)
 					+ " > " + maxpingdelay);
 			lastping = System.currentTimeMillis();
 			return true;
@@ -162,6 +172,8 @@ public final class Node {
 
 	public void close() {
 		log.info("close");
+		this.closed = true;
+		//
 		getMessages();
 
 		if (tcpnode != null) {
@@ -239,7 +251,7 @@ public final class Node {
 	}
 
 	private boolean isClosed() {
-		return source == null;
+		return source == null || closed;
 	}
 
 	public void messageReceived() {

@@ -399,31 +399,36 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		}
 		//
 		if (notification.getSentCount() <= MAX_SENTCOUNT) {
-			notification.addAttribute("sentcount",
-					notification.getSentCount() + 1);
-			synchronized (nodes) {
-				for (Node node : nodes) {
-					if (node.isConnected()) {
-						if (exceptions == null
-								|| !exceptions.contains(node.getID())) {
-							node.addMessage(notification);
-							addResponseListener(notification.getID(),
-									messageResponseListener);
-						} else {
-							log.debug("Not broadcasting to " + node
-									+ " because node is in exceptions list");
-						}
-					} else {
-						log.debug("not broadcasting to " + node
-								+ " node because it's not yet connected");
-					}
-				}
-				//
-				nodes.notify();
-			}
+			sendToNodes(notification, messageResponseListener, exceptions);
 		} else {
 			log.info("not sending m" + "essage " + notification
 					+ " due sentcount " + notification.getSentCount());
+		}
+	}
+
+	private void sendToNodes(MMessage notification,
+			MessageResponseListener messageResponseListener,
+			Set<MNodeID> exceptions) {
+		notification.addAttribute("sentcount", notification.getSentCount() + 1);
+		synchronized (nodes) {
+			for (Node node : nodes) {
+				if (node.isConnected()) {
+					if (exceptions == null
+							|| !exceptions.contains(node.getID())) {
+						node.addMessage(notification);
+						addResponseListener(notification.getID(),
+								messageResponseListener);
+					} else {
+						log.debug("Not broadcasting to " + node
+								+ " because node is in exceptions list");
+					}
+				} else {
+					log.debug("not broadcasting to " + node
+							+ " node because it's not yet connected");
+				}
+			}
+			//
+			nodes.notify();
 		}
 	}
 

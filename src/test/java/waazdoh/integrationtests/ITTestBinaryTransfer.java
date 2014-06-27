@@ -40,6 +40,10 @@ public final class ITTestBinaryTransfer extends TestCase {
 		testTransfer(1000000);
 	}
 
+	public void testTransfer5M() throws SAXException, InterruptedException {
+		testTransfer(5000000);
+	}
+
 	/*
 	 * public void testTransfer4M() { testTransfer(4000000); }
 	 */
