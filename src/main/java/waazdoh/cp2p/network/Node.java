@@ -23,6 +23,7 @@ public final class Node {
 	private static final int WARNING_TRESHOLD = 5;
 	private static final long MAX_PINGDELAY = 10000;
 	private static final int MAX_MESSAGES_COUNT = 20;
+	private static final long MIN_PINGDELAY = 200;
 	private MNodeID id;
 	//
 	private MLogger log = MLogger.getLogger(this);
@@ -151,8 +152,8 @@ public final class Node {
 	}
 
 	private long getPingDelay() {
-		if (this.currentpingdelay < 10) {
-			currentpingdelay = 10;
+		if (this.currentpingdelay < Node.MIN_PINGDELAY) {
+			currentpingdelay = Node.MIN_PINGDELAY;
 		}
 		return this.currentpingdelay;
 	}
@@ -254,13 +255,15 @@ public final class Node {
 		return source == null || closed;
 	}
 
-	public void messageReceived() {
+	public void messageReceived(String name) {
 		receivedmessages++;
 
-		this.currentpingdelay /= 2;
-
+		if (name.toLowerCase().indexOf("ping") < 0) {
+			// received ping messages do not effect time between pings.
+			this.currentpingdelay /= 2;
+		}
 		log.info("Message received " + getReceivedMessages()
-				+ " current ping delay:" + this.currentpingdelay + "ms");
+				+ " current ping delay:" + this.getPingDelay() + "ms");
 	}
 
 	public void pingSent() {

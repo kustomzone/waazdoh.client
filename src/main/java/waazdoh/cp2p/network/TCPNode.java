@@ -11,7 +11,6 @@
 package waazdoh.cp2p.network;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -175,10 +174,9 @@ public final class TCPNode {
 				try {
 					cc.disconnect();
 					this.wait(100);
-					ChannelFuture closefuture = cc.close();
-					if (closefuture != null) {
-						closefuture.sync();
-					}
+					cc.close().addListener(arg0 -> {
+						log.info("channel closed " + cc);
+					});
 				} catch (InterruptedException e) {
 					log.error(e);
 				}

@@ -536,7 +536,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 					}
 					//
 					sentbynode.touch();
-					sentbynode.messageReceived();
+					sentbynode.messageReceived(message.getName());
 					//
 					log.info("handling message: " + message + " from "
 							+ sentbynode);
