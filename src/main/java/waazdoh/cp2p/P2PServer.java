@@ -10,6 +10,8 @@
  ******************************************************************************/
 package waazdoh.cp2p;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -355,6 +357,21 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		String slist = p.get(MPreferences.SERVERLIST, "");
 		log.info("got server list " + slist);
 		if (slist != null) {
+			if (slist.length() == 0) {
+				log.info("Serverlist empty. Adding service domain with default port");
+				String service = p.get(MPreferences.SERVICE_URL, "");
+				URL u;
+				try {
+					u = new URL(service);
+					String host = u.getHost();
+					log.info("host " + host);
+					slist = host + ":" + TCPListener.DEFAULT_PORT;
+					log.info("new list " + slist);
+				} catch (MalformedURLException e) {
+					log.error(e);
+				}
+			}
+			//
 			StringTokenizer st = new StringTokenizer(slist, ",");
 			while (st.hasMoreTokens()) {
 				String server = st.nextToken();
