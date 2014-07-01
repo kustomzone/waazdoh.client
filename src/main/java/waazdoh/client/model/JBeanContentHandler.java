@@ -28,7 +28,7 @@ public final class JBeanContentHandler implements ContentHandler {
 	}
 
 	private JBean getCurrent() {
-		if (stack.size() > 0) {
+		if (!stack.isEmpty()) {
 			return stack.lastElement();
 		} else {
 			return null;

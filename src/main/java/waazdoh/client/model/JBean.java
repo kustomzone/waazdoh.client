@@ -420,7 +420,7 @@ public final class JBean implements Comparable<JBean> {
 
 	public void addChildren(JBean nb) {
 		for (JBean c : nb.getChildren()) {
-			if (c.getChildren().size() > 0) {
+			if (!c.getChildren().isEmpty()) {
 				JBean ncb = new JBean(c.getName());
 				add(ncb);
 				ncb.addChildren(c);

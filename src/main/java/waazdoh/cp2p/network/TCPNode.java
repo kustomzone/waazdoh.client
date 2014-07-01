@@ -55,7 +55,7 @@ public final class TCPNode {
 
 	public synchronized int sendMessages(MMessageList smessages) {
 		if (isConnected()) {
-			if (smessages.size() > 0) {
+			if (!smessages.isEmpty()) {
 				log.debug("writing messages " + smessages);
 
 				channel.writeAndFlush(smessages).addListener(

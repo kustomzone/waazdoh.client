@@ -30,6 +30,8 @@ import waazdoh.util.MTimedFlag;
 
 public final class Download implements Runnable, MessageResponseListener,
 		SourceListener {
+	private static final String MESSAGENAME_WHOHAS = "whohas";
+	private static final String MESSAGENAME_STREAM = "stream";
 	private static final int GIVEUP_TIMEOUT_MSEC = 1000 * 60 * 4;
 	private Binary bin;
 	private MNodeConnection source;
@@ -109,7 +111,7 @@ public final class Download implements Runnable, MessageResponseListener,
 	}
 
 	public synchronized boolean isReady() {
-		if (sentstarts.size() > 0) {
+		if (!sentstarts.isEmpty()) {
 			return false;
 		} else {
 			if (!hasBeenReady) {
@@ -155,10 +157,9 @@ public final class Download implements Runnable, MessageResponseListener,
 			log.info("broadcasting whohas " + m);
 			if (m != null) {
 				source.broadcastMessage(m, this);
-			} else if (!isReady() && sentstarts.size() == 0) {
+			} else if (!isReady() && sentstarts.isEmpty()) {
 				bin.resetCRC();
 				log.info("resetCRC " + isReady());
-				// reset();
 			}
 		} else {
 			log.info("already ok " + bin);
@@ -166,13 +167,9 @@ public final class Download implements Runnable, MessageResponseListener,
 		}
 	}
 
-	private synchronized void reset() {
-		bin.clear();
-	}
-
 	public MMessage getWhoHasMessage() {
 		synchronized (sentstarts) {
-			MMessage m = source.getMessage("whohas");
+			MMessage m = source.getMessage(MESSAGENAME_WHOHAS);
 			m.addAttribute("streamid", "" + getID());
 			JBean needed = m.add("needed");
 			if (addNeededPieces(needed) && !isReady()) {
@@ -184,50 +181,10 @@ public final class Download implements Runnable, MessageResponseListener,
 	}
 
 	private void handleResponse(MMessage b) {
-		if (b.getName().equals("stream") && !isReady()) {
+		if (b.getName().equals(MESSAGENAME_STREAM) && !isReady()) {
 			MStringID sid = b.getIDAttribute("streamid");
-
 			if (sid != null && getID().equals(sid)) {
-				log.info("response " + b);
-
-				flag.reset();
-				giveupflag.reset();
-				//
-				byte responsebytes[] = b.getAttachment("bytes");
-				if (responsebytes != null) {
-					log.info("Download got floats " + responsebytes.length);
-					this.countbytes += responsebytes.length;
-					int start = b.getAttributeInt("start");
-					// int end = b.getAttributeInt("end");
-					//
-					overwritebytes += bin.addAt(start, responsebytes);
-					//
-					synchronized (sentstarts) {
-						for (Integer i : new HashSet<Integer>(
-								sentstarts.keySet())) {
-							NeededStart s = sentstarts.get(i);
-							if (start >= s.start && start <= s.end) {
-								sentstarts.remove(i);
-							}
-						}
-					}
-					updateSpeedInfo();
-				} else {
-					log.info("response bytes null");
-				}
-				//
-				String sthrough = b.getAttribute("through");
-				Node lasthandlernode = source.getNode(b.getSentBy());
-				if (sthrough != null) {
-					MNodeID throughid = new MNodeID(sthrough);
-					sendWhoHasMessage(source.getNode(throughid));
-				} else if (lasthandlernode != null) {
-					sendWhoHasMessage(lasthandlernode);
-				} else {
-					log.info("not sending back a message... broadcasting later");
-				}
-				//
-				log.debug("stream response handled");
+				handleCheckedMessage(b);
 			} else {
 				log.error("StreamID " + sid + " while waiting " + bin);
 			}
@@ -236,12 +193,59 @@ public final class Download implements Runnable, MessageResponseListener,
 		}
 	}
 
-	private String toHexString(byte[] responsebytes) {
-		StringBuffer sb = new StringBuffer();
-		for (byte b : responsebytes) {
-			sb.append(Integer.toHexString((int) b));
+	private void handleCheckedMessage(MMessage b) {
+		log.info("Handling message " + b);
+
+		flag.reset();
+		giveupflag.reset();
+		//
+		byte responsebytes[] = b.getAttachment("bytes");
+		if (responsebytes != null) {
+			writeRetrievedBytes(b, responsebytes);
+		} else {
+			log.info("response bytes null");
 		}
-		return sb.toString();
+		//
+		String sthrough = b.getAttribute("through");
+		Node lasthandlernode = source.getNode(b.getSentBy());
+		if (sthrough != null) {
+			MNodeID throughid = new MNodeID(sthrough);
+			sendWhoHasMessage(source.getNode(throughid));
+		} else if (lasthandlernode != null) {
+			sendWhoHasMessage(lasthandlernode);
+		} else {
+			log.info("not sending back a message... broadcasting later");
+		}
+		//
+		log.debug("stream response handled");
+	}
+
+	private void writeRetrievedBytes(MMessage b, byte[] responsebytes) {
+		log.info("Download got floats " + responsebytes.length);
+		this.countbytes += responsebytes.length;
+		int start = b.getAttributeInt("start");
+		//
+		overwritebytes += bin.addAt(start, responsebytes);
+		//
+		removeSentRequestStart(start);
+		updateSpeedInfo();
+	}
+
+	/**
+	 * If request for this index has been sent, remove request from sentstarts
+	 * -list.
+	 * 
+	 * @param index
+	 */
+	private void removeSentRequestStart(int index) {
+		synchronized (sentstarts) {
+			for (Integer i : new HashSet<Integer>(sentstarts.keySet())) {
+				NeededStart s = sentstarts.get(i);
+				if (index >= s.start && index <= s.end) {
+					sentstarts.remove(i);
+				}
+			}
+		}
 	}
 
 	private MBinaryID getID() {
@@ -302,8 +306,7 @@ public final class Download implements Runnable, MessageResponseListener,
 	}
 
 	private NeededStart getStartNeedSent(int start) {
-		NeededStart needed = sentstarts.get(start);
-		return needed;
+		return sentstarts.get(start);
 	}
 
 	@Override

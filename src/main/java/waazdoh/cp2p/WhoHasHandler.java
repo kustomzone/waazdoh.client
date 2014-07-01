@@ -64,7 +64,7 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 			List<JBean> neededpieces = needed.getChildren();
 			int bytes = 0;
 			while (bytes < WaazdohInfo.WHOHAS_RESPONSE_MAX_PIECE_SIZE
-					&& neededpieces.size() > 0) {
+					&& !neededpieces.isEmpty()) {
 				log.info("processing pieces wanted " + neededpieces);
 
 				int pieceindex = (int) (Math.random() * neededpieces.size());
