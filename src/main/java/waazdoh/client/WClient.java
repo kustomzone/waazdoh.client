@@ -74,10 +74,16 @@ public final class WClient {
 		return preferences;
 	}
 
+	public boolean trySavedSession() {
+		return setSession(getPreferences().get(
+				MPreferences.PREFERENCES_SESSION, ""));
+	}
+
 	public boolean setSession(final String session) {
 		if (!service.isLoggedIn()) {
 			if (service.setSession(session)) {
 				source.setService(service);
+				getPreferences().set(MPreferences.PREFERENCES_SESSION, session);
 				loggedIn();
 				return true;
 			} else {

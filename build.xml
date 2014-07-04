@@ -1,7 +1,7 @@
 <project>
 	<import file="ant.xml" />
 
-		<property name="projectname" value="waazdoh.client" />
+	<property name="projectname" value="waazdoh.client" />
 
 	<target name="client.check.uptodate">
 		<uptodate property="client.notrequired" targetfile="target/build.trig">
@@ -15,7 +15,7 @@
 		<echo file="target/build.trig">Done</echo>
 
 		<ant target="runmvn">
-			<property name="args" value="compile" />
+			<property name="args" value="compile package" />
 		</ant>
 	</target>
 
