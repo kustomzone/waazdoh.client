@@ -3,6 +3,10 @@ package waazdoh.util;
 public class ConditionWaiter {
 	public ConditionWaiter(Condition c, int maxtime) {
 		long st = System.currentTimeMillis();
+		if (maxtime <= 0) {
+			maxtime = Integer.MAX_VALUE;
+		}
+		//
 		while ((System.currentTimeMillis() - st) < maxtime && !c.test()) {
 			doWait();
 		}
