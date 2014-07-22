@@ -103,6 +103,24 @@ public class TestP2PServer extends WCTestCase {
 		}
 	}
 
+	public void testABConnection() {
+		P2PServer servera = getServer();
+		P2PServer serverb = getOtherServerNoBind();
+		log.info("getting servers done");
+		try {
+			Node n = serverb.addNode(new MHost("localhost"), servera.getPort());
+			log.info("waiting");
+			new ConditionWaiter(() -> n.isConnected(), 20000);
+			assertNotNull(n.getID());
+			assertTrue(n.getReceivedMessages() > 0);
+			//
+		} finally {
+			log.info("closing");
+			servera.close();
+			serverb.close();
+		}
+	}
+
 	public void testReporting() {
 		P2PServer a = getServer();
 		MTimedFlag f = new MTimedFlag(Integer.MAX_VALUE);
@@ -129,4 +147,21 @@ public class TestP2PServer extends WCTestCase {
 		log.info("returning " + s);
 		return s;
 	}
+
+	private P2PServer getOtherServerNoBind() {
+		P2PServer s = new P2PServer(new StaticTestPreferences("otherserver",
+				"otherserver"), false, null);
+		s.start();
+		log.info("returning " + s);
+		return s;
+	}
+
+	private P2PServer getServerNoBind() {
+		P2PServer s = new P2PServer(getPreferences("p2pservertests"), false,
+				null);
+		s.start();
+		log.info("returning " + s);
+		return s;
+	}
+
 }

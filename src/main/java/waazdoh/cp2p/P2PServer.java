@@ -38,6 +38,7 @@ import waazdoh.cp2p.network.MNodeConnection;
 import waazdoh.cp2p.network.Node;
 import waazdoh.cp2p.network.SourceListener;
 import waazdoh.cp2p.network.TCPListener;
+import waazdoh.util.ConditionWaiter;
 import waazdoh.util.MLogger;
 import waazdoh.util.MPreferences;
 import waazdoh.util.MStringID;
@@ -212,8 +213,6 @@ public final class P2PServer implements MMessager, MMessageFactory,
 				tcplistener.start();
 			}
 
-			addDefaultNodes();
-			//
 			startMessageSendLoops();
 		} else {
 			log.info("Not starting the network. Closed.");
@@ -354,35 +353,41 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	}
 
 	private void addDefaultNodes() {
+		new ConditionWaiter(() -> {
+			String slist = p.get(MPreferences.SERVERLIST, "");
+			return slist != null && slist.length() > 0;
+		}, 2000);
+
 		String slist = p.get(MPreferences.SERVERLIST, "");
 		log.info("got server list " + slist);
-		if (slist != null) {
-			if (slist.length() == 0) {
-				log.info("Serverlist empty. Adding service domain with default port");
-				String service = p.get(MPreferences.SERVICE_URL, "");
-				URL u;
-				try {
-					u = new URL(service);
-					String host = u.getHost();
-					log.info("host " + host);
-					slist = host + ":" + TCPListener.DEFAULT_PORT;
-					log.info("new list " + slist);
-				} catch (MalformedURLException e) {
-					log.error(e);
-				}
+
+		if (slist == null || slist.length() == 0) {
+			slist = "";
+			log.info("Serverlist empty. Adding service domain with default port");
+			String service = p.get(MPreferences.SERVICE_URL, "");
+			URL u;
+			try {
+				u = new URL(service);
+				String host = u.getHost();
+				log.info("host " + host);
+				slist = host + ":" + TCPListener.DEFAULT_PORT;
+				log.info("new list " + slist);
+			} catch (MalformedURLException e) {
+				log.error(e);
 			}
-			//
-			StringTokenizer st = new StringTokenizer(slist, ",");
-			while (st.hasMoreTokens()) {
-				String server = st.nextToken();
-				int indexOf = server.indexOf(':');
-				if (indexOf > 0) {
-					String host = server.substring(0, indexOf);
-					int port = Integer.parseInt(server.substring(indexOf + 1));
-					addNode(new MHost(host), port);
-				} else {
-					log.info("invalid value " + server);
-				}
+		}
+
+		//
+		StringTokenizer st = new StringTokenizer(slist, ",");
+		while (st.hasMoreTokens()) {
+			String server = st.nextToken();
+			int indexOf = server.indexOf(':');
+			if (indexOf > 0) {
+				String host = server.substring(0, indexOf);
+				int port = Integer.parseInt(server.substring(indexOf + 1));
+				addNode(new MHost(host), port);
+			} else {
+				log.info("invalid value " + server);
 			}
 		}
 	}

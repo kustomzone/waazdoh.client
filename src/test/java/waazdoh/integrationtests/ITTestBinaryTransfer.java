@@ -16,6 +16,14 @@ import waazdoh.util.MStringID;
 public final class ITTestBinaryTransfer extends TestCase {
 	private MLogger log = MLogger.getLogger(this);
 
+	public void testTransfer10kAB() throws SAXException, InterruptedException {
+		testTransfer(10000, true, false);
+	}
+
+	public void testTransfer10kBA() throws SAXException, InterruptedException {
+		testTransfer(10000, false, true);
+	}
+	
 	public void testTransfer10k() throws SAXException, InterruptedException {
 		testTransfer(10000);
 	}
@@ -44,21 +52,21 @@ public final class ITTestBinaryTransfer extends TestCase {
 		testTransfer(5000000);
 	}
 
-	/*
-	 * public void testTransfer4M() { testTransfer(4000000); }
-	 */
+	private void testTransfer(int i) throws SAXException, InterruptedException {
+		testTransfer(i, true, false);
+	}
 
 	@Test
-	public void testTransfer(int binarysize) throws SAXException,
-			InterruptedException {
+	public void testTransfer(int binarysize, boolean bind1, boolean bind2)
+			throws SAXException, InterruptedException {
 		log.info("test transferm " + binarysize);
 		//
 		String username1 = "test1" + Math.random();
 		log.info("service1 with " + username1);
-		P2PBinarySource source1 = getServiceSource(username1, true);
+		P2PBinarySource source1 = getServiceSource(username1, bind1);
 		String username2 = "test2" + Math.random();
 		log.info("service2 with " + username2);
-		P2PBinarySource source2 = getServiceSource(username2, false);
+		P2PBinarySource source2 = getServiceSource(username2, bind2);
 		log.info("wait service2 " + source2);
 		source2.waitUntilReady();
 
@@ -112,7 +120,8 @@ public final class ITTestBinaryTransfer extends TestCase {
 
 	private P2PBinarySource getServiceSource(final String username1,
 			boolean bind) throws SAXException {
-		MPreferences p1 = new StaticTestPreferences("waazdohclienttests", username1);
+		MPreferences p1 = new StaticTestPreferences("waazdohclienttests",
+				username1);
 		P2PBinarySource source1 = new P2PBinarySource(p1, bind);
 		ServiceMock service1 = new ServiceMock(username1, source1);
 

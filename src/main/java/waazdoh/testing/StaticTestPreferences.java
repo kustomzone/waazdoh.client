@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
+import waazdoh.util.MLogger;
 import waazdoh.util.MPreferences;
 
 public final class StaticTestPreferences implements MPreferences {
@@ -30,17 +31,12 @@ public final class StaticTestPreferences implements MPreferences {
 					+ username + File.separator);
 		}
 
-		// creating a list of servers used in other clients in this test.
-		prefs.putInt(MPreferences.NETWORK_MAX_DOWNLOADS, 8);
-		String serverlist = "";
-		for (Integer serviceport : ports) {
-			serverlist += "localhost:" + serviceport + ",";
-		}
-		prefs.put(MPreferences.SERVERLIST, serverlist);
 		// creating a random port
 		int port = 8000 + (int) (Math.random() * 10000);
-		prefs.putInt(MPreferences.NETWORK_SERVER_PORT, port);
+		getPrefs().putInt(MPreferences.NETWORK_SERVER_PORT, port);
 		ports.add(port);
+
+		prefs.putInt(MPreferences.NETWORK_MAX_DOWNLOADS, 8);
 	}
 
 	public static void clearPorts() {
@@ -59,7 +55,7 @@ public final class StaticTestPreferences implements MPreferences {
 
 			return ret;
 		} catch (BackingStoreException e) {
-			e.printStackTrace();
+			MLogger.getLogger(this).error(e);
 			return null;
 		}
 	}
@@ -98,6 +94,19 @@ public final class StaticTestPreferences implements MPreferences {
 
 	@Override
 	public String get(final String name, String defaultvalue) {
+		if (name.equals(SERVERLIST)) {
+			int port = getPrefs().getInt(NETWORK_SERVER_PORT, 19000);
+			// creating a list of servers used in other clients in this test.
+			String serverlist = "";
+			for (Integer serviceport : ports) {
+				if (serviceport != port) {
+					serverlist += "localhost:" + serviceport + ",";
+				}
+			}
+
+			getPrefs().put(MPreferences.SERVERLIST, serverlist);
+		}
+		//
 		String get = get(name);
 		if (get == null || get.equals("")) {
 			getPrefs().put(name, defaultvalue);
