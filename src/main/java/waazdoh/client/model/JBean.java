@@ -64,11 +64,11 @@ public final class JBean implements Comparable<JBean> {
 		return toXML().hashCode();
 	}
 
-	public void toXML(StringBuffer sb) {
+	public void toXML(StringBuilder sb) {
 		toXML(0, sb);
 	}
 
-	public void toXML(int indent, StringBuffer sb) {
+	public void toXML(int indent, StringBuilder sb) {
 		appendDoctypes(sb);
 		//
 		indent(indent, sb);
@@ -99,7 +99,7 @@ public final class JBean implements Comparable<JBean> {
 		}
 	}
 
-	private void appendAttributes(StringBuffer sb) {
+	private void appendAttributes(StringBuilder sb) {
 		for (final String key : attributes.keySet()) {
 			String value = attributes.get(key);
 			char q = '\"';
@@ -110,7 +110,7 @@ public final class JBean implements Comparable<JBean> {
 		}
 	}
 
-	private void appendDoctypes(StringBuffer sb) {
+	private void appendDoctypes(StringBuilder sb) {
 		if (doctypes != null) {
 			for (String line : doctypes) {
 				sb.append(line);
@@ -127,7 +127,7 @@ public final class JBean implements Comparable<JBean> {
 		return ret;
 	}
 
-	private void indent(int indent, StringBuffer sb) {
+	private void indent(int indent, StringBuilder sb) {
 		for (int i = 0; i < indent; i++) {
 			sb.append('\t');
 		}
@@ -260,7 +260,7 @@ public final class JBean implements Comparable<JBean> {
 	}
 
 	public XML toXML() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		toXML(sb);
 		return new XML(sb.toString());
 	}

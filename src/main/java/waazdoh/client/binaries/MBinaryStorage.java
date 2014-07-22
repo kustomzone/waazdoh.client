@@ -250,7 +250,7 @@ public final class MBinaryStorage {
 
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer("MBinaryStorage[");
+		StringBuilder sb = new StringBuilder("MBinaryStorage[");
 		//
 		sb.append("" + streams.size());
 		//

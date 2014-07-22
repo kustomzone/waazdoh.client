@@ -44,7 +44,7 @@ public final class MBeanStorage {
 			File f = getFile(id);
 			if (f.exists()) {
 				BufferedReader br = new BufferedReader(new FileReader(f));
-				StringBuffer sb = new StringBuffer();
+				StringBuilder sb = new StringBuilder();
 				while (true) {
 					String line = br.readLine();
 					if (line == null) {

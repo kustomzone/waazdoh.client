@@ -30,7 +30,7 @@ public final class XML {
 	}
 
 	public XML(Reader stringReader) throws IOException {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		BufferedReader br = new BufferedReader(stringReader);
 		while (true) {
 			String line = br.readLine();
