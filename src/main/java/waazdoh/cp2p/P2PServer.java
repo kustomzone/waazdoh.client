@@ -392,9 +392,13 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		}
 	}
 
-	public void notifyNewMessages() {
-		synchronized (nodes) {
-			nodes.notifyAll();
+	public void notifyNodes() {
+		try {
+			synchronized (nodes) {
+				nodes.notifyAll();
+			}
+		} catch (IllegalMonitorStateException e) {
+			//TODO not sure what happens here.
 		}
 	}
 
@@ -491,9 +495,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		}
 		//
 		if (nodes != null) {
-			synchronized (nodes) {
-				nodes.notifyAll();
-			}
+			notifyNodes();
 			log.info("closing nodes again");
 			List<Node> ns = new LinkedList<>(nodes);
 			nodes = new LinkedList<Node>();

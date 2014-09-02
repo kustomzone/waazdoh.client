@@ -24,7 +24,7 @@ public interface MMessager {
 
 	MMessageList handle(MMessageList ms);
 
-	void notifyNewMessages();
+	void notifyNodes();
 
 	void addResponseListener(MessageID id,
 			MessageResponseListener responseListener);

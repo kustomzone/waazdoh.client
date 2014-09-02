@@ -92,7 +92,7 @@ public final class Node {
 		}
 		//
 		source.addResponseListener(b.getID(), b.getResponseListener());
-		source.notifyNewMessages();
+		source.notifyNodes();
 	}
 
 	private boolean findMessage(MMessage b) {
