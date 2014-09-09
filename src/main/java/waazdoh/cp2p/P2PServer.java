@@ -393,12 +393,14 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	}
 
 	public void notifyNodes() {
-		try {
-			synchronized (nodes) {
-				nodes.notifyAll();
+		if (nodes != null) {
+			try {
+				synchronized (nodes) {
+					nodes.notifyAll();
+				}
+			} catch (IllegalMonitorStateException e) {
+				// TODO not sure what happens here.
 			}
-		} catch (IllegalMonitorStateException e) {
-			//TODO not sure what happens here.
 		}
 	}
 
