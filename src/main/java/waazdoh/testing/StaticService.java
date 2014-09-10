@@ -24,6 +24,7 @@ import waazdoh.util.MURL;
 public final class StaticService implements CMService {
 	private UserID userid;
 	private static Map<MStringID, JBean> data = new HashMap<MStringID, JBean>();
+	private static Map<String, String> storage = new HashMap<>();
 
 	@Override
 	public boolean setSession(String session) {
@@ -33,6 +34,11 @@ public final class StaticService implements CMService {
 	@Override
 	public String getInfoText() {
 		return "staticservice:" + data;
+	}
+
+	@Override
+	public String readStorageArea(String string) {
+		return storage.get(string);
 	}
 
 	@Override

@@ -124,4 +124,8 @@ public final class WClient {
 		}
 		return applogin;
 	}
+
+	public String readStorageArea(String string) {
+		return getService().readStorageArea(string);
+	}
 }

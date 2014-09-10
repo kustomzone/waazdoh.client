@@ -56,4 +56,6 @@ public interface CMService {
 
 	boolean isConnected();
 
+	String readStorageArea(String string);
+
 }

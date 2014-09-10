@@ -62,16 +62,23 @@ public final class RestServiceClient implements CMService {
 
 	@Override
 	public JBean acceptAppLogin(MStringID id) {
-		List<String>params = new LinkedList<String>();
+		List<String> params = new LinkedList<String>();
 		params.add(id.toString());
 		return getBean("users", "acceptapp", true, params);
 	}
 
 	@Override
 	public JBean checkAppLogin(MStringID id) {
-		List<String>params = new LinkedList<String>();
+		List<String> params = new LinkedList<String>();
 		params.add(id.toString());
 		return getBean("users", "checkapplogin", false, params);
+	}
+
+	@Override
+	public String readStorageArea(String string) {
+		List<String> params = new LinkedList<>();
+		params.add(string);
+		return getBean("storage", "read", true, params).getValue("data");
 	}
 
 	@Override
@@ -92,7 +99,7 @@ public final class RestServiceClient implements CMService {
 			JBeanResponse response = getResponses("users", "checksession",
 					true, params);
 			log.info("checksession response " + response);
-			JBean buid = response.find("uid");
+			JBean buid = response.find("userid");
 			if (response.isSuccess() && buid != null) {
 				String suserid = buid.getText();
 				if (suserid != null) {
@@ -121,13 +128,13 @@ public final class RestServiceClient implements CMService {
 
 	@Override
 	public MURL getURL(final String service, String type, MID id) {
-		List<String>params = new LinkedList<String>();
+		List<String> params = new LinkedList<String>();
 		params.add("" + id);
 		return getAnonymousURL(service, type, params);
 	}
 
 	private MURL getAnonymousURL(final String service, String string,
-			List<String>params) {
+			List<String> params) {
 		return getAuthURL(service, string, params, null);
 	}
 

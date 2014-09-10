@@ -35,6 +35,9 @@ public final class ServiceMock implements CMService {
 	final private MBinarySource source;
 
 	private static Map<String, JBean> objects = new HashMap<String, JBean>();
+	private static Map<String, String> storagearea = new HashMap<>();
+
+	private MLogger log = MLogger.getLogger(this);
 
 	public ServiceMock(String username, MBinarySource nsource)
 			throws SAXException {
@@ -47,6 +50,16 @@ public final class ServiceMock implements CMService {
 		addBGroup(gusersid.toString(), gname);
 		addBGroup(new MStringID().toString(), "test");
 
+	}
+
+	@Override
+	public String readStorageArea(String string) {
+		log.info("read storagearea " + string);
+		return storagearea.get(string);
+	}
+
+	public void writeStorageArea(String string, String string2) {
+		storagearea.put(string, string2);
 	}
 
 	private void addBGroup(final String gid, String gname) throws SAXException {
