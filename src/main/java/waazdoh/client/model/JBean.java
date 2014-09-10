@@ -280,7 +280,10 @@ public final class JBean implements Comparable<JBean> {
 	}
 
 	private void delete(final String string) {
-		children.remove(get(string));
+		JBean value = get(string);
+		if (value != null) {
+			children.remove(value);
+		}
 	}
 
 	public JBean setValue(final String string2) {
@@ -460,8 +463,12 @@ public final class JBean implements Comparable<JBean> {
 	}
 
 	public void setBase64Value(final String valuename, String value) {
-		byte[] bytes64 = Base64.encodeBase64(value.getBytes());
-		addValue(valuename, new String(bytes64));
+		if (value != null) {
+			byte[] bytes64 = Base64.encodeBase64(value.getBytes());
+			addValue(valuename, new String(bytes64));
+		} else {
+			delete(valuename);
+		}
 	}
 
 	public String getBase64Value(final String string) {
