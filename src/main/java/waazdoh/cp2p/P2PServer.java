@@ -25,6 +25,7 @@ import java.util.StringTokenizer;
 import waazdoh.client.binaries.ReportingService;
 import waazdoh.client.model.Binary;
 import waazdoh.client.model.JBean;
+import waazdoh.client.model.MBinaryID;
 import waazdoh.cp2p.common.MHost;
 import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;
@@ -136,14 +137,18 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	private void initHandlers() {
 		handlers.put("ping", new PingHandler());
 		WhoHasHandler whohashandler = new WhoHasHandler(bytesource, this);
-		whohashandler.addListener((streamid, count) -> {
-			Download download = getDownload(streamid);
-			if (download == null) {
-				this.bytesource.addDownload(streamid);
-			} else {
-				log.info("already downloading " + download);
+		whohashandler.addListener(new WhoHasListener() {
+			@Override
+			public void binaryRequested(MBinaryID streamid, Integer count) {
+				Download download = getDownload(streamid);
+				if (download == null) {
+					bytesource.addDownload(streamid);
+				} else {
+					log.info("already downloading " + download);
+				}
 			}
 		});
+
 		handlers.put("whohas", whohashandler);
 		//
 		for (MMessageHandler handler : handlers.values()) {
@@ -353,9 +358,12 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	}
 
 	private void addDefaultNodes() {
-		new ConditionWaiter(() -> {
-			String slist = p.get(MPreferences.SERVERLIST, "");
-			return slist != null && slist.length() > 0;
+		new ConditionWaiter(new ConditionWaiter.Condition() {
+			@Override
+			public boolean test() {
+				String slist = p.get(MPreferences.SERVERLIST, "");
+				return slist != null && slist.length() > 0;
+			}
 		}, 2000);
 
 		String slist = p.get(MPreferences.SERVERLIST, "");

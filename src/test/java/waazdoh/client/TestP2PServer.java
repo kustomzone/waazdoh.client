@@ -2,6 +2,7 @@ package waazdoh.client;
 
 import org.xml.sax.SAXException;
 
+import waazdoh.client.binaries.ReportingService;
 import waazdoh.client.model.Binary;
 import waazdoh.client.model.MBinaryID;
 import waazdoh.cp2p.P2PServer;
@@ -12,6 +13,7 @@ import waazdoh.testing.ServiceMock;
 import waazdoh.testing.StaticTestPreferences;
 import waazdoh.testing.TestPBinarySource;
 import waazdoh.util.ConditionWaiter;
+import waazdoh.util.ConditionWaiter.Condition;
 import waazdoh.util.MPreferences;
 import waazdoh.util.MStringID;
 import waazdoh.util.MTimedFlag;
@@ -27,28 +29,42 @@ public class TestP2PServer extends WCTestCase {
 	}
 
 	public void testAddSelfAsNode() {
-		P2PServer s = getServer();
+		final P2PServer s = getServer();
 		assertNotNull(s);
 		//
-		Node n = s.addNode(new MHost("localhost"), s.getPort());
+		final Node n = s.addNode(new MHost("localhost"), s.getPort());
 		assertNotNull(n);
 		assertFalse(n.isConnected());
 		assertNull(n.getID());
 		// the node gets and id, but it's the same id with server
-		new ConditionWaiter(() -> n.getID() != null, 20000);
+		new ConditionWaiter(new Condition() {
+			public boolean test() {
+				return n.getID() != null;
+			}
+		}, 20000);
+
 		assertNotNull(n.getID());
 		// node gets disconnected
-		new ConditionWaiter(() -> !n.isConnected(), 10000);
+		new ConditionWaiter(new Condition() {
+			public boolean test() {
+				return !n.isConnected();
+			}
+		}, 10000);
+
 		assertFalse(n.isConnected());
 		// and finally node is removed
-		new ConditionWaiter(() -> s.getNode(n.getID()) == null, 40000);
+		new ConditionWaiter(new Condition() {
+			public boolean test() {
+				return s.getNode(n.getID()) == null;
+			}
+		}, 40000);
 		assertNull(s.getNode(n.getID()));
 	}
 
 	public void testNodeListener() {
 		P2PServer s = getServer();
-		MTimedFlag t = new MTimedFlag(10000);
-		MTimedFlag doneflag = new MTimedFlag(10000);
+		final MTimedFlag t = new MTimedFlag(10000);
+		final MTimedFlag doneflag = new MTimedFlag(10000);
 		//
 		s.addSourceListener(new SourceListener() {
 
@@ -90,9 +106,14 @@ public class TestP2PServer extends WCTestCase {
 		P2PServer serverb = getOtherServer();
 		log.info("getting servers done");
 		try {
-			Node n = serverb.addNode(new MHost("localhost"), servera.getPort());
+			final Node n = serverb.addNode(new MHost("localhost"), servera.getPort());
 			log.info("waiting");
-			new ConditionWaiter(() -> n.isConnected(), 20000);
+			new ConditionWaiter(new Condition() {
+				public boolean test() {
+					return n.isConnected();
+				}
+			}, 20000);
+
 			assertNotNull(n.getID());
 			assertTrue(n.getReceivedMessages() > 0);
 			//
@@ -108,9 +129,18 @@ public class TestP2PServer extends WCTestCase {
 		P2PServer serverb = getOtherServerNoBind();
 		log.info("getting servers done");
 		try {
-			Node n = serverb.addNode(new MHost("localhost"), servera.getPort());
+			final Node n = serverb.addNode(new MHost("localhost"),
+					servera.getPort());
 			log.info("waiting");
-			new ConditionWaiter(() -> n.isConnected(), 20000);
+
+			new ConditionWaiter(new Condition() {
+
+				@Override
+				public boolean test() {
+					return n.isConnected();
+				}
+			}, 20000);
+
 			assertNotNull(n.getID());
 			assertTrue(n.getReceivedMessages() > 0);
 			//
@@ -123,12 +153,23 @@ public class TestP2PServer extends WCTestCase {
 
 	public void testReporting() {
 		P2PServer a = getServer();
-		MTimedFlag f = new MTimedFlag(Integer.MAX_VALUE);
-		a.setReportingService((id, success) -> {
-			f.trigger();
+		final MTimedFlag f = new MTimedFlag(Integer.MAX_VALUE);
+		a.setReportingService(new ReportingService() {
+			@Override
+			public void reportDownload(MStringID id, boolean success) {
+				f.trigger();
+			}
 		});
+
 		a.reportDownload(new MStringID(), false);
-		new ConditionWaiter(() -> f.isTriggered(), 1000);
+		new ConditionWaiter(new Condition() {
+
+			@Override
+			public boolean test() {
+				return f.isTriggered();
+			}
+		}, 1000);
+
 		assertTrue(f.isTriggered());
 	}
 
