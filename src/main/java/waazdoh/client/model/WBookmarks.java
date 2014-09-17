@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public final class WBookmarks {
 	private List<BookmarksListener> listeners = new LinkedList<BookmarksListener>();
@@ -27,13 +28,13 @@ public final class WBookmarks {
 	}
 
 	private void update() {
-		Map<String, String> groups = service.getBookmarkGroups();
+		Set<String> groups = service.listStorageArea("bookmarks");
 		if (groups != null) {
-			for (final String mid : groups.keySet()) {
-				if (this.groups.get(mid) == null) {
-					this.groups.put(mid,
-							new WBookmarkGroup(mid, groups.get(mid), service));
-					fireGroupAdded(get(mid));
+			for (final String name : groups) {
+				if (this.groups.get(name) == null) {
+					this.groups.put(name,
+							new WBookmarkGroup(name, service));
+					fireGroupAdded(get(name));
 				}
 			}
 		}

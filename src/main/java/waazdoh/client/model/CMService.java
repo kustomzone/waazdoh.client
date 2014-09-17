@@ -10,7 +10,7 @@
  ******************************************************************************/
 package waazdoh.client.model;
 
-import java.util.Map;
+import java.util.Set;
 
 import waazdoh.util.MStringID;
 import waazdoh.util.MURL;
@@ -46,10 +46,6 @@ public interface CMService {
 
 	JBeanResponse reportDownload(MStringID id, boolean success);
 
-	JBeanResponse getBookmarkGroup(final String id);
-
-	Map<String, String> getBookmarkGroups();
-
 	JBeanResponse getUser(UserID userid);
 
 	boolean publish(MID id);
@@ -57,5 +53,7 @@ public interface CMService {
 	boolean isConnected();
 
 	String readStorageArea(String string);
+
+	Set<String> listStorageArea(String string);
 
 }

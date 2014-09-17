@@ -12,6 +12,7 @@ package waazdoh.testing;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import waazdoh.client.model.CMService;
 import waazdoh.client.model.JBean;
@@ -39,6 +40,12 @@ public final class StaticService implements CMService {
 	@Override
 	public String readStorageArea(String string) {
 		return storage.get(string);
+	}
+
+	@Override
+	public Set<String> listStorageArea(String string) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -122,18 +129,6 @@ public final class StaticService implements CMService {
 
 	@Override
 	public JBeanResponse search(final String filter, int index, int i) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public JBeanResponse getBookmarkGroup(final String id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Map<String, String> getBookmarkGroups() {
 		// TODO Auto-generated method stub
 		return null;
 	}

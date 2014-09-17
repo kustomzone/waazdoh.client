@@ -10,14 +10,23 @@
  ******************************************************************************/
 package waazdoh.client.model;
 
+import org.xml.sax.SAXException;
+
+import waazdoh.util.xml.XML;
 
 public final class WBookmark {
-	private String id;
 	private String oid;
 	private String created;
+	private String name;
 
-	public WBookmark(JBean bbookmark) {
-		id = bbookmark.getValue("bookmarkid");
+	public WBookmark(String group, String bookmarkname, CMService service)
+			throws SAXException {
+		this.name = bookmarkname;
+
+		String r = service.readStorageArea("/bookmarks/" + group + "/"
+				+ bookmarkname);
+		JBean bbookmark = new JBean(new XML(r));
+
 		oid = bbookmark.getValue("objectid");
 		created = bbookmark.getValue("created");
 	}

@@ -13,6 +13,7 @@ package waazdoh.testing;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.xml.sax.SAXException;
 
@@ -56,6 +57,20 @@ public final class ServiceMock implements CMService {
 	public String readStorageArea(String string) {
 		log.info("read storagearea " + string);
 		return storagearea.get(string);
+	}
+
+	@Override
+	public Set<String> listStorageArea(String string) {
+		Set<String> ret = new HashSet<>();
+
+		Set<String> s = storagearea.keySet();
+		for (String storedpath : s) {
+			if (storedpath.indexOf(string) == 0) {
+				ret.add(storedpath);
+			}
+		}
+
+		return ret;
 	}
 
 	public void writeStorageArea(String string, String string2) {
@@ -203,23 +218,6 @@ public final class ServiceMock implements CMService {
 	public JBeanResponse reportDownload(MStringID id, boolean success) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public JBeanResponse getBookmarkGroup(final String id) {
-		JBeanResponse ret = JBeanResponse.getTrue();
-		ret.setBean(groups.get(id));
-		return ret;
-	}
-
-	@Override
-	public Map<String, String> getBookmarkGroups() {
-		Map<String, String> ret = new HashMap<String, String>();
-		for (final String id : groups.keySet()) {
-			JBean b = groups.get(id);
-			ret.put(id, b.getValue("name"));
-		}
-		return ret;
 	}
 
 	@Override

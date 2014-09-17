@@ -13,9 +13,11 @@ package waazdoh.service.rest;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.xml.sax.SAXException;
 
@@ -79,6 +81,20 @@ public final class RestServiceClient implements CMService {
 		List<String> params = new LinkedList<>();
 		params.add(string);
 		return getBean("storage", "read", true, params).getValue("data");
+	}
+
+	@Override
+	public Set<String> listStorageArea(String string) {
+		List<String> params = new LinkedList<>();
+		params.add(string);
+		JBean b = getBean("storage", "list", true, params).get("items");
+		Set<String> ret = new HashSet<>();
+		List<JBean> cs = b.getChildren();
+		for (JBean childbean : cs) {
+			ret.add(childbean.getValue("path"));
+		}
+		//
+		return ret;
 	}
 
 	@Override
@@ -336,38 +352,6 @@ public final class RestServiceClient implements CMService {
 			log.info("exception with response " + sbody);
 			return JBeanResponse.getError("ERROR " + sbody);
 		}
-	}
-
-	@Override
-	public HashMap<String, String> getBookmarkGroups() {
-		JBeanResponse ret = getResponses("bookmarks", "listgroups", true, null);
-		if (ret.isSuccess()) {
-			HashMap<String, String> list = new HashMap<String, String>();
-
-			JBean bgroups = ret.getBean().get("bookmarkgroups");
-			List<JBean> cs = bgroups.getChildren();
-			for (JBean groupbean : cs) {
-				/*
-				 * <group> <name>users</name>
-				 * <groupid>fac8093e-c9ed-43b6-99bd-7fc9207f3c7d</groupid>
-				 * </group>
-				 */
-				log.info("bookmarkgroup " + groupbean);
-				list.put(groupbean.getValue("groupid"),
-						groupbean.getValue("name"));
-			}
-
-			return list;
-		} else {
-			return null;
-		}
-	}
-
-	@Override
-	public JBeanResponse getBookmarkGroup(final String id) {
-		List<String> params = new LinkedList<String>();
-		params.add(id.toString());
-		return getResponses("bookmarks", "getgroup", true, params);
 	}
 
 	@Override
