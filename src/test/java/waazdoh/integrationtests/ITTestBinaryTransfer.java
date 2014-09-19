@@ -60,7 +60,6 @@ public final class ITTestBinaryTransfer extends TestCase {
 	public void testTransfer(int binarysize, boolean bind1, boolean bind2)
 			throws SAXException, InterruptedException {
 		log.info("test transferm " + binarysize);
-		//
 		String username1 = "test1" + Math.random();
 		log.info("service1 with " + username1);
 		P2PBinarySource source1 = getServiceSource(username1, bind1);
@@ -73,48 +72,40 @@ public final class ITTestBinaryTransfer extends TestCase {
 		log.info("creating binary");
 		Binary b1 = source1.newBinary("test", "bin");
 		assertNotNull(b1);
-		//
 		log.info("adding bytes");
 		for (int i = 0; i < binarysize; i++) {
 			b1.add((byte) (i & 0xff));
 		}
-		//
 		log.info("publishing " + b1);
 		b1.setReady();
 		b1.publish();
 		String b1hasht = b1.getHash();
-		//
 		source1.clearMemory(0);
 		log.info("getOrDownload source1");
 		Binary b1reload = source1.getOrDownload(b1.getID());
 		assertNotNull(b1reload);
 		assertEquals(b1hasht, b1reload.getHash());
 
-		//
 		log.info("getOrDownload source2");
 		Binary b2 = source2.getOrDownload(b1.getID());
 		assertNotNull(b2);
-		//
 		log.info("wait until ready");
 
 		long st = System.currentTimeMillis();
-		while (!b2.isReady() && (System.currentTimeMillis() - st) < 60000) {
+		while (!b2.isReady() && System.currentTimeMillis() - st < 60000) {
 			doWait(100);
 		}
 
 		log.info("checks " + b2);
 		assertTrue(b2.isReady());
 		assertTrue(b2.isOK());
-		//
 		assertEquals(b1, b2);
-		//
 		log.info("closing");
 		source1.startClosing();
 		source2.startClosing();
 
 		source1.close();
 		source2.close();
-		//
 
 	}
 

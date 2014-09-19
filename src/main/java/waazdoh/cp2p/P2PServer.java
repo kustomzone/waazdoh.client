@@ -156,6 +156,10 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		}
 	}
 
+	public void addMessageHandler(String name, MMessageHandler h) {
+		handlers.put(name, h);
+	}
+
 	private void sleep(long time) {
 		synchronized (this) {
 			try {
@@ -489,8 +493,10 @@ public final class P2PServer implements MMessager, MMessageFactory,
 			tcplistener.startClosing();
 		}
 
-		for (Download d : downloads.values()) {
-			d.stop();
+		synchronized (downloads) {
+			for (Download d : downloads.values()) {
+				d.stop();
+			}
 		}
 	}
 

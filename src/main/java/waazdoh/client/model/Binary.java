@@ -125,10 +125,10 @@ public final class Binary implements HashSource {
 		return overwritecount;
 	}
 
-	public synchronized void add(byte[] nbytes, int length) {
-		ensureSize(length + length);
-		for (int i = 0; i < length; i++) {
-			bytes[length++] = nbytes[i];
+	public synchronized void add(byte[] nbytes, int addingbytes) {
+		ensureSize(this.length + addingbytes);
+		for (int i = 0; i < addingbytes; i++) {
+			bytes[addingbytes++] = nbytes[i];
 		}
 		resetCRC();
 	}

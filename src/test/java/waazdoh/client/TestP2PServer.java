@@ -7,6 +7,8 @@ import waazdoh.client.model.Binary;
 import waazdoh.client.model.MBinaryID;
 import waazdoh.cp2p.P2PServer;
 import waazdoh.cp2p.common.MHost;
+import waazdoh.cp2p.messaging.MMessage;
+import waazdoh.cp2p.messaging.SimpleMessageHandler;
 import waazdoh.cp2p.network.Node;
 import waazdoh.cp2p.network.SourceListener;
 import waazdoh.testing.ServiceMock;
@@ -20,10 +22,19 @@ import waazdoh.util.MTimedFlag;
 
 public class TestP2PServer extends WCTestCase {
 
+	private P2PServer serverb;
+	private P2PServer servera;
+
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		servera = null;
+		serverb = null;
+	}
+
 	public void testStartAndStop() {
 		P2PServer s = getServer();
 		assertTrue(s.isRunning());
-		//
 		s.close();
 		assertFalse(s.isRunning());
 	}
@@ -31,7 +42,6 @@ public class TestP2PServer extends WCTestCase {
 	public void testAddSelfAsNode() {
 		final P2PServer s = getServer();
 		assertNotNull(s);
-		//
 		final Node n = s.addNode(new MHost("localhost"), s.getPort());
 		assertNotNull(n);
 		assertFalse(n.isConnected());
@@ -65,7 +75,6 @@ public class TestP2PServer extends WCTestCase {
 		P2PServer s = getServer();
 		final MTimedFlag t = new MTimedFlag(10000);
 		final MTimedFlag doneflag = new MTimedFlag(10000);
-		//
 		s.addSourceListener(new SourceListener() {
 
 			@Override
@@ -91,14 +100,19 @@ public class TestP2PServer extends WCTestCase {
 		assertTrue(s.canDownload());
 		ServiceMock service = new ServiceMock("test", new TestPBinarySource(
 				s.getPreferences()));
+
+		MBinaryID downloadid = null;
 		for (int i = 0; i < MPreferences.NETWORK_MAX_DOWNLOADS_DEFAULT; i++) {
 			assertTrue(s.canDownload());
 			MBinaryID id = new MBinaryID();
 			s.addDownload(new Binary(id, service));
+			downloadid = id;
 			assertNotNull(s.getDownload(id));
 		}
-		//
 		assertFalse(s.canDownload());
+		//
+		s.removeDownload(downloadid);
+		assertTrue(s.canDownload());
 	}
 
 	public void testTwoNodes() {
@@ -106,7 +120,8 @@ public class TestP2PServer extends WCTestCase {
 		P2PServer serverb = getOtherServer();
 		log.info("getting servers done");
 		try {
-			final Node n = serverb.addNode(new MHost("localhost"), servera.getPort());
+			final Node n = serverb.addNode(new MHost("localhost"),
+					servera.getPort());
 			log.info("waiting");
 			new ConditionWaiter(new Condition() {
 				public boolean test() {
@@ -116,7 +131,6 @@ public class TestP2PServer extends WCTestCase {
 
 			assertNotNull(n.getID());
 			assertTrue(n.getReceivedMessages() > 0);
-			//
 		} finally {
 			log.info("closing");
 			servera.close();
@@ -125,30 +139,50 @@ public class TestP2PServer extends WCTestCase {
 	}
 
 	public void testABConnection() {
-		P2PServer servera = getServer();
-		P2PServer serverb = getOtherServerNoBind();
-		log.info("getting servers done");
 		try {
-			final Node n = serverb.addNode(new MHost("localhost"),
-					servera.getPort());
-			log.info("waiting");
-
-			new ConditionWaiter(new Condition() {
-
-				@Override
-				public boolean test() {
-					return n.isConnected();
-				}
-			}, 20000);
-
-			assertNotNull(n.getID());
-			assertTrue(n.getReceivedMessages() > 0);
-			//
+			createTwoServers();
 		} finally {
 			log.info("closing");
 			servera.close();
 			serverb.close();
 		}
+	}
+
+	private void createTwoServers() {
+		servera = getServer();
+		serverb = getOtherServerNoBind();
+		log.info("getting servers done");
+		final Node n = serverb.addNode(new MHost("localhost"),
+				servera.getPort());
+		log.info("waiting");
+
+		new ConditionWaiter(new Condition() {
+
+			@Override
+			public boolean test() {
+				return n.isConnected();
+			}
+		}, 20000);
+
+		assertNotNull(n.getID());
+		assertTrue(n.getReceivedMessages() > 0);
+	}
+
+	public void testBroadcast() {
+		createTwoServers();
+
+		servera.addMessageHandler("test", new SimpleMessageHandler() {
+
+			@Override
+			public MMessage handle(MMessage childb) {
+				setValue("testbroadcast", "" + childb);
+				return null;
+			}
+		});
+		serverb.broadcastMessage(serverb.getMessage("test"));
+		//
+		waitForValue("testbroadcast", 10000);
+		assertValue("testbroadcast");
 	}
 
 	public void testReporting() {
@@ -176,30 +210,6 @@ public class TestP2PServer extends WCTestCase {
 	private P2PServer getOtherServer() {
 		P2PServer s = new P2PServer(new StaticTestPreferences("otherserver",
 				"otherserver"), true, null);
-		s.start();
-		log.info("returning " + s);
-		return s;
-	}
-
-	private P2PServer getServer() {
-		P2PServer s = new P2PServer(getPreferences("p2pservertests"), true,
-				null);
-		s.start();
-		log.info("returning " + s);
-		return s;
-	}
-
-	private P2PServer getOtherServerNoBind() {
-		P2PServer s = new P2PServer(new StaticTestPreferences("otherserver",
-				"otherserver"), false, null);
-		s.start();
-		log.info("returning " + s);
-		return s;
-	}
-
-	private P2PServer getServerNoBind() {
-		P2PServer s = new P2PServer(getPreferences("p2pservertests"), false,
-				null);
 		s.start();
 		log.info("returning " + s);
 		return s;

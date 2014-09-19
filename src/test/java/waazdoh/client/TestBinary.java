@@ -64,7 +64,6 @@ public final class TestBinary extends TestCase {
 				sb.append("ready");
 			}
 		});
-		//
 		a.setReady();
 		new ConditionWaiter(new ConditionWaiter.Condition() {
 			@Override
