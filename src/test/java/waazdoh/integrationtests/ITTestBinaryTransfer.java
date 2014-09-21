@@ -23,7 +23,7 @@ public final class ITTestBinaryTransfer extends TestCase {
 	public void testTransfer10kBA() throws SAXException, InterruptedException {
 		testTransfer(10000, false, true);
 	}
-	
+
 	public void testTransfer10k() throws SAXException, InterruptedException {
 		testTransfer(10000);
 	}
@@ -79,11 +79,13 @@ public final class ITTestBinaryTransfer extends TestCase {
 		log.info("publishing " + b1);
 		b1.setReady();
 		b1.publish();
+		assertEquals(binarysize, b1.length());
 		String b1hasht = b1.getHash();
 		source1.clearMemory(0);
 		log.info("getOrDownload source1");
 		Binary b1reload = source1.getOrDownload(b1.getID());
 		assertNotNull(b1reload);
+		assertEquals(b1.getBean().toText(), b1reload.getBean().toText());
 		assertEquals(b1hasht, b1reload.getHash());
 
 		log.info("getOrDownload source2");

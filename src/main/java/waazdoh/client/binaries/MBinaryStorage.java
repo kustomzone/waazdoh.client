@@ -173,14 +173,14 @@ public final class MBinaryStorage {
 	public Binary reload(Binary binary) {
 		try {
 			return loadPersistentBinary(binary);
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			log.error(e);
 			return null;
 		}
 	}
 
 	public synchronized Binary loadPersistentStream(MBinaryID streamid)
-			throws FileNotFoundException {
+			throws IOException {
 		synchronized (streams) {
 			Binary bin;
 			bin = new Binary(streamid, service);
@@ -200,14 +200,18 @@ public final class MBinaryStorage {
 		}
 	}
 
-	private Binary loadPersistentBinary(Binary w) throws FileNotFoundException {
+	private Binary loadPersistentBinary(Binary w) throws IOException {
 		BufferedInputStream is = new BufferedInputStream(new FileInputStream(
 				getDataPath(w)));
-		if (w.load(is)) {
-			return w;
-		} else {
-			log.info("loading Binary " + w.getID() + " failed");
-			return null;
+		try {
+			if (w.load(is)) {
+				return w;
+			} else {
+				log.info("loading Binary " + w.getID() + " failed");
+				return null;
+			}
+		} finally {
+			is.close();
 		}
 	}
 

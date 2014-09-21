@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2013 Juuso Vilmunen.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0
@@ -28,13 +28,18 @@ public final class Binary implements HashSource {
 	private static final String BEAN_TAG = "binary";
 	private static final int DEFAULT_BYTEARRAYSIZE = 1000;
 	private Byte[] bytes = new Byte[10];
-	private int length;
+	private int bytesindex = 0;
+	//
+	private int length = -1;
 	private MCRC crc;
 	private long timestamp;
+	//
 	private MLogger log = MLogger.getLogger(this);
 	private MCRC storedcrc;
 	private List<BinaryListener> listeners;
-
+	//
+	public final static String TYPE_STREAM = "audiostream";
+	private String type = TYPE_STREAM;
 	private UserID creatorid;
 	private String version;
 	private String comment = "";
@@ -44,12 +49,13 @@ public final class Binary implements HashSource {
 	private String extension;
 	private MBinaryID id;
 
-	private static int count;
+	private static int count = 0;
 
 	public Binary(CMService service, String comment, String extension) {
 		this.service = service;
 		this.id = new MBinaryID();
 		creatorid = service.getUserID();
+		//
 		if (service != null) {
 			this.creatorid = service.getUserID();
 		}
@@ -65,7 +71,9 @@ public final class Binary implements HashSource {
 
 		this.id = streamid;
 		this.service = service;
+		//
 		loadFromService(streamid);
+		//
 		used();
 	}
 
@@ -75,7 +83,8 @@ public final class Binary implements HashSource {
 	}
 
 	public int getMemoryUsage() {
-		return bytes.length;
+		int total = bytes.length;
+		return total;
 	}
 
 	private void init() {
@@ -83,7 +92,7 @@ public final class Binary implements HashSource {
 	}
 
 	public String getFilename() {
-		return getID() + "." + extension;
+		return getID().toString() + "." + extension;
 	}
 
 	public synchronized boolean load(InputStream is) {
@@ -118,17 +127,19 @@ public final class Binary implements HashSource {
 
 			bytes[index++] = b;
 		}
-		if (index > length) {
-			length = index;
+		if (index > bytesindex) {
+			bytesindex = index;
 		}
+		//
 		resetCRC();
+		//
 		return overwritecount;
 	}
 
-	public synchronized void add(byte[] nbytes, int addingbytes) {
-		ensureSize(this.length + addingbytes);
-		for (int i = 0; i < addingbytes; i++) {
-			bytes[addingbytes++] = nbytes[i];
+	public synchronized void add(byte[] nbytes, int length) {
+		ensureSize(bytesindex + length);
+		for (int i = 0; i < length; i++) {
+			bytes[bytesindex++] = nbytes[i];
 		}
 		resetCRC();
 	}
@@ -158,29 +169,31 @@ public final class Binary implements HashSource {
 	public synchronized void add(byte[] fsamples) {
 		used();
 
-		ensureSize(length + fsamples.length);
+		ensureSize(bytesindex + fsamples.length);
+		//
 		for (int i = 0; i < fsamples.length; i++) {
-			bytes[length++] = fsamples[i];
+			bytes[bytesindex++] = fsamples[i];
 		}
-		log.info("bytes size " + length);
+		log.info("bytes size " + bytesindex);
 		resetCRC();
 	}
 
 	public synchronized void add(Byte b) {
-		ensureSize(length + 100);
-		bytes[length++] = b;
+		ensureSize(bytesindex + 100);
+		bytes[bytesindex++] = b;
 		resetCRC();
 	}
 
-	/**
-	 * Public FloatStream(JBean b, CMService service) { this.service = service;
-	 * load(b); }
-	 */
+	// public FloatStream(JBean b, CMService service) {
+	// this.service = service;
+	// load(b);
+	// }
 	private void load(JBean b) {
 		if (b.get(BEAN_TAG) != null) {
 			b = b.get(BEAN_TAG);
 			id = new MBinaryID(b.getAttribute("id"));
 		}
+		//
 		this.length = b.getIntValue("length");
 		this.storedcrc = new MCRC(b.getLongValue("crc"));
 		this.creatorid = new UserID(b.getValue("creator"));
@@ -211,6 +224,7 @@ public final class Binary implements HashSource {
 
 		JBean bean = getBean();
 		bean.setAttribute("id", getID().toString());
+		//
 		service.addBean(getID(), bean);
 	}
 
@@ -228,16 +242,20 @@ public final class Binary implements HashSource {
 	}
 
 	public boolean isOK() {
-		return id != null && storedcrc != null && creatorid != null;
+		if (id == null || storedcrc == null || creatorid == null) {
+			return false;
+		}
+		return true;
 	}
 
 	public JBean getBean() {
 		JBean b = new JBean(BEAN_TAG);
+		//
 		b.addValue("length", "" + length);
 		b.addValue("crc", "" + currentCRC().getValue());
 		b.addValue("creator", "" + creatorid);
 		b.addValue("version", version);
-		b.addValue("comment", comment);
+		b.addValue("comment", "" + comment);
 		b.addValue("extension", extension);
 		return b;
 	}
@@ -245,7 +263,7 @@ public final class Binary implements HashSource {
 	public synchronized boolean save(OutputStream os) {
 		try {
 			BufferedOutputStream bos = new BufferedOutputStream(os);
-			for (int i = 0; i < length; i++) {
+			for (int i = 0; i < bytesindex; i++) {
 				bos.write(bytes[i]);
 			}
 			bos.close();
@@ -261,7 +279,7 @@ public final class Binary implements HashSource {
 		used();
 
 		int bsindex = 0;
-		while (bsindex < bs.length && bsindex < length) {
+		while (bsindex < bs.length && bsindex < bytesindex) {
 			bs[bsindex] = bytes[index];
 			bsindex++;
 		}
@@ -275,7 +293,7 @@ public final class Binary implements HashSource {
 	public synchronized Byte get(int isample) {
 		used();
 
-		if (isample < length) {
+		if (isample < bytesindex) {
 			return bytes[isample];
 		} else {
 			return null;
@@ -291,13 +309,14 @@ public final class Binary implements HashSource {
 		for (byte b : f) {
 			bytes[isample++] = b;
 		}
-		if (isample > length) {
-			length = isample;
+		if (isample > bytesindex) {
+			bytesindex = isample;
 		}
 	}
 
 	synchronized MCRC currentCRC() {
-		return new MCRC(bytes, length);
+		MCRC ncrc = new MCRC(bytes, bytesindex);
+		return ncrc;
 	}
 
 	public MBinaryID getID() {
@@ -340,7 +359,11 @@ public final class Binary implements HashSource {
 	public boolean equals(Object obj) {
 		if (obj instanceof Binary) {
 			Binary bin = (Binary) obj;
-			return bin.getID().equals(getID()) && getCRC().equals(bin.getCRC());
+			if (!bin.getID().equals(getID()))
+				return false;
+			if (!getCRC().equals(bin.getCRC()))
+				return false;
+			return true;
 		}
 		return false;
 	}
@@ -354,6 +377,7 @@ public final class Binary implements HashSource {
 		used();
 
 		storedcrc = currentCRC();
+		length = bytesindex;
 		fireReady();
 	}
 
@@ -406,7 +430,7 @@ public final class Binary implements HashSource {
 	public int getBytesLength() {
 		used();
 
-		return length;
+		return bytesindex;
 	}
 
 	public boolean isUsed(int suggestedmemorytreshold) {
@@ -439,6 +463,6 @@ public final class Binary implements HashSource {
 	}
 
 	public CMService getService() {
-		return this.service;
+		return service;
 	}
 }
