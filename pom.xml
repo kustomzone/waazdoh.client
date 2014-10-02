@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>waazdoh.client</artifactId>
 	<packaging>jar</packaging>
-	<version>1.2.3</version>
+	<version>1.2.4</version>
 	<name>waazdoh.client</name>
 	<url>http://maven.apache.org</url>
 	<groupId>waazdoh</groupId>
@@ -220,7 +220,7 @@
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-all</artifactId> <!-- Use 'netty-all' for 4.0 or above -->
-			<version>5.0.0.Alpha1</version>
+			<version>4.1.0.Beta3</version>
 			<scope>compile</scope>
 		</dependency>
 

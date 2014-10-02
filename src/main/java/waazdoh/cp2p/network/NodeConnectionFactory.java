@@ -110,8 +110,8 @@ public final class NodeConnectionFactory {
 		}
 
 		@Override
-		protected void messageReceived(ChannelHandlerContext ctx,
-				MMessageList msgs) throws Exception {
+		protected void channelRead0(ChannelHandlerContext ctx, MMessageList msgs)
+				throws Exception {
 			log.info("messageReceived size " + msgs.size());
 			getNode(ctx).messagesReceived(msgs);
 		}
