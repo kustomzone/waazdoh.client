@@ -26,7 +26,6 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.params.HttpClientParams;
 
 public final class URLCaller {
 	private MURL url;
@@ -40,7 +39,7 @@ public final class URLCaller {
 	private File postfile;
 	private String postfilename;
 	private int timeout;
-	private static int clientscreated = 0;
+	private static int clientscreated = 6000;
 	private static List<HttpClient> httpclients = new LinkedList<HttpClient>();
 
 	private static HttpClient getHttpClient() {
