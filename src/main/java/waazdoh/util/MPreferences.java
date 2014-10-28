@@ -14,7 +14,7 @@ import java.util.Set;
 
 public interface MPreferences {
 	static final String SERVICE_URL = "service.url";
-	static final String LOCAL_PATH = "local.path";
+	static final String LOCAL_PATH = "local.home.path";
 	static final String LOCAL_PATH_DEFAULT = "waazdoh";
 	static final String SERVERLIST = "network.hosts.list";
 	static final String NETWORK_SERVER_PORT = "network.server.port";
