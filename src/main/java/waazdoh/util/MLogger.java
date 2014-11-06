@@ -53,6 +53,7 @@ public final class MLogger {
 
 	public void error(Exception e) {
 		getLog().severe(e.toString());
+		getLog().throwing("" + o, "", e);
 	}
 
 	private PrintWriter getWriter() {
@@ -76,6 +77,7 @@ public final class MLogger {
 
 	public void error(Throwable cause) {
 		getLog().severe(cause.toString());
+		getLog().throwing("" + o, "", cause);
 	}
 
 	public void error(final String string) {
