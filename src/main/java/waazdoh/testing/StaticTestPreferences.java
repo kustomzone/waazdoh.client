@@ -25,11 +25,16 @@ public final class StaticTestPreferences implements MPreferences {
 			prefs.put(MPreferences.SERVICE_URL,
 					"http://localhost:18099/waazdoh");
 		}
-		if (prefs.get(MPreferences.LOCAL_PATH, "").equals("")) {
-			prefs.put(MPreferences.LOCAL_PATH, System.getProperty("user.home")
-					+ File.separator + "waazdohclienttest" + File.separator
-					+ username + File.separator);
+
+		String deflocalpath = "" + "waazdohclienttest" + File.separator
+				+ username + File.separator;
+		String lpath = prefs.get(MPreferences.LOCAL_PATH, "");
+		if (lpath.equals("")) {
+			lpath = deflocalpath;
+			prefs.put(MPreferences.LOCAL_PATH, lpath);
 		}
+
+		MLogger.getLogger(this).info("Local path " + lpath);
 
 		// creating a random port
 		int port = 8000 + (int) (Math.random() * 10000);
@@ -117,6 +122,7 @@ public final class StaticTestPreferences implements MPreferences {
 	}
 
 	public String get(final String string) {
+
 		return getPrefs().get(string, "");
 	}
 
