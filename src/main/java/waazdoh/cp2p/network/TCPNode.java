@@ -111,8 +111,14 @@ public final class TCPNode {
 	}
 
 	public boolean shouldGiveUp() {
-		return !isConnected()
-				&& (System.currentTimeMillis() - lastmessage) > MAX_GIVEUP_TIME;
+		if (!isConnected()
+				&& (System.currentTimeMillis() - lastmessage) > MAX_GIVEUP_TIME) {
+			log.info("Should give up " + lastmessage + " "
+					+ (System.currentTimeMillis() - lastmessage));
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public void logChannel() {

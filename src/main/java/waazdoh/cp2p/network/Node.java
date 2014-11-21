@@ -200,6 +200,7 @@ public final class Node {
 				}
 
 				if (checknode != null & checknode.shouldGiveUp()) {
+					log.info("Should give up... so giving up. ");
 					checknode.close();
 					tcpnode = null;
 				}
