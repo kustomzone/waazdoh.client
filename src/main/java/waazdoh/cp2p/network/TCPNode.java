@@ -14,6 +14,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.socket.oio.OioSocketChannel;
 
 import java.net.ConnectException;
 import java.util.List;
@@ -79,14 +80,15 @@ public final class TCPNode {
 
 	public synchronized boolean isConnected() {
 		checkConnection();
-		return channel != null && isactive;
+		OioSocketChannel oio = (OioSocketChannel) channel;
+		return channel != null && isactive && channel.isOpen() && oio.localAddress()!=null && oio.remoteAddress()!=null;
 	}
 
 	private synchronized void checkConnection() {
 		// if closed and connectionwaiter is triggered, create new connection
 		if (!closed && !offline && channel == null
 				&& (connectionwaiter == null || connectionwaiter.isTriggered())) {
-			log.debug("creating connection " + this + " trigger "
+			log.info("creating connection " + this + " trigger "
 					+ connectionwaiter);
 			TCPNode.connectionfactory.connect(this, host, port);
 			connectionwaiter = new MTimedFlag(10000);
