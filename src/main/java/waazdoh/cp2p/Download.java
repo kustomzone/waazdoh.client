@@ -113,7 +113,11 @@ public final class Download implements Runnable, MessageResponseListener,
 	public synchronized boolean isReady() {
 		if (!sentstarts.isEmpty()) {
 			return false;
+		} else if (this.countbytes < bin.length()) {
+			log.info("isready length fail " + countbytes);
+			return false;
 		} else {
+			log.info("isready length ok " + countbytes + " " + bin.length());
 			if (!hasBeenReady) {
 				hasBeenReady = bin.isReady();
 			}
