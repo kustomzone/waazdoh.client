@@ -1,73 +1,76 @@
 package waazdoh.integrationtests;
 
-import junit.framework.TestCase;
+import java.io.IOException;
 
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
+import waazdoh.client.WCTestCase;
 import waazdoh.client.model.Binary;
 import waazdoh.cp2p.P2PBinarySource;
-import waazdoh.testing.ServiceMock;
 import waazdoh.testing.StaticTestPreferences;
 import waazdoh.util.MLogger;
-import waazdoh.util.MPreferences;
-import waazdoh.util.MStringID;
 
-public final class ITTestBinaryTransfer extends TestCase {
+public final class ITTestBinaryTransfer extends WCTestCase {
 	private MLogger log = MLogger.getLogger(this);
 
-	public void testTransfer10kAB() throws SAXException, InterruptedException {
+	public void testTransfer10kAB() throws SAXException, InterruptedException,
+			IOException {
 		testTransfer(10000, true, false);
 	}
 
-	public void testTransfer10kBA() throws SAXException, InterruptedException {
+	public void testTransfer10kBA() throws SAXException, InterruptedException,
+			IOException {
 		testTransfer(10000, false, true);
 	}
 
-	public void testTransfer10k() throws SAXException, InterruptedException {
+	public void testTransfer10k() throws SAXException, InterruptedException,
+			IOException {
 		testTransfer(10000);
 	}
 
-	public void testTransfer30k() throws SAXException, InterruptedException {
+	public void testTransfer30k() throws SAXException, InterruptedException,
+			IOException {
 		testTransfer(30000);
 	}
 
-	public void testTransfer75k() throws SAXException, InterruptedException {
+	public void testTransfer75k() throws SAXException, InterruptedException,
+			IOException {
 		testTransfer(75000);
 	}
 
-	public void testTransfer100k() throws SAXException, InterruptedException {
+	public void testTransfer100k() throws SAXException, InterruptedException,
+			IOException {
 		testTransfer(100000);
 	}
 
-	public void testTransfer300k() throws SAXException, InterruptedException {
+	public void testTransfer300k() throws SAXException, InterruptedException,
+			IOException {
 		testTransfer(300000);
 	}
 
-	public void testTransfer1M() throws SAXException, InterruptedException {
+	public void testTransfer1M() throws SAXException, InterruptedException,
+			IOException {
 		testTransfer(1000000);
 	}
 
-	public void testTransfer5M() throws SAXException, InterruptedException {
+	public void testTransfer5M() throws SAXException, InterruptedException,
+			IOException {
 		testTransfer(5000000);
 	}
 
-	private void testTransfer(int i) throws SAXException, InterruptedException {
+	private void testTransfer(int i) throws SAXException, InterruptedException,
+			IOException {
 		testTransfer(i, true, false);
 	}
 
 	@Test
 	public void testTransfer(int binarysize, boolean bind1, boolean bind2)
-			throws SAXException, InterruptedException {
+			throws SAXException, InterruptedException, IOException {
 		log.info("test transferm " + binarysize);
 		String username1 = "test1" + Math.random();
 		log.info("service1 with " + username1);
 		P2PBinarySource source1 = getServiceSource(username1, bind1);
-		String username2 = "test2" + Math.random();
-		log.info("service2 with " + username2);
-		P2PBinarySource source2 = getServiceSource(username2, bind2);
-		log.info("wait service2 " + source2);
-		source2.waitUntilReady();
 
 		log.info("creating binary");
 		Binary b1 = source1.newBinary("test", "bin");
@@ -82,13 +85,22 @@ public final class ITTestBinaryTransfer extends TestCase {
 		assertEquals(binarysize, b1.length());
 		String b1hasht = b1.getHash();
 		source1.clearMemory(0);
+
 		log.info("getOrDownload source1");
 		Binary b1reload = source1.getOrDownload(b1.getID());
 		assertNotNull(b1reload);
 		assertEquals(b1.getBean().toText(), b1reload.getBean().toText());
 		assertEquals(b1hasht, b1reload.getHash());
 
+		// 2
+
 		log.info("getOrDownload source2");
+		String username2 = "test2" + Math.random();
+		log.info("service2 with " + username2);
+		P2PBinarySource source2 = getServiceSource(username2, bind2);
+		log.info("wait service2 " + source2);
+		source2.waitUntilReady();
+
 		Binary b2 = source2.getOrDownload(b1.getID());
 		assertNotNull(b2);
 		log.info("wait until ready");
@@ -109,17 +121,6 @@ public final class ITTestBinaryTransfer extends TestCase {
 		source1.close();
 		source2.close();
 
-	}
-
-	private P2PBinarySource getServiceSource(final String username1,
-			boolean bind) throws SAXException {
-		MPreferences p1 = new StaticTestPreferences("waazdohclienttests",
-				username1);
-		P2PBinarySource source1 = new P2PBinarySource(p1, bind);
-		ServiceMock service1 = new ServiceMock(username1, source1);
-
-		service1.setSession("" + new MStringID());
-		return source1;
 	}
 
 	private synchronized void doWait(int i) {

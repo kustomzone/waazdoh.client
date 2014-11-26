@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import waazdoh.client.binaries.BinarySource;
 import waazdoh.client.binaries.ReportingService;
 import waazdoh.client.model.Binary;
 import waazdoh.client.model.JBean;
@@ -63,7 +64,6 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	boolean dobind;
 	private boolean closed = false;
 	private MPreferences p;
-	private ByteArraySource bytesource;
 	private long lastmessagereceived;
 	private TCPListener tcplistener;
 
@@ -73,11 +73,12 @@ public final class P2PServer implements MMessager, MMessageFactory,
 
 	private ThreadGroup tg = new ThreadGroup("p2p");
 	private ReportingService reporting;
+	private BinarySource binarysource;
 
-	public P2PServer(MPreferences p, boolean bind2, ByteArraySource nbytesource) {
+	public P2PServer(MPreferences p, boolean bind2, BinarySource nbinsource) {
 		this.p = p;
 		this.dobind = bind2;
-		this.bytesource = nbytesource;
+		this.binarysource = nbinsource;
 		initHandlers();
 		//
 		runChecker();
@@ -136,13 +137,13 @@ public final class P2PServer implements MMessager, MMessageFactory,
 
 	private void initHandlers() {
 		handlers.put("ping", new PingHandler());
-		WhoHasHandler whohashandler = new WhoHasHandler(bytesource, this);
+		WhoHasHandler whohashandler = new WhoHasHandler(binarysource, this);
 		whohashandler.addListener(new WhoHasListener() {
 			@Override
 			public void binaryRequested(MBinaryID streamid, Integer count) {
 				Download download = getDownload(streamid);
 				if (download == null) {
-					bytesource.addDownload(streamid);
+					binarysource.getOrDownload(streamid);
 				} else {
 					log.info("already downloading " + download);
 				}

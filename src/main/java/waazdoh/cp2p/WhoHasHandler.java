@@ -10,6 +10,7 @@
  ******************************************************************************/
 package waazdoh.cp2p;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -17,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import waazdoh.client.binaries.BinarySource;
+import waazdoh.client.model.Binary;
 import waazdoh.client.model.JBean;
 import waazdoh.client.model.MBinaryID;
 import waazdoh.client.model.MID;
@@ -37,7 +40,7 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 	/**
 	 * 
 	 */
-	private final ByteArraySource source;
+	private final BinarySource source;
 	private final MNodeConnection nodeconnection;
 	//
 	private Map<MID, MNodeID> whohas = new HashMap<MID, MNodeID>();
@@ -46,7 +49,7 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 
 	private boolean downloadeverything;
 
-	public WhoHasHandler(ByteArraySource source, MNodeConnection nodeconnection) {
+	public WhoHasHandler(BinarySource source, MNodeConnection nodeconnection) {
 		this.source = source;
 		this.nodeconnection = nodeconnection;
 	}
@@ -84,24 +87,26 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 					end = start + WaazdohInfo.WHOHAS_RESPONSE_MAX_PIECE_SIZE;
 				}
 				//
-				byte allbytes[] = source.get(streamid);
+				Binary bin = source.getOrDownload(streamid);
 				byte bs[] = new byte[end - start + 1];
 				bytes += bs.length;
 				int index = 0;
-				log.info("preparing piece " + start + " -> " + end
-						+ " allbytes:" + allbytes.length + " bs:" + bs.length);
-				for (int i = start; i <= end; i++) {
-					bs[index++] = allbytes[i];
+				log.info("preparing piece " + start + " -> " + end + " bin:"
+						+ bin + " bs:" + bs.length);
+				try {
+					bin.read(start, bs);
+					m.addAttachment("bytes", bs);
+					m.addAttribute("start", start);
+					m.addAttribute("end", end);
+				} catch (IOException e) {
+					log.error(e);
 				}
-				m.addAttachment("bytes", bs);
-				m.addAttribute("start", start);
-				m.addAttribute("end", end);
 			}
 
 			return m;
 		} else {
 			if (downloadeverything) {
-				source.addDownload(streamid);
+				source.getOrDownload(streamid);
 			}
 			//
 			final List<WhoHasListener> listeners = this.listeners;

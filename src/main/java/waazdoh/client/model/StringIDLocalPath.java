@@ -8,7 +8,7 @@ public class StringIDLocalPath {
 	private String id;
 
 	public StringIDLocalPath(String localpath, MBinaryID mBinaryID) {
-		this.localpath = localpath;
+		this.localpath = localpath.toString();
 		this.id = mBinaryID.toString();
 	}
 

@@ -1,7 +1,10 @@
 package waazdoh.client;
 
+import java.io.File;
+
 import org.xml.sax.SAXException;
 
+import waazdoh.client.binaries.BinaryStorage;
 import waazdoh.client.binaries.ReportingService;
 import waazdoh.client.model.Binary;
 import waazdoh.client.model.MBinaryID;
@@ -105,7 +108,14 @@ public class TestP2PServer extends WCTestCase {
 		for (int i = 0; i < MPreferences.NETWORK_MAX_DOWNLOADS_DEFAULT; i++) {
 			assertTrue(s.canDownload());
 			MBinaryID id = new MBinaryID();
-			s.addDownload(new Binary(id, service));
+			Binary b = new Binary(service, new BinaryStorage() {
+				@Override
+				public String getBinaryPath(MBinaryID id) {
+					return getTempPath() + File.separator + id;
+				}
+			}, "", "");
+			b.load(id);
+			s.addDownload(b);
 			downloadid = id;
 			assertNotNull(s.getDownload(id));
 		}
@@ -113,6 +123,11 @@ public class TestP2PServer extends WCTestCase {
 		//
 		s.removeDownload(downloadid);
 		assertTrue(s.canDownload());
+	}
+
+	private String getTempPath() {
+		String tempDir = System.getProperty("java.io.tmpdir");
+		return tempDir;
 	}
 
 	public void testTwoNodes() {

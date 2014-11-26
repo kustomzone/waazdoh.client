@@ -17,7 +17,7 @@ import java.util.Set;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.client.binaries.MBinarySource;
+import waazdoh.client.binaries.BinarySource;
 import waazdoh.client.model.CMService;
 import waazdoh.client.model.JBean;
 import waazdoh.client.model.JBeanResponse;
@@ -33,14 +33,14 @@ public final class ServiceMock implements CMService {
 	private String session;
 	private UserID userid;
 	private Map<String, JBean> groups = new HashMap<String, JBean>();
-	final private MBinarySource source;
+	final private BinarySource source;
 
 	private static Map<String, JBean> objects = new HashMap<String, JBean>();
 	private static Map<String, String> storagearea = new HashMap<>();
 
 	private MLogger log = MLogger.getLogger(this);
 
-	public ServiceMock(String username, MBinarySource nsource)
+	public ServiceMock(String username, BinarySource nsource)
 			throws SAXException {
 		this.username = username;
 		MStringID gusersid = new MStringID();

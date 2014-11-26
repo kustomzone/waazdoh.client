@@ -10,8 +10,11 @@
  ******************************************************************************/
 package waazdoh.cp2p;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import waazdoh.client.model.Binary;
@@ -33,6 +36,7 @@ public final class Download implements Runnable, MessageResponseListener,
 	private static final String MESSAGENAME_WHOHAS = "whohas";
 	private static final String MESSAGENAME_STREAM = "stream";
 	private static final int GIVEUP_TIMEOUT_MSEC = 1000 * 60 * 4;
+	private static final int PART_SIZE = 10000;
 	private Binary bin;
 	private MNodeConnection source;
 	private MLogger log;
@@ -40,10 +44,12 @@ public final class Download implements Runnable, MessageResponseListener,
 	private MTimedFlag giveupflag = new MTimedFlag(GIVEUP_TIMEOUT_MSEC);
 	private long endtime;
 	private long starttime;
-	private Map<Integer, NeededStart> sentstarts = new HashMap<Integer, Download.NeededStart>();
+	private Map<Integer, DownloadPart> sentstarts = new HashMap<Integer, DownloadPart>();
+	private List<DownloadPart> missingparts = new LinkedList<DownloadPart>();
+
 	private boolean hasBeenReady;
 	private String speedinfo;
-	private int nullcount;
+
 	private int countbytes;
 	private int overwritebytes;
 
@@ -58,6 +64,14 @@ public final class Download implements Runnable, MessageResponseListener,
 
 		log = MLogger.getLogger(this);
 		log.info("created");
+		//
+		initMissingParts();
+	}
+
+	private void initMissingParts() {
+		for (int i = 0; i < bin.length(); i += PART_SIZE) {
+			missingparts.add(new DownloadPart(i, i + PART_SIZE));
+		}
 	}
 
 	public String getMemoryUsageInfo() {
@@ -119,6 +133,7 @@ public final class Download implements Runnable, MessageResponseListener,
 		} else {
 			log.info("isready length ok " + countbytes + " " + bin.length());
 			if (!hasBeenReady) {
+				bin.flush();
 				hasBeenReady = bin.isReady();
 			}
 			return hasBeenReady;
@@ -127,7 +142,7 @@ public final class Download implements Runnable, MessageResponseListener,
 
 	private void resetSentStarts() {
 		log.info("resetting sent needed pieces");
-		sentstarts = new HashMap<Integer, Download.NeededStart>();
+		sentstarts = new HashMap<Integer, Download.DownloadPart>();
 	}
 
 	private void sendWhoHasMessage(Node n) {
@@ -225,14 +240,35 @@ public final class Download implements Runnable, MessageResponseListener,
 	}
 
 	private void writeRetrievedBytes(MMessage b, byte[] responsebytes) {
-		log.info("Download got floats " + responsebytes.length);
-		this.countbytes += responsebytes.length;
-		int start = b.getAttributeInt("start");
+		try {
+			log.info("Download got floats " + responsebytes.length);
+			this.countbytes += responsebytes.length;
+			int start = b.getAttributeInt("start");
+			//
+			bin.addAt(start, responsebytes);
+			//
+			removeSentRequestStart(start);
+			removeMissingPart(start, responsebytes.length);
+			updateSpeedInfo();
+		} catch (IOException e) {
+			log.error(e);
+		}
+	}
+
+	private void removeMissingPart(int start, int length) {
+		log.info("missingparts " + missingparts);
+
+		LinkedList<DownloadPart> nlist = new LinkedList<DownloadPart>(
+				missingparts);
+		for (int i = 0; i < missingparts.size(); i++) {
+			DownloadPart p = missingparts.get(i);
+			if (p.start <= start && start + length >= p.end) {
+				nlist.remove(i);
+				break;
+			}
+		}
 		//
-		overwritebytes += bin.addAt(start, responsebytes);
-		//
-		removeSentRequestStart(start);
-		updateSpeedInfo();
+		missingparts = nlist;
 	}
 
 	/**
@@ -244,7 +280,7 @@ public final class Download implements Runnable, MessageResponseListener,
 	private void removeSentRequestStart(int index) {
 		synchronized (sentstarts) {
 			for (Integer i : new HashSet<Integer>(sentstarts.keySet())) {
-				NeededStart s = sentstarts.get(i);
+				DownloadPart s = sentstarts.get(i);
 				if (index >= s.start && index <= s.end) {
 					sentstarts.remove(i);
 				}
@@ -257,59 +293,25 @@ public final class Download implements Runnable, MessageResponseListener,
 	}
 
 	private synchronized boolean addNeededPieces(JBean needed) {
-		while (bin.get(this.nullcount) != null) {
-			this.nullcount++;
-		}
-		int start = nullcount;
-		if (start >= bin.length()) {
-			// done
-			return false;
+		if (missingparts.size() > 0) {
+			int randompart = (int) (Math.random() * missingparts.size());
+			DownloadPart missingpart = missingparts.get(randompart);
+
+			DownloadPart s = new DownloadPart(missingpart.start,
+					missingpart.end);
+			sentstarts.put(missingpart.start, s);
+			//
+			JBean p = needed.add("piece");
+			p.addValue("start", s.start);
+			p.addValue("end", s.end);
+			log.info("piece needed " + p);
+			return true;
 		} else {
-			int getlength = bin.length() - start;
-			if (getlength > WaazdohInfo.DOWNLOADER_MAX_REQUESTED_PIECELENGTH) {
-				getlength = WaazdohInfo.DOWNLOADER_MAX_REQUESTED_PIECELENGTH;
-			}
-			//
-			Byte[] bytes = bin.getByteBuffer();
-			int bytesLength = bin.getBytesLength();
-			//
-			while (bytes[start] != null || getStartNeedSent(start) != null) {
-				NeededStart s = getStartNeedSent(start);
-				if (s != null) {
-					start = s.end;
-				}
-				start++;
-				if (start >= bytesLength) {
-					break;
-				}
-			}
-			//
-			int end = start;
-			while (end < (bin.length() - 1)
-					&& (end >= bytesLength || bytes[end] == null)) {
-				end++;
-				if (end > bytesLength) {
-					end = bin.length() - 1;
-				}
-			}
-			log.info("start:" + start + " end:" + end + " with " + sentstarts
-					+ " ow:" + (100.0f * overwritebytes / countbytes));
-			if (end > start || (end < bytesLength && bytes[end] == null)) {
-				NeededStart s = new NeededStart(start, end);
-				sentstarts.put(start, s);
-				//
-				JBean p = needed.add("piece");
-				p.addValue("start", start);
-				p.addValue("end", end);
-				log.info("piece needed " + p);
-				return true;
-			} else {
-				return false;
-			}
+			return false;
 		}
 	}
 
-	private NeededStart getStartNeedSent(int start) {
+	private DownloadPart getStartNeedSent(int start) {
 		return sentstarts.get(start);
 	}
 
@@ -318,18 +320,18 @@ public final class Download implements Runnable, MessageResponseListener,
 		return "Download[" + bin + "][" + speedinfo + "]";
 	}
 
-	private class NeededStart {
+	private class DownloadPart {
 		private int start;
 		private int end;
 
-		public NeededStart(int start, int end) {
+		public DownloadPart(int start, int end) {
 			this.start = start;
 			this.end = end;
 		}
 
 		@Override
 		public String toString() {
-			return "needed[" + start + " -> " + end + "]";
+			return "part[" + start + " -> " + end + "]";
 		}
 	}
 

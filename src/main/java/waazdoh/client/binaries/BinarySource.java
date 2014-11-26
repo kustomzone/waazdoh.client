@@ -19,9 +19,7 @@ import waazdoh.client.model.JBean;
 import waazdoh.client.model.MBinaryID;
 import waazdoh.util.MStringID;
 
-public interface MBinarySource {
-	void saveBinaries();
-
+public interface BinarySource {
 	void close();
 
 	boolean isRunning();
@@ -29,6 +27,8 @@ public interface MBinarySource {
 	void setService(CMService service);
 
 	CMService getService();
+
+	Binary get(MBinaryID streamid);
 
 	Binary getOrDownload(MBinaryID binaryid);
 

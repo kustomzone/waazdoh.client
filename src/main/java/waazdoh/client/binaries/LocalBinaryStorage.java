@@ -11,13 +11,9 @@
 package waazdoh.client.binaries;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -27,44 +23,28 @@ import java.util.Map;
 import waazdoh.client.model.Binary;
 import waazdoh.client.model.CMService;
 import waazdoh.client.model.MBinaryID;
-import waazdoh.client.model.MID;
 import waazdoh.client.model.StringIDLocalPath;
 import waazdoh.util.MCRC;
 import waazdoh.util.MLogger;
 import waazdoh.util.MPreferences;
 import waazdoh.util.MStringID;
 
-public final class MBinaryStorage {
+public final class LocalBinaryStorage implements BinaryStorage {
 	private List<Binary> streams = new LinkedList<Binary>();
 	private Map<MBinaryID, MCRC> crcs = new HashMap<MBinaryID, MCRC>();
 	//
 	private MLogger log = MLogger.getLogger(this);
-	private final String localpath;
 	private boolean running = true;
 	private final CMService service;
+	private MPreferences preferences;
 
-	public MBinaryStorage(MPreferences p, CMService service) {
-		this.localpath = p.get(MPreferences.LOCAL_PATH, ".waazdoh");
+	public LocalBinaryStorage(MPreferences p, CMService service) {
 		this.service = service;
-		//
-		Thread t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				while (isRunning()) {
-					try {
-						saveBinaries();
-						synchronized (streams) {
-							streams.wait(6000);
-						}
-					} catch (InterruptedException e) {
-						log.error(e);
-					} catch (Exception e) {
-						log.error(e);
-					}
-				}
-			}
-		}, "Storage save binaries");
-		t.start();
+		this.preferences = p;
+	}
+
+	private String getLocalPath() {
+		return preferences.get(MPreferences.LOCAL_PATH, ".waazdoh");
 	}
 
 	public String getMemoryUsageInfo() {
@@ -114,20 +94,6 @@ public final class MBinaryStorage {
 		}
 	}
 
-	public void clearFromMemory(int time, MID binaryid) {
-		saveBinaries();
-		Binary persistentStream = findStream(binaryid.getStringID());
-		log.info("clear from memory " + persistentStream + " time:" + time);
-		if (persistentStream != null) {
-			if (!persistentStream.isUsed(time)) {
-				log.info("removing " + binaryid);
-				synchronized (streams) {
-					streams.remove(findStream(binaryid.getStringID()));
-				}
-			}
-		}
-	}
-
 	public Binary findStream(MStringID streamid) {
 		synchronized (streams) {
 			Binary fs = null;
@@ -140,33 +106,6 @@ public final class MBinaryStorage {
 				}
 			}
 			return fs;
-		}
-	}
-
-	public void saveBinaries() {
-		synchronized (streams) {
-			Collection<Binary> lbinaries = streams;
-			for (Binary bin : lbinaries) {
-				try {
-					saveBinary(bin);
-				} catch (IOException e) {
-					log.error(e);
-				}
-			}
-		}
-	}
-
-	private void saveBinary(Binary fs) throws FileNotFoundException {
-		synchronized (streams) {
-			MCRC persistentBinaryCRC = getPersistentBinaryTimestamp(fs.getID());
-			MCRC fscrc = fs.getCRC();
-			if ((persistentBinaryCRC == null || !persistentBinaryCRC
-					.equals(fscrc)) && fs.isReady()) {
-				String datapath = getDataPath(fs);
-				log.info("saving binary datapath:" + datapath);
-				fs.save(new BufferedOutputStream(new FileOutputStream(datapath)));
-				crcs.put(fs.getID(), fs.getCRC());
-			}
 		}
 	}
 
@@ -183,17 +122,11 @@ public final class MBinaryStorage {
 			throws IOException {
 		synchronized (streams) {
 			Binary bin;
-			bin = new Binary(streamid, service);
-			if (bin.isOK()) {
-				String datapath = getDataPath(bin);
-				log.info("loading persistent binary " + streamid + " datapath:"
-						+ datapath);
-				File f = new File(datapath);
-				if (f.exists()) {
-					return loadPersistentBinary(bin);
-				} else {
-					return null;
-				}
+			bin = new Binary(service, this, "default", "default");
+			bin.load(streamid);
+
+			if (bin.isOK() && bin.checkCRC()) {
+				return bin;
 			} else {
 				return null;
 			}
@@ -215,13 +148,10 @@ public final class MBinaryStorage {
 		}
 	}
 
-	public File getBinaryFile(Binary bin) {
-		return new File(getDataPath(bin));
-	}
-
-	private MCRC getPersistentBinaryTimestamp(MBinaryID mBinaryID) {
-		return crcs.get(mBinaryID);
-	}
+	/*
+	 * public File getBinaryFile(Binary bin) { return new
+	 * File(getDataPath(bin)); }
+	 */
 
 	private Binary getPersistentStream(MBinaryID streamid) {
 		synchronized (streams) {
@@ -240,16 +170,22 @@ public final class MBinaryStorage {
 		return datapath;
 	}
 
-	private String getBinaryPath(MBinaryID mBinaryID) {
-		String sid = mBinaryID.toString();
-		String binarypath = new StringIDLocalPath(this.localpath, mBinaryID)
-				.getPath();
+	private String getBinaryFolderPath(MBinaryID id) {
+		String binarypath = new StringIDLocalPath(getLocalPath(), id).getPath();
 
 		//
 		File file = new File(binarypath);
 		file.mkdirs();
 		//
 		return binarypath;
+	}
+
+	public String getBinaryPath(MBinaryID id) {
+		return getBinaryFolderPath(id) + File.separator + id.toString();
+	}
+
+	public File getBinaryFile(Binary b) {
+		return new File(getDataPath(b));
 	}
 
 	@Override
@@ -271,8 +207,6 @@ public final class MBinaryStorage {
 
 	public void clearMemory(int suggestedmemorytreshold) {
 		synchronized (streams) {
-			saveBinaries();
-
 			List<Binary> bis = this.streams;
 			List<Binary> nbis = new LinkedList<Binary>();
 
@@ -293,7 +227,7 @@ public final class MBinaryStorage {
 		synchronized (streams) {
 			log.info("Adding a new binary. memory usage:"
 					+ getMemoryUsageInfo());
-			Binary b = new Binary(service, comment, extension);
+			Binary b = new Binary(service, this, comment, extension);
 			this.streams.add(b);
 			return b;
 		}

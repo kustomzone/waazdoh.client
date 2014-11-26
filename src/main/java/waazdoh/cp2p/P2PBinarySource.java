@@ -13,28 +13,26 @@ package waazdoh.cp2p;
 import java.io.File;
 import java.util.Set;
 
-import waazdoh.client.binaries.MBinarySource;
-import waazdoh.client.binaries.MBinaryStorage;
+import waazdoh.client.binaries.BinarySource;
+import waazdoh.client.binaries.LocalBinaryStorage;
 import waazdoh.client.binaries.ReportingService;
 import waazdoh.client.model.Binary;
-import waazdoh.client.model.BinaryListener;
 import waazdoh.client.model.CMService;
 import waazdoh.client.model.JBean;
 import waazdoh.client.model.MBinaryID;
-import waazdoh.client.model.MID;
 import waazdoh.cp2p.network.MBeanStorage;
 import waazdoh.util.MLogger;
 import waazdoh.util.MPreferences;
 import waazdoh.util.MStringID;
 
-public final class P2PBinarySource implements MBinarySource {
+public final class P2PBinarySource implements BinarySource {
 	P2PServer server;
 	//
 	MLogger log = MLogger.getLogger(this);
 	private MPreferences preferences;
 	private MBeanStorage beanstorage;
 	private ReportingService reporting;
-	private MBinaryStorage storage;
+	private LocalBinaryStorage storage;
 	private CMService service;
 
 	public P2PBinarySource(MPreferences p, Object reportingservice) {
@@ -42,22 +40,7 @@ public final class P2PBinarySource implements MBinarySource {
 	}
 
 	public P2PBinarySource(MPreferences p, boolean bind2) {
-		this.server = new P2PServer(p, bind2, new ByteArraySource() {
-			@Override
-			public byte[] get(MBinaryID streamid) {
-				Binary fs = P2PBinarySource.this.get(streamid);
-				if (fs == null || !fs.isReady()) {
-					return null;
-				} else {
-					return fs.asByteBuffer();
-				}
-			}
-
-			@Override
-			public void addDownload(MBinaryID streamid) {
-				getOrDownload(streamid);
-			}
-		});
+		this.server = new P2PServer(p, bind2, this);
 
 		this.preferences = p;
 	}
@@ -110,7 +93,7 @@ public final class P2PBinarySource implements MBinarySource {
 	@Override
 	public void setService(CMService service) {
 		this.service = service;
-		storage = new MBinaryStorage(preferences, service);
+		storage = new LocalBinaryStorage(preferences, service);
 		beanstorage = new MBeanStorage(preferences);
 		server.start();
 	}
@@ -120,14 +103,9 @@ public final class P2PBinarySource implements MBinarySource {
 		return beanstorage.getBean(id);
 	}
 
-	private synchronized Binary get(MBinaryID streamid) {
+	public synchronized Binary get(MBinaryID streamid) {
 		Binary fs = storage.getBinary(streamid);
 		return fs;
-	}
-
-	private void clearFromMemory(int time, MID binaryid) {
-		log.info("clear from memory " + binaryid + " time:" + time);
-		storage.clearFromMemory(time, binaryid);
 	}
 
 	@Override
@@ -149,8 +127,9 @@ public final class P2PBinarySource implements MBinarySource {
 		if (fs == null) {
 			if (server.waitForDownloadSlot(5000)) {
 				log.info("new Binary " + fsid);
-				fs = new Binary(fsid, service);
-				if (fs.isOK()) {
+				fs = new Binary(service, storage, "", "");
+
+				if (fs.load(fsid) && fs.isOK()) {
 					addBinary(fs);
 					addDownload(fs);
 				} else {
@@ -167,12 +146,6 @@ public final class P2PBinarySource implements MBinarySource {
 	}
 
 	private synchronized void addDownload(final Binary bin) {
-		bin.addListener(new BinaryListener() {
-			@Override
-			public void ready(Binary binary) {
-				saveBinaries();
-			}
-		});
 		server.addDownload(bin);
 	}
 
@@ -183,11 +156,6 @@ public final class P2PBinarySource implements MBinarySource {
 
 	private synchronized void addBinary(Binary stream) {
 		storage.addNewBinary(stream);
-	}
-
-	@Override
-	public void saveBinaries() {
-		storage.saveBinaries();
 	}
 
 	@Override
@@ -224,5 +192,9 @@ public final class P2PBinarySource implements MBinarySource {
 		} catch (InterruptedException e) {
 			log.error(e);
 		}
+	}
+
+	public MPreferences getPreferences() {
+		return preferences;
 	}
 }

@@ -11,14 +11,16 @@
 package waazdoh.client.model;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.util.LinkedList;
 import java.util.List;
 
+import waazdoh.client.binaries.BinaryStorage;
 import waazdoh.util.HashSource;
 import waazdoh.util.MCRC;
 import waazdoh.util.MLogger;
@@ -26,11 +28,8 @@ import waazdoh.util.MStringID;
 
 public final class Binary implements HashSource {
 	private static final String BEAN_TAG = "binary";
-	private static final int DEFAULT_BYTEARRAYSIZE = 1000;
-	private Byte[] bytes = new Byte[10];
-	private int bytesindex = 0;
 	//
-	private int length = -1;
+	private long length = -1;
 	private MCRC crc;
 	private long timestamp;
 	//
@@ -38,8 +37,6 @@ public final class Binary implements HashSource {
 	private MCRC storedcrc;
 	private List<BinaryListener> listeners;
 	//
-	public final static String TYPE_STREAM = "audiostream";
-	private String type = TYPE_STREAM;
 	private UserID creatorid;
 	private String version;
 	private String comment = "";
@@ -49,10 +46,16 @@ public final class Binary implements HashSource {
 	private String extension;
 	private MBinaryID id;
 
+	private RandomAccessFile access;
+	private BinaryStorage storage;
+
 	private static int count = 0;
 
-	public Binary(CMService service, String comment, String extension) {
+	public Binary(CMService service, BinaryStorage storage, String comment,
+			String extension) {
 		this.service = service;
+		this.storage = storage;
+
 		this.id = new MBinaryID();
 		creatorid = service.getUserID();
 		//
@@ -63,18 +66,14 @@ public final class Binary implements HashSource {
 		this.extension = extension;
 		this.comment = comment;
 
+		count++;
+
 		used();
 	}
 
-	public Binary(MBinaryID streamid, CMService service) {
-		count++;
-
+	public boolean load(MBinaryID streamid) {
 		this.id = streamid;
-		this.service = service;
-		//
-		loadFromService(streamid);
-		//
-		used();
+		return loadFromService(streamid);
 	}
 
 	@Override
@@ -83,22 +82,19 @@ public final class Binary implements HashSource {
 	}
 
 	public int getMemoryUsage() {
-		int total = bytes.length;
-		return total;
+		return 0;
 	}
 
 	private void init() {
 		resetCRC();
 	}
 
-	public String getFilename() {
-		return getID().toString() + "." + extension;
-	}
-
 	public synchronized boolean load(InputStream is) {
 		try {
+			newFile();
+
 			log.info("" + this + " loading from inputstream " + is);
-			bytes = new Byte[1000];
+
 			byte[] nbytes = new byte[1000];
 			// @
 			while (true) {
@@ -116,72 +112,57 @@ public final class Binary implements HashSource {
 		}
 	}
 
-	public synchronized int addAt(int index, byte[] nbytes) {
-		ensureSize(index + nbytes.length);
-		int overwritecount = 0;
+	private synchronized void newFile() throws IOException {
+		RandomAccessFile a = getFile();
+		a.seek(0);
+		a.setLength(0);
+	}
 
-		for (byte b : nbytes) {
-			if (bytes[index] != null) {
-				overwritecount++;
-			}
+	private RandomAccessFile getFile() throws IOException {
+		if (access == null) {
+			String filepath = storage.getBinaryPath(getID());
+			log.info("accessing file " + filepath);
+			access = new RandomAccessFile(new File(filepath), "rw");
+		}
+		return access;
+	}
 
-			bytes[index++] = b;
-		}
-		if (index > bytesindex) {
-			bytesindex = index;
-		}
+	public synchronized void addAt(int index, byte[] nbytes) throws IOException {
+		RandomAccessFile file = getFile();
+		file.seek(index);
+		file.write(nbytes, 0, nbytes.length);
 		//
 		resetCRC();
-		//
-		return overwritecount;
 	}
 
-	public synchronized void add(byte[] nbytes, int length) {
-		ensureSize(bytesindex + length);
-		for (int i = 0; i < length; i++) {
-			bytes[bytesindex++] = nbytes[i];
-		}
-		resetCRC();
-	}
-
-	private synchronized void ensureSize(int i) {
-		while (bytes.length < i) {
-			try {
-				int nlength = (int) (i * 1.1 + 10);
-				Byte[] nbytes = new Byte[nlength];
-				System.arraycopy(bytes, 0, nbytes, 0, bytes.length);
-				bytes = nbytes;
-				log.debug("binary using bytes " + bytes.length);
-			} catch (OutOfMemoryError memoryerror) {
-				log.error(memoryerror);
-				log.error("Out of memory with index " + i + " size:"
-						+ bytes.length);
-				log.info("ensureSize " + memoryerror);
-				try {
-					this.wait(10000);
-				} catch (InterruptedException e) {
-					log.error(e);
-				}
-			}
-		}
-	}
-
-	public synchronized void add(byte[] fsamples) {
+	public synchronized void add(byte[] nbytes, int length) throws IOException {
 		used();
-
-		ensureSize(bytesindex + fsamples.length);
-		//
-		for (int i = 0; i < fsamples.length; i++) {
-			bytes[bytesindex++] = fsamples[i];
-		}
-		log.info("bytes size " + bytesindex);
+		RandomAccessFile f = getFile();
+		f.write(nbytes, 0, length);
 		resetCRC();
 	}
 
-	public synchronized void add(Byte b) {
-		ensureSize(bytesindex + 100);
-		bytes[bytesindex++] = b;
+	public synchronized void add(byte[] bytes) throws FileNotFoundException,
+			IOException {
+		used();
+		getFile().write(bytes);
 		resetCRC();
+	}
+
+	public synchronized void add(Byte b) throws IOException {
+		getFile().write(b.intValue());
+		resetCRC();
+	}
+
+	public synchronized void read(int start, byte[] bs) throws IOException {
+		if (isReady()) {
+			RandomAccessFile f = getFile();
+			f.seek(start);
+			f.read(bs);
+			closeFile();
+		} else {
+			throw new RuntimeException("Binary is not ready to be read");
+		}
 	}
 
 	// public FloatStream(JBean b, CMService service) {
@@ -207,6 +188,7 @@ public final class Binary implements HashSource {
 		if (b != null && (b.get("data") != null || b.get("binary") != null)) {
 			log.info("loading Binary " + b);
 			load(b.find(BEAN_TAG));
+			used();
 			return true;
 		} else {
 			log.info("Service read " + pid + " failed");
@@ -226,12 +208,6 @@ public final class Binary implements HashSource {
 		bean.setAttribute("id", getID().toString());
 		//
 		service.addBean(getID(), bean);
-	}
-
-	public synchronized void fillWithNaN(int length) {
-		used();
-
-		bytes = new Byte[DEFAULT_BYTEARRAYSIZE];
 	}
 
 	@Override
@@ -260,63 +236,39 @@ public final class Binary implements HashSource {
 		return b;
 	}
 
-	public synchronized boolean save(OutputStream os) {
-		try {
-			BufferedOutputStream bos = new BufferedOutputStream(os);
-			for (int i = 0; i < bytesindex; i++) {
-				bos.write(bytes[i]);
-			}
-			bos.close();
-			os.close();
-			return true;
-		} catch (IOException e) {
-			log.error(e);
-			return false;
-		}
-	}
+	/*
+	 * public synchronized int read(int index, byte bs[]) throws IOException {
+	 * used(); RandomAccessFile f = getFile(); return f.read(bs, index,
+	 * bs.length); }
+	 */
 
-	public synchronized int read(int index, byte bs[]) {
-		used();
-
-		int bsindex = 0;
-		while (bsindex < bs.length && bsindex < bytesindex) {
-			bs[bsindex] = bytes[index];
-			bsindex++;
-		}
-		return bsindex;
-	}
-
-	public int length() {
+	public long length() {
 		return length;
-	}
-
-	public synchronized Byte get(int isample) {
-		used();
-
-		if (isample < bytesindex) {
-			return bytes[isample];
-		} else {
-			return null;
-		}
 	}
 
 	private void used() {
 		this.usedtime = System.currentTimeMillis();
 	}
 
-	public synchronized void set(int isample, byte[] f) {
-		ensureSize(isample + f.length);
-		for (byte b : f) {
-			bytes[isample++] = b;
-		}
-		if (isample > bytesindex) {
-			bytesindex = isample;
+	synchronized MCRC currentCRC() {
+		try {
+			String binaryPath = this.storage.getBinaryPath(getID());
+			if (new File(binaryPath).exists()) {
+				MCRC ncrc = new MCRC(getInputStream());
+				return ncrc;
+			} else {
+				log.info("currentCRC file not found " + binaryPath);
+				return new MCRC();
+			}
+		} catch (IOException e) {
+			log.error(e);
+			return null;
 		}
 	}
 
-	synchronized MCRC currentCRC() {
-		MCRC ncrc = new MCRC(bytes, bytesindex);
-		return ncrc;
+	public InputStream getInputStream() throws FileNotFoundException {
+		return new BufferedInputStream(new FileInputStream(
+				storage.getBinaryPath(getID())));
 	}
 
 	public MBinaryID getID() {
@@ -376,9 +328,21 @@ public final class Binary implements HashSource {
 	public void setReady() {
 		used();
 
-		storedcrc = currentCRC();
-		length = bytesindex;
-		fireReady();
+		try {
+			length = getFile().length();
+			closeFile();
+			storedcrc = currentCRC();
+			fireReady();
+		} catch (IOException e) {
+			log.error(e);
+		}
+	}
+
+	private void closeFile() throws IOException {
+		if (access != null) {
+			this.access.close();
+			this.access = null;
+		}
 	}
 
 	private void fireReady() {
@@ -409,28 +373,8 @@ public final class Binary implements HashSource {
 		return listeners;
 	}
 
-	public synchronized byte[] asByteBuffer() {
-		used();
-
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		save(baos);
-		return baos.toByteArray();
-	}
-
 	public void clear() {
 		init();
-	}
-
-	public Byte[] getByteBuffer() {
-		used();
-
-		return bytes;
-	}
-
-	public int getBytesLength() {
-		used();
-
-		return bytesindex;
 	}
 
 	public boolean isUsed(int suggestedmemorytreshold) {
@@ -465,4 +409,18 @@ public final class Binary implements HashSource {
 	public CMService getService() {
 		return service;
 	}
+
+	public boolean checkCRC() {
+		return getCRC().equals(this.storedcrc);
+	}
+
+	public synchronized void flush() {
+		try {
+			closeFile();
+			resetCRC();
+		} catch (IOException e) {
+			log.error(e);
+		}
+	}
+
 }

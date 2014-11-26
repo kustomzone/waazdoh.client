@@ -6,17 +6,25 @@ import java.util.Map;
 import java.util.Set;
 
 import junit.framework.TestCase;
+
+import org.xml.sax.SAXException;
+
+import waazdoh.cp2p.P2PBinarySource;
 import waazdoh.cp2p.P2PServer;
+import waazdoh.testing.ServiceMock;
 import waazdoh.testing.StaticTestPreferences;
 import waazdoh.util.ConditionWaiter;
 import waazdoh.util.MLogger;
 import waazdoh.util.MPreferences;
+import waazdoh.util.MStringID;
 
 public class WCTestCase extends TestCase {
 	private static final String PREFERENCES_PREFIX = "wcclienttests";
 	protected MLogger log = MLogger.getLogger(this);
 	private Map<String, String> values = new HashMap<String, String>();
 	private Set<P2PServer> servers = new HashSet<>();
+
+	private int usernamecounter = 0;
 
 	protected void setUp() throws Exception {
 		log.info("************************ STARTING A TEST " + this + " "
@@ -82,5 +90,21 @@ public class WCTestCase extends TestCase {
 		servers.add(s);
 		log.info("returning " + s);
 		return s;
+	}
+
+	protected P2PBinarySource getServiceSource(final String username1,
+			boolean bind) throws SAXException {
+		MPreferences p1 = new StaticTestPreferences("waazdohclienttests",
+				username1);
+		P2PBinarySource source1 = new P2PBinarySource(p1, bind);
+		ServiceMock service1 = new ServiceMock(username1, source1);
+
+		service1.setSession("" + new MStringID());
+		return source1;
+	}
+
+	protected String getRandomUserName() {
+		return "username" + (usernamecounter++) + "_"
+				+ System.currentTimeMillis();
 	}
 }

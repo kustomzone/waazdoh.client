@@ -4,7 +4,7 @@ import java.net.MalformedURLException;
 import java.util.HashSet;
 import java.util.Set;
 
-import waazdoh.client.binaries.MBinarySource;
+import waazdoh.client.binaries.BinarySource;
 import waazdoh.client.model.CMService;
 import waazdoh.client.model.JBean;
 import waazdoh.client.model.UserID;
@@ -16,20 +16,20 @@ import waazdoh.util.MStringID;
 public final class WClient {
 	private CMService service;
 	private MPreferences preferences;
-	private MBinarySource source;
+	private BinarySource source;
 	private boolean running = true;
 	//
 	private Set<WClientListener> listeners = new HashSet<WClientListener>();
 	private WBookmarks bookmarks;
 
-	public WClient(MPreferences p, MBinarySource binarysource)
+	public WClient(MPreferences p, BinarySource binarysource)
 			throws MalformedURLException {
 		this.preferences = p;
 		this.source = binarysource;
 		service = new RestServiceClient(getServiceURL(), source);
 	}
 
-	public WClient(MPreferences p, MBinarySource binarysource,
+	public WClient(MPreferences p, BinarySource binarysource,
 			CMService nservice) {
 		this.preferences = p;
 		this.source = binarysource;
@@ -54,7 +54,7 @@ public final class WClient {
 		return service.getUserID();
 	}
 
-	public MBinarySource getBinarySource() {
+	public BinarySource getBinarySource() {
 		return source;
 	}
 

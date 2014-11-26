@@ -16,8 +16,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import waazdoh.client.binaries.MBinarySource;
-import waazdoh.client.binaries.MBinaryStorage;
+import waazdoh.client.binaries.BinarySource;
+import waazdoh.client.binaries.LocalBinaryStorage;
 import waazdoh.client.binaries.ReportingService;
 import waazdoh.client.model.Binary;
 import waazdoh.client.model.CMService;
@@ -26,9 +26,9 @@ import waazdoh.client.model.MBinaryID;
 import waazdoh.util.MPreferences;
 import waazdoh.util.MStringID;
 
-public final class TestPBinarySource implements MBinarySource {
+public final class TestPBinarySource implements BinarySource {
 	private MPreferences preferences;
-	private MBinaryStorage storage;
+	private LocalBinaryStorage storage;
 	private CMService service;
 	private Map<String, JBean> beans = new HashMap<String, JBean>();
 
@@ -114,15 +114,16 @@ public final class TestPBinarySource implements MBinarySource {
 		return beans.get(id);
 	}
 
-	private Binary get(MBinaryID fsid) {
+	public Binary get(MBinaryID fsid) {
 		return storage.getBinary(fsid);
 	}
 
 	@Override
-	public Binary getOrDownload(MBinaryID samplesid) {
-		Binary b = storage.getBinary(samplesid);
+	public Binary getOrDownload(MBinaryID bid) {
+		Binary b = storage.getBinary(bid);
 		if (b == null) {
-			b = new Binary(samplesid, service);
+			b = storage.newBinary("", "bin");
+			b.load(bid);
 			storage.addNewBinary(b);
 		}
 		return b;
@@ -136,12 +137,7 @@ public final class TestPBinarySource implements MBinarySource {
 	@Override
 	public void setService(CMService service) {
 		this.service = service;
-		this.storage = new MBinaryStorage(preferences, service);
-	}
-
-	@Override
-	public void saveBinaries() {
-		storage.saveBinaries();
+		this.storage = new LocalBinaryStorage(preferences, service);
 	}
 
 	@Override

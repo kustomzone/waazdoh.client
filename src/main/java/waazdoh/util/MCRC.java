@@ -10,6 +10,8 @@
  ******************************************************************************/
 package waazdoh.util;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.zip.CRC32;
 
 public final class MCRC {
@@ -48,6 +50,17 @@ public final class MCRC {
 		}
 		if (crc32 != null) {
 			value = crc32.getValue();
+		}
+	}
+
+	public MCRC(InputStream inputStream) throws IOException {
+		crc32 = new CRC32();
+		while (true) {
+			int b = inputStream.read();
+			if (b < 0) {
+				break;
+			}
+			update((byte) b);
 		}
 	}
 

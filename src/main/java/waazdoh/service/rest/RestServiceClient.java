@@ -21,7 +21,7 @@ import java.util.Set;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.client.binaries.MBinarySource;
+import waazdoh.client.binaries.BinarySource;
 import waazdoh.client.model.CMService;
 import waazdoh.client.model.JBean;
 import waazdoh.client.model.JBeanResponse;
@@ -40,9 +40,9 @@ public final class RestServiceClient implements CMService {
 	private UserID userid;
 	private String username;
 	private boolean loggedin;
-	private MBinarySource source;
+	private BinarySource source;
 
-	public RestServiceClient(final String localurl, MBinarySource source)
+	public RestServiceClient(final String localurl, BinarySource source)
 			throws MalformedURLException {
 		this.url = new URL(localurl);
 		this.source = source;
