@@ -46,11 +46,6 @@ public final class TestPBinarySource implements BinarySource {
 		return ret;
 	}
 
-	@Override
-	public boolean reload(Binary binary) {
-		return storage.reload(binary) != null;
-	}
-
 	public void addBinary(Binary stream) {
 		storage.addNewBinary(stream);
 	}

@@ -129,8 +129,10 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		}
 		info += "]";
 
-		for (Node node : nodes) {
-			info += " node:" + node.getMemoryUsageInfo();
+		synchronized (nodes) {
+			for (Node node : nodes) {
+				info += " node:" + node.getMemoryUsageInfo();
+			}
 		}
 		return info;
 	}

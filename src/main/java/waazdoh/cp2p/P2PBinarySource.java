@@ -59,11 +59,6 @@ public final class P2PBinarySource implements BinarySource {
 	}
 
 	@Override
-	public boolean reload(Binary binary) {
-		return this.storage.reload(binary) != null;
-	}
-
-	@Override
 	public String getInfoText() {
 		String info = "server:" + server.getInfoText();
 		return info;

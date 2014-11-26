@@ -156,7 +156,7 @@ public final class TestBinary extends WCTestCase implements BinaryStorage {
 		return new Binary(service, this, "test", "test");
 	}
 
-	public void testLoad() throws SAXException, IOException {
+	public void testLoadSharedFile() throws SAXException, IOException {
 		P2PBinarySource c1 = getServiceSource(getRandomUserName(), false);
 		Binary b1 = c1.newBinary("test", "test");
 		assertNotNull(b1);
@@ -175,5 +175,17 @@ public final class TestBinary extends WCTestCase implements BinaryStorage {
 		assertNotNull(b2);
 		assertTrue(b2.checkCRC());
 		assertEquals(b1.getCRC(), b2.getCRC());
+	}
+
+	public void testLoad() throws IOException {
+		Binary b1 = getNewBinary();
+		addData(b1);
+		b1.setReady();
+
+		Binary b2 = getNewBinary();
+		b2.load(b1.getInputStream());
+		b2.setReady();
+
+		assertEquals(b2.getCRC(), b1.getCRC());
 	}
 }

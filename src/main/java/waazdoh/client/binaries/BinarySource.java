@@ -50,8 +50,6 @@ public interface BinarySource {
 
 	File getBinaryFile(Binary bin);
 
-	boolean reload(Binary binary);
-
 	Set<MStringID> getLocalObjectIDs();
 
 	void waitUntilReady();

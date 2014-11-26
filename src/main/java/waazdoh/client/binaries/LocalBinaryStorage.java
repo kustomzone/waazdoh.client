@@ -85,7 +85,7 @@ public final class LocalBinaryStorage implements BinaryStorage {
 				fs = getPersistentStream(streamid);
 				if (fs != null) {
 					log.info("found persistent data " + streamid);
-					streams.add(fs);
+					addNewBinary(fs);
 				} else {
 					log.info("ERROR Stream with id " + streamid + " null");
 				}
@@ -106,15 +106,6 @@ public final class LocalBinaryStorage implements BinaryStorage {
 				}
 			}
 			return fs;
-		}
-	}
-
-	public Binary reload(Binary binary) {
-		try {
-			return loadPersistentBinary(binary);
-		} catch (IOException e) {
-			log.error(e);
-			return null;
 		}
 	}
 
@@ -228,7 +219,7 @@ public final class LocalBinaryStorage implements BinaryStorage {
 			log.info("Adding a new binary. memory usage:"
 					+ getMemoryUsageInfo());
 			Binary b = new Binary(service, this, comment, extension);
-			this.streams.add(b);
+			addNewBinary(b);
 			return b;
 		}
 	}

@@ -84,7 +84,6 @@ public final class ITTestBinaryTransfer extends WCTestCase {
 		b1.publish();
 		assertEquals(binarysize, b1.length());
 		String b1hasht = b1.getHash();
-		source1.clearMemory(0);
 
 		log.info("getOrDownload source1");
 		Binary b1reload = source1.getOrDownload(b1.getID());
