@@ -113,6 +113,7 @@ public final class Binary implements HashSource {
 	}
 
 	private synchronized void newFile() throws IOException {
+		log.info("new file");
 		RandomAccessFile a = getFile();
 		a.seek(0);
 		a.setLength(0);
@@ -132,6 +133,18 @@ public final class Binary implements HashSource {
 		file.seek(index);
 		file.write(nbytes, 0, nbytes.length);
 		//
+		log.debug("added " + nbytes.length + " at " + index + ". File size now "
+				+ file.length());
+		resetCRC();
+	}
+
+	public void addAt(int index, byte[] nbytes, int length) throws IOException {
+		RandomAccessFile file = getFile();
+		file.seek(index);
+		file.write(nbytes, 0, length);
+		//
+		log.debug("added " + length + " at " + index + ". File size now "
+				+ file.length());
 		resetCRC();
 	}
 
@@ -139,6 +152,9 @@ public final class Binary implements HashSource {
 		used();
 		RandomAccessFile f = getFile();
 		f.write(nbytes, 0, length);
+
+		log.debug("added " + nbytes.length + ". File size now " + f.length());
+
 		resetCRC();
 	}
 
@@ -146,11 +162,15 @@ public final class Binary implements HashSource {
 			IOException {
 		used();
 		getFile().write(bytes);
+		log.debug("added " + bytes.length + ". File size now "
+				+ getFile().length());
+
 		resetCRC();
 	}
 
 	public synchronized void add(Byte b) throws IOException {
 		getFile().write(b.intValue());
+
 		resetCRC();
 	}
 
@@ -326,6 +346,8 @@ public final class Binary implements HashSource {
 	}
 
 	public void setReady() {
+		log.info("setting binary ready");
+
 		used();
 
 		try {
@@ -340,6 +362,7 @@ public final class Binary implements HashSource {
 
 	private void closeFile() throws IOException {
 		if (access != null) {
+			log.info("closing file " + access);
 			this.access.close();
 			this.access = null;
 		}
@@ -392,7 +415,8 @@ public final class Binary implements HashSource {
 		return extension;
 	}
 
-	public void importStream(InputStream stream) throws IOException {
+	public synchronized void importStream(InputStream stream)
+			throws IOException {
 		BufferedInputStream bis = new BufferedInputStream(stream);
 		byte bs[] = new byte[1024];
 		while (true) {
@@ -410,7 +434,7 @@ public final class Binary implements HashSource {
 		return service;
 	}
 
-	public boolean checkCRC() {
+	public synchronized boolean checkCRC() {
 		return getCRC().equals(this.storedcrc);
 	}
 
@@ -422,5 +446,4 @@ public final class Binary implements HashSource {
 			log.error(e);
 		}
 	}
-
 }

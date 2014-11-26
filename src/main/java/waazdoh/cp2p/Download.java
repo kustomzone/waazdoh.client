@@ -70,7 +70,11 @@ public final class Download implements Runnable, MessageResponseListener,
 
 	private void initMissingParts() {
 		for (int i = 0; i < bin.length(); i += PART_SIZE) {
-			missingparts.add(new DownloadPart(i, i + PART_SIZE));
+			int end = i + PART_SIZE;
+			if (end > bin.length()) {
+				end = (int) bin.length();
+			}
+			missingparts.add(new DownloadPart(i, end));
 		}
 	}
 
@@ -90,7 +94,8 @@ public final class Download implements Runnable, MessageResponseListener,
 		this.starttime = System.currentTimeMillis();
 		flag = new MTimedFlag(WaazdohInfo.DOWNLOAD_RESET_DELAY);
 		while (!isReady() && source.isRunning() && !giveupflag.isTriggered()) {
-			log.info("reset download");
+			log.info("reset download ready:" + isReady() + " source.running:"
+					+ source.isRunning() + " giveupflag:" + giveupflag);
 			flag.reset();
 			resetSentStarts();
 			sendWhoHasMessage();
@@ -128,7 +133,8 @@ public final class Download implements Runnable, MessageResponseListener,
 		if (!sentstarts.isEmpty()) {
 			return false;
 		} else if (this.countbytes < bin.length()) {
-			log.info("isready length fail " + countbytes);
+			log.info("isready length fail " + countbytes + " binary.length "
+					+ bin.length());
 			return false;
 		} else {
 			log.info("isready length ok " + countbytes + " " + bin.length());
@@ -241,11 +247,13 @@ public final class Download implements Runnable, MessageResponseListener,
 
 	private void writeRetrievedBytes(MMessage b, byte[] responsebytes) {
 		try {
-			log.info("Download got floats " + responsebytes.length);
+			log.info("Download got " + responsebytes.length + " bytes");
 			this.countbytes += responsebytes.length;
 			int start = b.getAttributeInt("start");
+			int end = b.getAttributeInt("end");
+			int length = end - start;
 			//
-			bin.addAt(start, responsebytes);
+			bin.addAt(start, responsebytes, length);
 			//
 			removeSentRequestStart(start);
 			removeMissingPart(start, responsebytes.length);
@@ -255,14 +263,14 @@ public final class Download implements Runnable, MessageResponseListener,
 		}
 	}
 
-	private void removeMissingPart(int start, int length) {
-		log.info("missingparts " + missingparts);
+	private synchronized void removeMissingPart(int start, int length) {
+		log.debug("missingparts " + missingparts);
 
 		LinkedList<DownloadPart> nlist = new LinkedList<DownloadPart>(
 				missingparts);
 		for (int i = 0; i < missingparts.size(); i++) {
 			DownloadPart p = missingparts.get(i);
-			if (p.start <= start && start + length >= p.end) {
+			if (start <= p.start && start + length >= p.end) {
 				nlist.remove(i);
 				break;
 			}
