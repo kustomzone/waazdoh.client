@@ -124,21 +124,6 @@ public final class LocalBinaryStorage implements BinaryStorage {
 		}
 	}
 
-	private Binary loadPersistentBinary(Binary w) throws IOException {
-		BufferedInputStream is = new BufferedInputStream(new FileInputStream(
-				getDataPath(w)));
-		try {
-			if (w.load(is)) {
-				return w;
-			} else {
-				log.info("loading Binary " + w.getID() + " failed");
-				return null;
-			}
-		} finally {
-			is.close();
-		}
-	}
-
 	/*
 	 * public File getBinaryFile(Binary bin) { return new
 	 * File(getDataPath(bin)); }
@@ -155,12 +140,6 @@ public final class LocalBinaryStorage implements BinaryStorage {
 		}
 	}
 
-	private String getDataPath(Binary bin) {
-		String datapath = getBinaryPath(bin.getID()) + bin.getID() + "."
-				+ bin.getExtension();
-		return datapath;
-	}
-
 	private String getBinaryFolderPath(MBinaryID id) {
 		String binarypath = new StringIDLocalPath(getLocalPath(), id).getPath();
 
@@ -171,12 +150,17 @@ public final class LocalBinaryStorage implements BinaryStorage {
 		return binarypath;
 	}
 
-	public String getBinaryPath(MBinaryID id) {
-		return getBinaryFolderPath(id) + File.separator + id.toString();
+	private String getFileName(Binary bin) {
+		return bin.getID() + "." + bin.getExtension();
+	}
+
+	public String getBinaryPath(Binary bin) {
+		return getBinaryFolderPath(bin.getID()) + File.separator
+				+ getFileName(bin);
 	}
 
 	public File getBinaryFile(Binary b) {
-		return new File(getDataPath(b));
+		return new File(getBinaryPath(b));
 	}
 
 	@Override

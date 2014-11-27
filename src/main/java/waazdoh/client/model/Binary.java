@@ -121,7 +121,7 @@ public final class Binary implements HashSource {
 
 	private RandomAccessFile getFile() throws IOException {
 		if (access == null) {
-			String filepath = storage.getBinaryPath(getID());
+			String filepath = storage.getBinaryPath(this);
 			log.info("accessing file " + filepath);
 			access = new RandomAccessFile(new File(filepath), "rw");
 		}
@@ -133,8 +133,8 @@ public final class Binary implements HashSource {
 		file.seek(index);
 		file.write(nbytes, 0, nbytes.length);
 		//
-		log.debug("added " + nbytes.length + " at " + index + ". File size now "
-				+ file.length());
+		log.debug("added " + nbytes.length + " at " + index
+				+ ". File size now " + file.length());
 		resetCRC();
 	}
 
@@ -272,7 +272,7 @@ public final class Binary implements HashSource {
 
 	synchronized MCRC currentCRC() {
 		try {
-			String binaryPath = this.storage.getBinaryPath(getID());
+			String binaryPath = this.storage.getBinaryPath(this);
 			if (new File(binaryPath).exists()) {
 				MCRC ncrc = new MCRC(getInputStream());
 				return ncrc;
@@ -288,7 +288,7 @@ public final class Binary implements HashSource {
 
 	public InputStream getInputStream() throws FileNotFoundException {
 		return new BufferedInputStream(new FileInputStream(
-				storage.getBinaryPath(getID())));
+				storage.getBinaryPath(this)));
 	}
 
 	public MBinaryID getID() {

@@ -1,9 +1,9 @@
 package waazdoh.client.binaries;
 
-import waazdoh.client.model.MBinaryID;
+import waazdoh.client.model.Binary;
 
 public interface BinaryStorage {
 
-	String getBinaryPath(MBinaryID id);
+	String getBinaryPath(Binary bin);
 
 }

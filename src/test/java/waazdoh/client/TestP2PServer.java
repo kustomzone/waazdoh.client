@@ -110,8 +110,9 @@ public class TestP2PServer extends WCTestCase {
 			MBinaryID id = new MBinaryID();
 			Binary b = new Binary(service, new BinaryStorage() {
 				@Override
-				public String getBinaryPath(MBinaryID id) {
-					return getTempPath() + File.separator + id;
+				public String getBinaryPath(Binary b) {
+					return getTempPath() + File.separator + b.getID() + "."
+							+ b.getExtension();
 				}
 			}, "", "");
 			b.load(id);

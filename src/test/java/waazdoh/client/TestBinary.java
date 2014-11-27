@@ -9,7 +9,6 @@ import org.xml.sax.SAXException;
 import waazdoh.client.binaries.BinaryStorage;
 import waazdoh.client.model.Binary;
 import waazdoh.client.model.BinaryListener;
-import waazdoh.client.model.MBinaryID;
 import waazdoh.cp2p.P2PBinarySource;
 import waazdoh.testing.StaticService;
 import waazdoh.util.ConditionWaiter;
@@ -116,8 +115,9 @@ public final class TestBinary extends WCTestCase implements BinaryStorage {
 	}
 
 	@Override
-	public String getBinaryPath(MBinaryID id) {
-		return getTempPath() + File.separator + id;
+	public String getBinaryPath(Binary b) {
+		return getTempPath() + File.separator + b.getID() + "."
+				+ b.getExtension();
 	}
 
 	public void testBinaryBean() throws IOException {
