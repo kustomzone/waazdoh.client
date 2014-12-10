@@ -2,11 +2,13 @@ package waazdoh.client;
 
 import java.net.MalformedURLException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import waazdoh.client.binaries.BinarySource;
 import waazdoh.client.model.CMService;
 import waazdoh.client.model.JBean;
+import waazdoh.client.model.JBeanResponse;
 import waazdoh.client.model.UserID;
 import waazdoh.client.model.WBookmarks;
 import waazdoh.service.rest.RestServiceClient;
@@ -29,8 +31,7 @@ public final class WClient {
 		service = new RestServiceClient(getServiceURL(), source);
 	}
 
-	public WClient(MPreferences p, BinarySource binarysource,
-			CMService nservice) {
+	public WClient(MPreferences p, BinarySource binarysource, CMService nservice) {
 		this.preferences = p;
 		this.source = binarysource;
 		this.service = nservice;
@@ -127,5 +128,11 @@ public final class WClient {
 
 	public String readStorageArea(String string) {
 		return getService().readStorageArea(string);
+	}
+
+	public List<MStringID> search(String searchitem, int index, int count) {
+		JBeanResponse bresult = getService().search(searchitem, index, count);
+		List<MStringID> idlist = bresult.getIDList();
+		return idlist;
 	}
 }

@@ -167,7 +167,7 @@ public final class ServiceMock implements CMService {
 		for (int i = index; i < count; i++) {
 			list.add("" + new MStringID());
 		}
-		ret.getBean().addList("items", list);
+		ret.getBean().addList("idlist", list);
 		return ret;
 	}
 

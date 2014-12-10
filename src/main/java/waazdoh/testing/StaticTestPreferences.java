@@ -26,8 +26,13 @@ public final class StaticTestPreferences implements MPreferences {
 					"http://localhost:18099/waazdoh");
 		}
 
-		String deflocalpath = "" + "waazdohclienttest" + File.separator
-				+ username + File.separator;
+		String deflocalpath = "";
+		if (new File("target").exists()) {
+			deflocalpath = "target" + File.separator;
+		}
+		deflocalpath = "" + "waazdohclienttest" + File.separator + username
+				+ File.separator;
+		
 		String lpath = prefs.get(MPreferences.LOCAL_PATH, "");
 		if (lpath.equals("")) {
 			lpath = deflocalpath;

@@ -20,17 +20,20 @@ import waazdoh.util.MStringID;
 import waazdoh.util.xml.XML;
 
 public final class JBeanResponse {
+	public static final String IDLIST_ITEM = "item";
+	public static final String IDLIST = "idlist";
+
 	private static final String AUTHENTICATION_FAILED_MESSAGE = "auth failed";
 	private JBean bean = new JBean("response");
 	private MLogger log = MLogger.getLogger(this);
 
 	public JBeanResponse(final String o) throws SAXException {
 		String string = (String) o;
-		JBean bean = new JBean(new XML(string));
-		if (bean.getName().equals("response")) {
-			this.bean = bean;
+		JBean nbean = new JBean(new XML(string));
+		if (nbean.getName().equals("response")) {
+			this.bean = nbean;
 		} else {
-			bean.add(bean);
+			this.bean.add(nbean);
 		}
 	}
 
@@ -74,11 +77,13 @@ public final class JBeanResponse {
 
 	public List<MStringID> getIDList() {
 		List<MStringID> ret = new LinkedList<MStringID>();
-		JBean items = bean.get("items");
+		JBean items = bean.get(IDLIST);
 		if (items != null) {
 			List<JBean> ids = items.getChildren();
-			for (JBean jBean : ids) {
-				ret.add(new MStringID(jBean.getText()));
+			for (JBean cb : ids) {
+				if (cb.getName().equals(IDLIST_ITEM)) {
+					ret.add(new MStringID(cb.getText()));
+				}
 			}
 			return ret;
 		} else {
