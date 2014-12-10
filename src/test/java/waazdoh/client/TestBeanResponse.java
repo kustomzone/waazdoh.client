@@ -1,17 +1,12 @@
 package waazdoh.client;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import junit.framework.TestCase;
 
-import org.junit.Test;
 import org.xml.sax.SAXException;
 
 import waazdoh.client.model.JBeanResponse;
 
-public class TestBeanResponse {
-
-	@Test
+public class TestBeanResponse extends TestCase {
 	public void testIDList() throws SAXException {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<response><" + JBeanResponse.IDLIST + ">");
