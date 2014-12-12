@@ -12,6 +12,7 @@ package waazdoh.util;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,6 +38,7 @@ public final class URLCaller {
 	private MURL url;
 	private String o;
 	private Map<String, String> postdata;
+	private Map<String, String> requestproperties = new HashMap<String, String>();
 	private MLogger log;
 
 	private static MLogger getLogger() {
@@ -116,5 +118,9 @@ public final class URLCaller {
 		RequestConfig requestConfig = RequestConfig.custom()
 				.setConnectTimeout(30 * 1000).build();
 		HttpClientBuilder.create().setDefaultRequestConfig(requestConfig);
+	}
+
+	public void setRequestProperty(String name, String value) {
+		requestproperties.put(name, value);
 	}
 }

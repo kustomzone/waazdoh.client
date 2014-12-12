@@ -31,7 +31,7 @@ public final class MURL {
 
 	@Override
 	public String toString() {
-		String url = "http://" + host;
+		String url = host.indexOf("http://") < 0 ? "http://" : "" + host;
 		if (port > 0) {
 			url += ":" + port;
 		}
