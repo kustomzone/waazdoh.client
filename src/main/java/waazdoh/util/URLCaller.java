@@ -10,190 +10,111 @@
  ******************************************************************************/
 package waazdoh.util;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpMethodBase;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.Consts;
+import org.apache.http.HttpEntity;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+
+import waazdoh.client.model.WaazdohInfo;
 
 public final class URLCaller {
 	private MURL url;
-	private Integer code;
-	private byte[] o;
+	private String o;
 	private Map<String, String> postdata;
 	private MLogger log;
-	private ProxySettings proxysettings;
-	private String password;
-	private String username;
-	private File postfile;
-	private String postfilename;
-	private int timeout;
-	private static int clientscreated = 6000;
-	private static List<HttpClient> httpclients = new LinkedList<HttpClient>();
-
-	private static HttpClient getHttpClient() {
-		if (httpclients == null) {
-			httpclients = new LinkedList<HttpClient>();
-		}
-		synchronized (httpclients) {
-			if (httpclients.size() == 0) {
-				clientscreated++;
-				getLogger().info("clients created " + clientscreated);
-				HttpClient c;
-				c = new HttpClient();
-				httpclients.add(c);
-			}
-			return httpclients.remove(0);
-		}
-	}
 
 	private static MLogger getLogger() {
 		return MLogger.getLogger("static urlcaller");
 	}
 
-	private static void reset() {
-		synchronized (httpclients) {
-			try {
-				httpclients.wait(2000);
-			} catch (InterruptedException e) {
-				getLogger().error(e);
-			}
-		}
-		httpclients = null;
-	}
-
-	public URLCaller(MURL url, ProxySettings proxy) {
+	public URLCaller(MURL url) {
 		this.url = url;
-		this.proxysettings = proxy;
 		this.log = MLogger.getLogger(this);
 	}
 
-	public void setCredentials(final String un, String pw) {
-		this.username = un;
-		this.password = pw;
-	}
-
-	private byte[] doCall() {
+	private String doCall() {
 		try {
-			HttpMethodBase method;
-			if (postdata == null && postfile == null) {
-				method = new GetMethod(url.toString());
+			HttpRequestBase method;
+			if (postdata == null) {
+				method = new HttpGet(url.toString());
 			} else {
 				method = getPostMethod();
 			}
 			MLogger.getLogger(this).info("calling " + method + " url:" + url);
-			HttpClient httpClient = getHttpClient();
-			httpClient.getParams().setSoTimeout(timeout);
-			//
-			if (proxysettings != null) {
-				proxysettings.handle(httpClient);
+
+			CloseableHttpClient client = HttpClients.createDefault();
+
+			method.addHeader("waazdoh.version", WaazdohInfo.version);
+
+			CloseableHttpResponse response = client.execute(method);
+			try {
+				HttpEntity e = response.getEntity();
+				o = EntityUtils.toString(e);
+				EntityUtils.consume(e);
+			} finally {
+				response.close();
 			}
-			if (username != null) {
-				httpClient.getParams().setAuthenticationPreemptive(true);
-				Credentials defaultcreds = new UsernamePasswordCredentials(
-						username, password);
-				httpClient.getState().setCredentials(
-						new AuthScope(url.getHost(), url.getPort(),
-								AuthScope.ANY_REALM), defaultcreds);
-			}
-			//
-			code = httpClient.executeMethod(method);
-			byte bs[] = method.getResponseBody();
-			if (bs != null && isOKHttpReponse()) {
-				o = bs;
-			} else {
-				log.error("Response:" + new String(bs));
-			}
-			synchronized (httpclients) {
-				httpclients.add(httpClient);
-			}
-		} catch (HttpException e) {
-			log.info("" + e);
-			reset();
+
 		} catch (IOException e) {
-			log.info("" + e);
-			URLCaller.reset();
+			getLogger().info("" + e);
+			return null;
 		} catch (IllegalStateException e) {
-			log.info("" + e);
-			URLCaller.reset();
+			getLogger().info("" + e);
 		} catch (IllegalArgumentException e) {
-			log.info("" + e);
-			URLCaller.reset();
+			getLogger().info("" + e);
 		}
 		return o;
 	}
 
-	private HttpMethodBase getPostMethod() {
-		HttpMethodBase method;
-		NameValuePair[] parts;
-		PostMethod nmethod = new PostMethod(url.toString());
-		nmethod.setRequestHeader("Content-Type",
-				"application/x-www-form-urlencoded");
-		//
-		parts = new NameValuePair[postdata.size()];
+	private HttpRequestBase getPostMethod() {
+		HttpPost nmethod = new HttpPost(url.toString());
+		nmethod.setHeader("Content-Type", "application/x-www-form-urlencoded");
+
+		List<NameValuePair> formData = new ArrayList<NameValuePair>();
+
 		Set<String> postdatakeys = postdata.keySet();
-		int iparts = 0;
 		for (String postkey : postdatakeys) {
-			parts[iparts++] = new NameValuePair(postkey, postdata.get(postkey));
+			formData.add(new BasicNameValuePair(postkey, postdata.get(postkey)));
 		}
 
-		// StringPart part = new StringPart("data", spost);
-		// part.setCharSet("UTF-8");
-		// parts = new Part[] { part };
-		nmethod.setRequestBody(parts);
-		method = nmethod;
-		return method;
+		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formData,
+				Consts.UTF_8);
+
+		nmethod.setEntity(entity);
+		return nmethod;
 	}
 
-	public byte[] getResponseBody() {
+	public String getResponseBody() {
 		return doCall();
 	}
 
-	private boolean isOKHttpReponse() {
-		if (code == 0 || code == 200) {
-			return true;
-		} else {
-			log.info("response not ok " + code + " " + o);
-			return false;
-		}
-	}
-
 	public boolean isOK() {
-		if (isOKHttpReponse() && getResponseBody() != null) {
-			return true;
-		} else {
-			return false;
-		}
+		return o != null;
 	}
 
 	public void setPostData(final Map<String, String> data) {
 		this.postdata = data;
 	}
 
-	public void setPost(final String filename, File f) {
-		this.postfile = f;
-		this.postfilename = filename;
-	}
-
-	public static void closeConnections() {
-		List<HttpClient> cs = URLCaller.httpclients;
-		for (HttpClient httpClient : cs) {
-			httpClient.getHttpConnectionManager().closeIdleConnections(0);
-		}
-	}
-
 	public void setTimeout(int i) {
-		this.timeout = i;
+		RequestConfig requestConfig = RequestConfig.custom()
+				.setConnectTimeout(30 * 1000).build();
+		HttpClientBuilder.create().setDefaultRequestConfig(requestConfig);
 	}
 }

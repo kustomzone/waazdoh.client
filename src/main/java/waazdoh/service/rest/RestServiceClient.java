@@ -230,24 +230,22 @@ public final class RestServiceClient implements CMService {
 
 	private JBeanResponse getResponses(final String service, String method,
 			boolean auth, List<String> params) {
-		byte[] responseBody = callService(service, method, auth, params);
+		String responseBody = callService(service, method, auth, params);
 		return parseResponse(responseBody);
 	}
 
-	private byte[] callService(final String service, String method,
+	private String callService(final String service, String method,
 			boolean auth, List<String> params) {
 		MURL murl = getURL(service, method, auth, params);
 		//
-		URLCaller urlcaller = new URLCaller(murl, new ClientProxySettings());
-		byte[] responseBody = urlcaller.getResponseBody();
-		return responseBody;
+		URLCaller urlcaller = new URLCaller(murl);
+		return urlcaller.getResponseBody();
 	}
 
 	private JBean getBean(String service, String method, boolean auth,
 			List<String> params) {
-		byte[] bytes = callService(service, method, auth, params);
+		String string = callService(service, method, auth, params);
 		try {
-			String string = new String(bytes);
 			// TODO parsing twice because xml data is escaped in the original.
 			JBean b = new JBean(new XML(string));
 			return new JBean(b.toXML());
@@ -257,12 +255,10 @@ public final class RestServiceClient implements CMService {
 		}
 	}
 
-	private JBeanResponse parseResponse(byte[] responseBody) {
-		String sbody;
+	private JBeanResponse parseResponse(String responseBody) {
 		if (responseBody != null) {
-			sbody = new String(responseBody);
 			try {
-				return new JBeanResponse(sbody);
+				return new JBeanResponse(responseBody);
 			} catch (SAXException e) {
 				log.error("" + e);
 				return null;
@@ -274,10 +270,10 @@ public final class RestServiceClient implements CMService {
 
 	public boolean isConnected() {
 		MURL murl = getURL("users", "test", false, new LinkedList<String>());
-		URLCaller urlcaller = new URLCaller(murl, new ClientProxySettings());
+		URLCaller urlcaller = new URLCaller(murl);
 		urlcaller.setTimeout(200);
 
-		byte[] responseBody = urlcaller.getResponseBody();
+		String responseBody = urlcaller.getResponseBody();
 		JBeanResponse responseBean = parseResponse(responseBody);
 		return responseBean != null && responseBean.isSuccess();
 	}
@@ -336,11 +332,10 @@ public final class RestServiceClient implements CMService {
 		String sbody = null;
 		try {
 			MURL mnurl = getURL(service, method, true, params);
-			URLCaller urlcaller = new URLCaller(mnurl,
-					new ClientProxySettings());
+			URLCaller urlcaller = new URLCaller(mnurl);
 			urlcaller.setPostData(data);
 			log.info("posting " + data + " to " + mnurl);
-			byte[] responseBody = urlcaller.getResponseBody();
+			String responseBody = urlcaller.getResponseBody();
 			if (responseBody != null) {
 				sbody = new String(responseBody);
 			} else {
