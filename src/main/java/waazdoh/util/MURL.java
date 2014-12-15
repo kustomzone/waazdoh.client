@@ -18,6 +18,11 @@ public final class MURL {
 	private int port;
 	private String host;
 
+	public MURL(String protocol, final String host, final int port) {
+		this.host = protocol + "://" + host;
+		this.port = port;
+	}
+
 	public MURL(final String host, int port) {
 		this.host = host;
 		this.port = port;
@@ -31,7 +36,13 @@ public final class MURL {
 
 	@Override
 	public String toString() {
-		String url = (host.indexOf("http") < 0 ? "https://" : "") + host;
+		String url = "";
+		if (host.indexOf("http") < 0) {
+			url = "https://";
+		}
+
+		url += host;
+
 		if (port > 0) {
 			url += ":" + port;
 		}

@@ -302,7 +302,7 @@ public final class RestServiceClient implements CMService {
 
 	public MURL getAuthURL(final String service, String method,
 			List<String> params, String auth) {
-		MURL murl = new MURL(url.getHost(), url.getPort());
+		MURL murl = new MURL(url.getProtocol(), url.getHost(), url.getPort());
 		murl.append(url.getPath());
 		murl.append("/" + service);
 		murl.append("/" + method);

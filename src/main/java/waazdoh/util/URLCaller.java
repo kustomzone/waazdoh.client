@@ -41,13 +41,14 @@ public final class URLCaller {
 	private Map<String, String> requestproperties = new HashMap<String, String>();
 	private MLogger log;
 
-	private static MLogger getLogger() {
-		return MLogger.getLogger("static urlcaller");
-	}
-
 	public URLCaller(MURL url) {
 		this.url = url;
 		this.log = MLogger.getLogger(this);
+		log.info("URLCaller with " + url);
+	}
+
+	private MLogger getLogger() {
+		return log;
 	}
 
 	private String doCall() {
@@ -58,7 +59,7 @@ public final class URLCaller {
 			} else {
 				method = getPostMethod();
 			}
-			MLogger.getLogger(this).info("calling " + method + " url:" + url);
+			getLogger().info("calling " + method + " url:" + url);
 
 			CloseableHttpClient client = HttpClients.createDefault();
 
@@ -79,7 +80,7 @@ public final class URLCaller {
 		} catch (IllegalStateException e) {
 			getLogger().info("" + e);
 		} catch (IllegalArgumentException e) {
-			getLogger().info("" + e);
+			getLogger().error(e);
 		}
 		return o;
 	}
