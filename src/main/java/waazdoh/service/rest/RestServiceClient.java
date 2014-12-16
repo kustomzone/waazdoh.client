@@ -11,7 +11,6 @@
 package waazdoh.service.rest;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -34,7 +33,7 @@ import waazdoh.util.URLCaller;
 import waazdoh.util.xml.XML;
 
 public final class RestServiceClient implements CMService {
-	private URL url;
+	private MURL url;
 	private MLogger log = MLogger.getLogger(this);
 	private String sessionid;
 	private UserID userid;
@@ -44,7 +43,7 @@ public final class RestServiceClient implements CMService {
 
 	public RestServiceClient(final String localurl, BinarySource source)
 			throws MalformedURLException {
-		this.url = new URL(localurl);
+		this.url = new MURL(localurl);
 		this.source = source;
 	}
 
@@ -302,8 +301,7 @@ public final class RestServiceClient implements CMService {
 
 	public MURL getAuthURL(final String service, String method,
 			List<String> params, String auth) {
-		MURL murl = new MURL(url.getProtocol(), url.getHost(), url.getPort());
-		murl.append(url.getPath());
+		MURL murl = new MURL(url.toString());
 		murl.append("/" + service);
 		murl.append("/" + method);
 		if (auth != null) {
