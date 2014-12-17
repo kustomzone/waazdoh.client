@@ -16,6 +16,7 @@ import java.io.Writer;
 import java.util.logging.Logger;
 
 public final class MLogger {
+	private static long starttime;
 	private Logger log;
 	private Object o;
 
@@ -40,7 +41,9 @@ public final class MLogger {
 		if (string != null) {
 			string = string.replace('\n', '-');
 		}
-		return "" + o + " - " + System.currentTimeMillis() + " --" + string;
+		return "" + o + " - "
+				+ (System.currentTimeMillis() - MLogger.starttime) + " --"
+				+ string;
 	}
 
 	private Logger getLog() {
@@ -82,5 +85,9 @@ public final class MLogger {
 
 	public void error(final String string) {
 		info("ERROR " + string);
+	}
+
+	public static void resetStartTime() {
+		MLogger.starttime = System.currentTimeMillis();
 	}
 }

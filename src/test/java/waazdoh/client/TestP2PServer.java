@@ -19,6 +19,7 @@ import waazdoh.testing.StaticTestPreferences;
 import waazdoh.testing.TestPBinarySource;
 import waazdoh.util.ConditionWaiter;
 import waazdoh.util.ConditionWaiter.Condition;
+import waazdoh.util.MLogger;
 import waazdoh.util.MPreferences;
 import waazdoh.util.MStringID;
 import waazdoh.util.MTimedFlag;
@@ -33,6 +34,7 @@ public class TestP2PServer extends WCTestCase {
 		super.setUp();
 		servera = null;
 		serverb = null;
+		MLogger.resetStartTime();
 	}
 
 	public void testStartAndStop() {
@@ -132,25 +134,31 @@ public class TestP2PServer extends WCTestCase {
 	}
 
 	public void testTwoNodes() {
+		log.info("time servera " + System.currentTimeMillis());
 		P2PServer servera = getServer();
+		log.info("time serverb " + System.currentTimeMillis());
 		P2PServer serverb = getOtherServer();
-		log.info("getting servers done");
+		log.info("time getting servers done");
 		try {
+			log.info("time addnode " + System.currentTimeMillis());
 			final Node n = serverb.addNode(new MHost("localhost"),
 					servera.getPort());
-			log.info("waiting");
+			log.info("time waiting");
 			new ConditionWaiter(new Condition() {
 				public boolean test() {
 					return n.isConnected();
 				}
 			}, 20000);
 
+			log.info("time check node " + System.currentTimeMillis());
 			assertNotNull(n.getID());
+			log.info("time getrecmessages " + System.currentTimeMillis());
 			assertTrue(n.getReceivedMessages() > 0);
 		} finally {
-			log.info("closing");
-			servera.close();
-			serverb.close();
+			log.info("time closing " + System.currentTimeMillis());
+			log.info("time closing");
+			servera.forceClose();
+			serverb.forceClose();
 		}
 	}
 
