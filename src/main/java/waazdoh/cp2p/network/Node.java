@@ -177,10 +177,21 @@ public final class Node {
 		//
 		getMessages();
 
+		closeTCPNode();
+		source = null;
+	}
+
+	private void closeTCPNode() {
 		if (tcpnode != null) {
 			tcpnode.close();
 			tcpnode = null;
 		}
+	}
+
+	public void forceClose() {
+		log.info("Closing fast");
+		closed = true;
+		closeTCPNode();
 		source = null;
 	}
 
@@ -249,6 +260,8 @@ public final class Node {
 	}
 
 	public boolean isConnected() {
+		log.info("isConnected reccount:" + getReceivedMessages() + " id:"
+				+ getID() + " isclosed:" + isClosed());
 		return getReceivedMessages() > 0 && !isClosed() && getID() != null;
 	}
 
