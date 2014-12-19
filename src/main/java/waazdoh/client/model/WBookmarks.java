@@ -27,13 +27,12 @@ public final class WBookmarks {
 		update();
 	}
 
-	private void update() {
+	private synchronized void update() {
 		Set<String> groups = service.listStorageArea("bookmarks");
 		if (groups != null) {
 			for (final String name : groups) {
 				if (this.groups.get(name) == null) {
-					this.groups.put(name,
-							new WBookmarkGroup(name, service));
+					this.groups.put(name, new WBookmarkGroup(name, service));
 					fireGroupAdded(get(name));
 				}
 			}
@@ -56,6 +55,12 @@ public final class WBookmarks {
 
 	public List<WBookmarkGroup> getBookmarkGroups() {
 		return new LinkedList<WBookmarkGroup>(groups.values());
+	}
+
+	public synchronized void addGroup(String string) {
+		WBookmarkGroup g = new WBookmarkGroup(string, service);
+		this.groups.put(string, g);
+		fireGroupAdded(g);
 	}
 
 }

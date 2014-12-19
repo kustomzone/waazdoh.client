@@ -103,13 +103,7 @@ public final class JBeanResponse {
 	}
 
 	public boolean isSuccess() {
-		Boolean asuccess = bean.getBooleanValue("success");
-		if (asuccess != null) {
-			return asuccess;
-		} else {
-			String serror = bean.getValue("error");
-			return serror == null;
-		}
+		return bean.getBooleanValue("success");
 	}
 
 	public JBean find(String string) {

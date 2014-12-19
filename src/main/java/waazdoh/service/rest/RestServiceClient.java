@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.xml.sax.SAXException;
 
@@ -90,10 +91,24 @@ public final class RestServiceClient implements CMService {
 		Set<String> ret = new HashSet<>();
 		List<JBean> cs = b.getChildren();
 		for (JBean childbean : cs) {
-			ret.add(childbean.getValue("path"));
+			ret.add(childbean.getValue("name"));
 		}
 		//
 		return ret;
+	}
+
+	@Override
+	public void writeStorageArea(String string, String sdata) {
+		List<String> params = new LinkedList<String>();
+		StringTokenizer st = new StringTokenizer(string, "/");
+		while (st.hasMoreTokens()) {
+			String t = st.nextToken();
+			params.add(t);
+		}
+
+		Map<String, String> data = new HashMap<String, String>();
+		data.put("data", sdata);
+		post("storage", "write", params, data);
 	}
 
 	@Override
@@ -193,6 +208,7 @@ public final class RestServiceClient implements CMService {
 		if (bean != null) {
 			if (!bean.getName().equals("object") || bean.get("data") == null) {
 				JBean b = new JBean("object");
+				b.addValue("success", true);
 				b.add("data").add(bean);
 				return b;
 			} else {

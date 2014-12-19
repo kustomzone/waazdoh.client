@@ -350,11 +350,7 @@ public final class JBean implements Comparable<JBean> {
 
 	public Boolean getBooleanValue(final String aname) {
 		String s = getValue(aname);
-		if (s != null) {
-			return Boolean.parseBoolean(s);
-		} else {
-			return null;
-		}
+		return "true".equals(s);
 	}
 
 	public JBean getFirst() {

@@ -38,11 +38,13 @@ public final class WBookmarkGroup {
 		Set<String> br = service.listStorageArea("/bookmarks/" + name);
 		MLogger.getLogger(this).info("BookmarkGroup " + br);
 		//
-		for (String bookmarkname : br) {
-			try {
-				bookmarks.add(new WBookmark(name, bookmarkname, service));
-			} catch (SAXException e) {
-				log.error(e);
+		if (br != null) {
+			for (String bookmarkname : br) {
+				try {
+					bookmarks.add(new WBookmark(name, bookmarkname, service));
+				} catch (SAXException e) {
+					log.error(e);
+				}
 			}
 		}
 	}

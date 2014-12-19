@@ -32,7 +32,7 @@ public final class StaticTestPreferences implements MPreferences {
 		}
 		deflocalpath = "" + "waazdohclienttest" + File.separator + username
 				+ File.separator;
-		
+
 		String lpath = prefs.get(MPreferences.LOCAL_PATH, "");
 		if (lpath.equals("")) {
 			lpath = deflocalpath;
@@ -99,7 +99,7 @@ public final class StaticTestPreferences implements MPreferences {
 
 	@Override
 	public boolean getBoolean(final String name, boolean defbool) {
-		return "true".equals(get(name));
+		return "true".equals(get(name, "" + defbool));
 	}
 
 	@Override

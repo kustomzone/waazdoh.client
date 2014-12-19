@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import waazdoh.client.model.JBean;
+import waazdoh.client.model.JBeanResponse;
 import waazdoh.client.model.MID;
 import waazdoh.client.model.UserID;
 import waazdoh.util.HashSource;
@@ -64,12 +65,17 @@ public final class ServiceObject implements HashSource {
 
 	public boolean load(MStringID oid) {
 		log.info("loading " + oid);
-		JBean response = env.getService().read(oid);
-		if (response != null && response.get("data").get(tagname) != null) {
-			id = new MID(oid, this);
-			return parseBean(response.get("data").get(tagname));
+		if (oid != null) {
+			JBean response = env.getService().read(oid);
+			if (response != null && response.getBooleanValue("success")
+					&& response.get("data").get(tagname) != null) {
+				id = new MID(oid, this);
+				return parseBean(response.get("data").get(tagname));
+			} else {
+				log.info("loading " + tagname + " bean failed " + oid);
+				return false;
+			}
 		} else {
-			log.info("loading " + tagname + " bean failed " + oid);
 			return false;
 		}
 	}

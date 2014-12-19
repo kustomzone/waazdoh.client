@@ -56,4 +56,6 @@ public interface CMService {
 
 	Set<String> listStorageArea(String string);
 
+	void writeStorageArea(String string, String data);
+
 }

@@ -49,6 +49,11 @@ public final class StaticService implements CMService {
 	}
 
 	@Override
+	public void writeStorageArea(String string, String data) {
+		// TODO Auto-generated method stub	
+	}
+	
+	@Override
 	public boolean isConnected() {
 		return true;
 	}
