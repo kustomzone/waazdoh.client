@@ -66,7 +66,8 @@ public final class ServiceMock implements CMService {
 		Set<String> s = storagearea.keySet();
 		for (String storedpath : s) {
 			if (storedpath.indexOf(string) == 0) {
-				ret.add(storedpath);
+				String name = storedpath.substring(string.length() + 1);
+				ret.add(name);
 			}
 		}
 
