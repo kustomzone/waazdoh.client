@@ -66,7 +66,7 @@ public final class LocalBinaryStorage implements BinaryStorage {
 
 	public void addNewBinary(Binary fs) {
 		synchronized (streams) {
-			if (findStream(fs.getID()) != null) {
+			if (findBinary(fs.getID()) != null) {
 				throw new RuntimeException("Binary " + fs + " already added");
 			} else {
 				log.info("adding binary " + fs);
@@ -79,7 +79,7 @@ public final class LocalBinaryStorage implements BinaryStorage {
 
 	public Binary getBinary(MBinaryID streamid) {
 		synchronized (streams) {
-			Binary fs = findStream(streamid);
+			Binary fs = findBinary(streamid);
 			//
 			if (fs == null) {
 				fs = getPersistentStream(streamid);
@@ -94,7 +94,7 @@ public final class LocalBinaryStorage implements BinaryStorage {
 		}
 	}
 
-	public Binary findStream(MStringID streamid) {
+	private Binary findBinary(MStringID streamid) {
 		synchronized (streams) {
 			Binary fs = null;
 			Iterator<Binary> i = new LinkedList<Binary>(streams).iterator();

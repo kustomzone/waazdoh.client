@@ -175,6 +175,8 @@ public final class TestBinary extends WCTestCase implements BinaryStorage {
 		assertNotNull(b2);
 		assertTrue(b2.checkCRC());
 		assertEquals(b1.getCRC(), b2.getCRC());
+		//
+		assertNotNull(c2.get(b1.getID()));
 	}
 
 	public void testLoad() throws IOException {
