@@ -15,17 +15,9 @@ import java.io.IOException;
 import java.io.Reader;
 
 public final class XML {
-	private String string;
+	private final String string;
 
 	public XML(final String string) {
-		this.string = string;
-	}
-
-	public String getString() {
-		return string;
-	}
-
-	public void setString(final String string) {
 		this.string = string;
 	}
 

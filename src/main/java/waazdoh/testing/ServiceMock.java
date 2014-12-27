@@ -195,7 +195,7 @@ public final class ServiceMock implements CMService {
 		return b;
 	}
 
-	private void createSession() {
+	public void createSession() {
 		session = new MStringID().toString();
 		createUserID();
 	}

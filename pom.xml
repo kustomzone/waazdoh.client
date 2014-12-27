@@ -230,7 +230,14 @@
 			<version>[5.0.0,)</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.turn</groupId>
+			<artifactId>ttorrent</artifactId>
+			<version>1.4</version>
+		</dependency>
+
 	</dependencies>
+
 	<repositories>
 		<!-- Repository needed to include the jboss netty library -->
 		<repository>

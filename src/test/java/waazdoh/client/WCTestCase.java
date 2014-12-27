@@ -1,5 +1,6 @@
 package waazdoh.client;
 
+import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -90,6 +91,19 @@ public class WCTestCase extends TestCase {
 		servers.add(s);
 		log.info("returning " + s);
 		return s;
+	}
+
+	protected WClient getClient(final String username, final boolean bind)
+			throws MalformedURLException, SAXException {
+		MPreferences p = new StaticTestPreferences("waazdohclienttests",
+				username);
+		P2PBinarySource source = new P2PBinarySource(p, bind);
+		ServiceMock service = new ServiceMock(username, source);
+		service.createSession();
+
+		WClient c = new WClient(p, source, service);
+		c.setSession(service.getSessionID());
+		return c;
 	}
 
 	protected P2PBinarySource getServiceSource(final String username1,

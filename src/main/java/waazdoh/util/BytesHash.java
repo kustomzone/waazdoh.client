@@ -11,10 +11,11 @@ public final class BytesHash {
 	public BytesHash(byte[] bytes) {
 		MessageDigest md;
 		try {
-			md = MessageDigest.getInstance("MD5");
+			md = MessageDigest.getInstance("SHA-1");
 			hash = md.digest(bytes);
 		} catch (NoSuchAlgorithmException e) {
 			MLogger.getLogger(this).error(e);
+			
 		}
 	}
 

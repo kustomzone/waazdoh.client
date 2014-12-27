@@ -14,7 +14,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import waazdoh.client.model.JBean;
-import waazdoh.client.model.JBeanResponse;
 import waazdoh.client.model.MID;
 import waazdoh.client.model.UserID;
 import waazdoh.util.HashSource;
@@ -50,10 +49,10 @@ public final class ServiceObject implements HashSource {
 		this(string, env, data, version, "WZH");
 	}
 
-	public ServiceObject(final String string, final WClient env,
+	public ServiceObject(final String tagname, final WClient env,
 			final ServiceObjectData data, final String version,
 			final String nprefix) {
-		this.tagname = string;
+		this.tagname = tagname;
 		this.creatorid = env.getUserID();
 		this.data = data;
 		this.env = env;
