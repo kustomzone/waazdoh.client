@@ -1,7 +1,7 @@
 package waazdoh.client.model;
 
 public final class WaazdohInfo {
-	public final static String version = "1.1.4";
+	public static final String version = "1.1.4";
 	public static final int DOWNLOADER_MAX_REQUESTED_PIECELENGTH = 200000; // should
 																			// be
 																			// larger
@@ -12,4 +12,7 @@ public final class WaazdohInfo {
 	public static final int MAX_RESPONSE_WAIT_TIME = 40000;
 	public static final int DOWNLOAD_RESET_DELAY = 8000;
 
+	private WaazdohInfo() {
+
+	}
 }
