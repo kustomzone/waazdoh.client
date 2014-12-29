@@ -22,20 +22,20 @@ import java.util.Set;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.client.model.JBean;
+import waazdoh.client.model.WData;
 import waazdoh.cp2p.common.MNodeID;
 import waazdoh.util.MLogger;
 import waazdoh.util.MStringID;
 import waazdoh.util.xml.XML;
 
 public final class MMessage {
-	private JBean bean;
+	private WData bean;
 	private Map<String, byte[]> attachments = new HashMap<String, byte[]>();
 	private int bytecount;
 	//
 	private MessageResponseListener responselistener;
 
-	public MMessage(JBean bean) {
+	public MMessage(WData bean) {
 		this.bean = bean;
 		//
 		bytecount = bean.toXML().toString().length();
@@ -49,7 +49,7 @@ public final class MMessage {
 	}
 
 	public MMessage(final String string, MStringID sentby) {
-		bean = new JBean(string);
+		bean = new WData(string);
 		bean.addValue("sentby", sentby.toString());
 		setID(new MessageID());
 		//
@@ -67,7 +67,7 @@ public final class MMessage {
 		dis.read(bs);
 		String sxml = new String(bs);
 		XML xml = new XML(sxml);
-		bean = new JBean(xml);
+		bean = new WData(xml);
 
 		addCreatedTimestamp();
 
@@ -102,7 +102,7 @@ public final class MMessage {
 		return bean.getValue(string);
 	}
 
-	public JBean get(final String string) {
+	public WData get(final String string) {
 		return bean.get(string);
 	}
 
@@ -126,7 +126,7 @@ public final class MMessage {
 		return this.bean.getIntValue(string);
 	}
 
-	public JBean add(final String string) {
+	public WData add(final String string) {
 		return this.bean.add(string);
 	}
 
@@ -166,7 +166,7 @@ public final class MMessage {
 		}
 	}
 
-	public List<JBean> getChildren() {
+	public List<WData> getChildren() {
 		return bean.getChildren();
 	}
 

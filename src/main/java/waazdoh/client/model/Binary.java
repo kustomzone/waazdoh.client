@@ -42,21 +42,21 @@ public final class Binary implements HashSource {
 	private String comment = "";
 	private long usedtime;
 	private boolean ready;
-	private CMService service;
+	private WService service;
 	private String extension;
-	private MBinaryID id;
+	private BinaryID id;
 
 	private RandomAccessFile access;
 	private BinaryStorage storage;
 
 	private static int count = 0;
 
-	public Binary(CMService service, BinaryStorage storage, String comment,
+	public Binary(WService service, BinaryStorage storage, String comment,
 			String extension) {
 		this.service = service;
 		this.storage = storage;
 
-		this.id = new MBinaryID();
+		this.id = new BinaryID();
 		creatorid = service.getUserID();
 		//
 		if (service != null) {
@@ -71,7 +71,7 @@ public final class Binary implements HashSource {
 		used();
 	}
 
-	public boolean load(MBinaryID streamid) {
+	public boolean load(BinaryID streamid) {
 		this.id = streamid;
 		return loadFromService(streamid);
 	}
@@ -189,10 +189,10 @@ public final class Binary implements HashSource {
 	// this.service = service;
 	// load(b);
 	// }
-	private void load(JBean b) {
+	private void load(WData b) {
 		if (b.get(BEAN_TAG) != null) {
 			b = b.get(BEAN_TAG);
-			id = new MBinaryID(b.getAttribute("id"));
+			id = new BinaryID(b.getAttribute("id"));
 		}
 		//
 		this.length = b.getIntValue("length");
@@ -204,7 +204,7 @@ public final class Binary implements HashSource {
 	}
 
 	private synchronized boolean loadFromService(MStringID pid) {
-		JBean b = service.read(pid);
+		WData b = service.read(pid);
 		if (b != null && (b.get("data") != null || b.get("binary") != null)) {
 			log.info("loading Binary " + b);
 			load(b.find(BEAN_TAG));
@@ -224,7 +224,7 @@ public final class Binary implements HashSource {
 	public void save() {
 		creatorid = service.getUserID();
 
-		JBean bean = getBean();
+		WData bean = getBean();
 		bean.setAttribute("id", getID().toString());
 		//
 		service.addBean(getID(), bean);
@@ -244,8 +244,8 @@ public final class Binary implements HashSource {
 		return true;
 	}
 
-	public JBean getBean() {
-		JBean b = new JBean(BEAN_TAG);
+	public WData getBean() {
+		WData b = new WData(BEAN_TAG);
 		//
 		b.addValue("length", "" + length);
 		b.addValue("crc", "" + currentCRC().getValue());
@@ -291,7 +291,7 @@ public final class Binary implements HashSource {
 				storage.getBinaryPath(this)));
 	}
 
-	public MBinaryID getID() {
+	public BinaryID getID() {
 		return id;
 	}
 
@@ -430,7 +430,7 @@ public final class Binary implements HashSource {
 		setReady();
 	}
 
-	public CMService getService() {
+	public WService getService() {
 		return service;
 	}
 

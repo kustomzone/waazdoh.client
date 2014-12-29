@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 import waazdoh.client.model.Binary;
-import waazdoh.client.model.CMService;
-import waazdoh.client.model.MBinaryID;
+import waazdoh.client.model.WService;
+import waazdoh.client.model.BinaryID;
 import waazdoh.client.model.StringIDLocalPath;
 import waazdoh.util.MCRC;
 import waazdoh.util.MLogger;
@@ -31,14 +31,14 @@ import waazdoh.util.MStringID;
 
 public final class LocalBinaryStorage implements BinaryStorage {
 	private List<Binary> streams = new LinkedList<Binary>();
-	private Map<MBinaryID, MCRC> crcs = new HashMap<MBinaryID, MCRC>();
+	private Map<BinaryID, MCRC> crcs = new HashMap<BinaryID, MCRC>();
 	//
 	private MLogger log = MLogger.getLogger(this);
 	private boolean running = true;
-	private final CMService service;
+	private final WService service;
 	private MPreferences preferences;
 
-	public LocalBinaryStorage(MPreferences p, CMService service) {
+	public LocalBinaryStorage(MPreferences p, WService service) {
 		this.service = service;
 		this.preferences = p;
 	}
@@ -77,7 +77,7 @@ public final class LocalBinaryStorage implements BinaryStorage {
 		}
 	}
 
-	public Binary getBinary(MBinaryID streamid) {
+	public Binary getBinary(BinaryID streamid) {
 		synchronized (streams) {
 			Binary fs = findBinary(streamid);
 			//
@@ -100,7 +100,7 @@ public final class LocalBinaryStorage implements BinaryStorage {
 			Iterator<Binary> i = new LinkedList<Binary>(streams).iterator();
 			while (fs == null && i.hasNext()) {
 				Binary test = i.next();
-				MBinaryID testid = test.getID();
+				BinaryID testid = test.getID();
 				if (testid.equals(streamid)) {
 					fs = test;
 				}
@@ -109,7 +109,7 @@ public final class LocalBinaryStorage implements BinaryStorage {
 		}
 	}
 
-	public synchronized Binary loadPersistentStream(MBinaryID streamid)
+	public synchronized Binary loadPersistentStream(BinaryID streamid)
 			throws IOException {
 		synchronized (streams) {
 			Binary bin;
@@ -129,7 +129,7 @@ public final class LocalBinaryStorage implements BinaryStorage {
 	 * File(getDataPath(bin)); }
 	 */
 
-	private Binary getPersistentStream(MBinaryID streamid) {
+	private Binary getPersistentStream(BinaryID streamid) {
 		synchronized (streams) {
 			try {
 				return loadPersistentStream(streamid);
@@ -140,7 +140,7 @@ public final class LocalBinaryStorage implements BinaryStorage {
 		}
 	}
 
-	private String getBinaryFolderPath(MBinaryID id) {
+	private String getBinaryFolderPath(BinaryID id) {
 		String binarypath = new StringIDLocalPath(getLocalPath(), id).getPath();
 
 		//

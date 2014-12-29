@@ -20,17 +20,17 @@ import waazdoh.client.binaries.BinarySource;
 import waazdoh.client.binaries.LocalBinaryStorage;
 import waazdoh.client.binaries.ReportingService;
 import waazdoh.client.model.Binary;
-import waazdoh.client.model.CMService;
-import waazdoh.client.model.JBean;
-import waazdoh.client.model.MBinaryID;
+import waazdoh.client.model.WService;
+import waazdoh.client.model.WData;
+import waazdoh.client.model.BinaryID;
 import waazdoh.util.MPreferences;
 import waazdoh.util.MStringID;
 
 public final class TestPBinarySource implements BinarySource {
 	private MPreferences preferences;
 	private LocalBinaryStorage storage;
-	private CMService service;
-	private Map<String, JBean> beans = new HashMap<String, JBean>();
+	private WService service;
+	private Map<String, WData> beans = new HashMap<String, WData>();
 
 	public TestPBinarySource(MPreferences p) {
 		this.preferences = p;
@@ -100,21 +100,21 @@ public final class TestPBinarySource implements BinarySource {
 	}
 
 	@Override
-	public void addBean(final String id, JBean response) {
+	public void addBean(final String id, WData response) {
 		beans.put(id, response);
 	}
 
 	@Override
-	public JBean getBean(final String id) {
+	public WData getBean(final String id) {
 		return beans.get(id);
 	}
 
-	public Binary get(MBinaryID fsid) {
+	public Binary get(BinaryID fsid) {
 		return storage.getBinary(fsid);
 	}
 
 	@Override
-	public Binary getOrDownload(MBinaryID bid) {
+	public Binary getOrDownload(BinaryID bid) {
 		Binary b = storage.getBinary(bid);
 		if (b == null) {
 			b = storage.newBinary("", "bin");
@@ -125,12 +125,12 @@ public final class TestPBinarySource implements BinarySource {
 	}
 
 	@Override
-	public CMService getService() {
+	public WService getService() {
 		return service;
 	}
 
 	@Override
-	public void setService(CMService service) {
+	public void setService(WService service) {
 		this.service = service;
 		this.storage = new LocalBinaryStorage(preferences, service);
 	}

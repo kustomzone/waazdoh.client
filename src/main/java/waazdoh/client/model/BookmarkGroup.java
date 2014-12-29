@@ -18,16 +18,16 @@ import org.xml.sax.SAXException;
 
 import waazdoh.util.MLogger;
 
-public final class WBookmarkGroup {
-	private CMService service;
+public final class BookmarkGroup {
+	private WService service;
 	private String name;
 
-	private List<WBookmark> bookmarks = new LinkedList<WBookmark>();
-	private List<WBookmarkGroupListener> listeners = new LinkedList<WBookmarkGroupListener>();
+	private List<Bookmark> bookmarks = new LinkedList<Bookmark>();
+	private List<BookmarkGroupListener> listeners = new LinkedList<BookmarkGroupListener>();
 
 	private MLogger log = MLogger.getLogger(this);
 
-	public WBookmarkGroup(final String name, CMService service) {
+	public BookmarkGroup(final String name, WService service) {
 		this.service = service;
 		this.name = name;
 		//
@@ -41,7 +41,7 @@ public final class WBookmarkGroup {
 		if (br != null) {
 			for (String bookmarkname : br) {
 				try {
-					bookmarks.add(new WBookmark(name, bookmarkname, service));
+					bookmarks.add(new Bookmark(name, bookmarkname, service));
 				} catch (SAXException e) {
 					log.error(e);
 				}
@@ -53,11 +53,11 @@ public final class WBookmarkGroup {
 		return name;
 	}
 
-	public List<WBookmark> getBookmarks() {
-		return new LinkedList<WBookmark>(bookmarks);
+	public List<Bookmark> getBookmarks() {
+		return new LinkedList<Bookmark>(bookmarks);
 	}
 
-	public void addListener(WBookmarkGroupListener wBookmarkGroupListener) {
+	public void addListener(BookmarkGroupListener wBookmarkGroupListener) {
 		listeners.add(wBookmarkGroupListener);
 	}
 }

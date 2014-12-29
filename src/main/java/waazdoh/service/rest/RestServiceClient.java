@@ -22,10 +22,10 @@ import java.util.StringTokenizer;
 import org.xml.sax.SAXException;
 
 import waazdoh.client.binaries.BinarySource;
-import waazdoh.client.model.CMService;
-import waazdoh.client.model.JBean;
-import waazdoh.client.model.JBeanResponse;
-import waazdoh.client.model.MID;
+import waazdoh.client.model.WService;
+import waazdoh.client.model.WData;
+import waazdoh.client.model.WResponse;
+import waazdoh.client.model.ObjectID;
 import waazdoh.client.model.UserID;
 import waazdoh.util.MLogger;
 import waazdoh.util.MStringID;
@@ -33,7 +33,7 @@ import waazdoh.util.MURL;
 import waazdoh.util.URLCaller;
 import waazdoh.util.xml.XML;
 
-public final class RestServiceClient implements CMService {
+public final class RestServiceClient implements WService {
 	private MURL url;
 	private MLogger log = MLogger.getLogger(this);
 	private String sessionid;
@@ -54,23 +54,23 @@ public final class RestServiceClient implements CMService {
 	}
 
 	@Override
-	public JBean requestAppLogin() {
+	public WData requestAppLogin() {
 		String method = "requestapplogin";
 		//
-		JBean response = getBean("users", method, false,
+		WData response = getBean("users", method, false,
 				new LinkedList<String>());
 		return response;
 	}
 
 	@Override
-	public JBean acceptAppLogin(MStringID id) {
+	public WData acceptAppLogin(MStringID id) {
 		List<String> params = new LinkedList<String>();
 		params.add(id.toString());
 		return getBean("users", "acceptapp", true, params);
 	}
 
 	@Override
-	public JBean checkAppLogin(MStringID id) {
+	public WData checkAppLogin(MStringID id) {
 		List<String> params = new LinkedList<String>();
 		params.add(id.toString());
 		return getBean("users", "checkapplogin", false, params);
@@ -87,10 +87,10 @@ public final class RestServiceClient implements CMService {
 	public Set<String> listStorageArea(String string) {
 		List<String> params = new LinkedList<>();
 		params.add(string);
-		JBean b = getBean("storage", "list", true, params).get("items");
+		WData b = getBean("storage", "list", true, params).get("items");
 		Set<String> ret = new HashSet<>();
-		List<JBean> cs = b.getChildren();
-		for (JBean childbean : cs) {
+		List<WData> cs = b.getChildren();
+		for (WData childbean : cs) {
 			ret.add(childbean.getValue("name"));
 		}
 		//
@@ -126,10 +126,10 @@ public final class RestServiceClient implements CMService {
 		if (session != null && session.length() > 0) {
 			sessionid = session;
 			List<String> params = new LinkedList<String>();
-			JBeanResponse response = getResponses("users", "checksession",
+			WResponse response = getResponses("users", "checksession",
 					true, params);
 			log.info("checksession response " + response);
-			JBean buid = response.find("userid");
+			WData buid = response.find("userid");
 			if (response.isSuccess() && buid != null) {
 				String suserid = buid.getText();
 				if (suserid != null) {
@@ -157,7 +157,7 @@ public final class RestServiceClient implements CMService {
 	}
 
 	@Override
-	public MURL getURL(final String service, String type, MID id) {
+	public MURL getURL(final String service, String type, ObjectID id) {
 		List<String> params = new LinkedList<String>();
 		params.add("" + id);
 		return getAnonymousURL(service, type, params);
@@ -169,45 +169,45 @@ public final class RestServiceClient implements CMService {
 	}
 
 	@Override
-	public JBeanResponse reportDownload(MStringID id, boolean success) {
+	public WResponse reportDownload(MStringID id, boolean success) {
 		List<String> params = new LinkedList<String>();
 		params.add(sessionid.toString());
 		params.add(id.toString());
 		params.add("" + success);
-		JBeanResponse response = getResponses("objects", "reportdownload",
+		WResponse response = getResponses("objects", "reportdownload",
 				false, params);
 		return response;
 	}
 
 	@Override
-	public JBeanResponse getUser(UserID userid) {
-		JBean b = source.getBean(userid.toString());
+	public WResponse getUser(UserID userid) {
+		WData b = source.getBean(userid.toString());
 		if (b == null) {
 			List<String> params = new LinkedList<String>();
 			params.add(userid.toString());
-			JBeanResponse getresponse = getResponses("users", "get", true,
+			WResponse getresponse = getResponses("users", "get", true,
 					params);
 			if (getresponse.isSuccess()) {
 				source.addBean(userid.toString(), b);
-				JBeanResponse resp = JBeanResponse.getTrue();
+				WResponse resp = WResponse.getTrue();
 				resp.setBean(b);
 				return resp;
 			} else {
-				return JBeanResponse.getFalse();
+				return WResponse.getFalse();
 			}
 		} else {
-			JBeanResponse resp = JBeanResponse.getTrue();
+			WResponse resp = WResponse.getTrue();
 			resp.setBean(b);
 			return resp;
 		}
 	}
 
 	@Override
-	public JBean read(MStringID id) {
-		JBean bean = getBean(id);
+	public WData read(MStringID id) {
+		WData bean = getBean(id);
 		if (bean != null) {
 			if (!bean.getName().equals("object") || bean.get("data") == null) {
-				JBean b = new JBean("object");
+				WData b = new WData("object");
 				b.addValue("success", true);
 				b.add("data").add(bean);
 				return b;
@@ -217,7 +217,7 @@ public final class RestServiceClient implements CMService {
 		} else {
 			List<String> params = new LinkedList<String>();
 			params.add(id.toString());
-			JBean response = getBean("objects", "read", false, params);
+			WData response = getBean("objects", "read", false, params);
 			if (response.get("object") != null) {
 				source.addBean(id.toString(), response.get("object"));
 			}
@@ -225,16 +225,16 @@ public final class RestServiceClient implements CMService {
 		}
 	}
 
-	private JBean getBean(MStringID id) {
+	private WData getBean(MStringID id) {
 		return source.getBean(id.toString());
 	}
 
 	@Override
-	public void addBean(MStringID id, JBean b) {
+	public void addBean(MStringID id, WData b) {
 		source.addBean(id.toString(), b);
 	}
 
-	private JBeanResponse store(MStringID id, JBean bean) {
+	private WResponse store(MStringID id, WData bean) {
 		List<String> params = new LinkedList<String>();
 		params.add(id.toString());
 		Map<String, String> data = new HashMap<String, String>();
@@ -243,7 +243,7 @@ public final class RestServiceClient implements CMService {
 		return post("objects", "write", params, data);
 	}
 
-	private JBeanResponse getResponses(final String service, String method,
+	private WResponse getResponses(final String service, String method,
 			boolean auth, List<String> params) {
 		String responseBody = callService(service, method, auth, params);
 		return parseResponse(responseBody);
@@ -257,29 +257,29 @@ public final class RestServiceClient implements CMService {
 		return urlcaller.getResponseBody();
 	}
 
-	private JBean getBean(String service, String method, boolean auth,
+	private WData getBean(String service, String method, boolean auth,
 			List<String> params) {
 		String string = callService(service, method, auth, params);
 		try {
 			// TODO parsing twice because xml data is escaped in the original.
-			JBean b = new JBean(new XML(string));
-			return new JBean(b.toXML());
+			WData b = new WData(new XML(string));
+			return new WData(b.toXML());
 		} catch (SAXException e) {
 			log.error(e);
 			return null;
 		}
 	}
 
-	private JBeanResponse parseResponse(String responseBody) {
+	private WResponse parseResponse(String responseBody) {
 		if (responseBody != null) {
 			try {
-				return new JBeanResponse(responseBody);
+				return new WResponse(responseBody);
 			} catch (SAXException e) {
 				log.error("" + e);
 				return null;
 			}
 		} else {
-			return JBeanResponse.getError("Null response");
+			return WResponse.getError("Null response");
 		}
 	}
 
@@ -289,12 +289,12 @@ public final class RestServiceClient implements CMService {
 		urlcaller.setTimeout(200);
 
 		String responseBody = urlcaller.getResponseBody();
-		JBeanResponse responseBean = parseResponse(responseBody);
+		WResponse responseBean = parseResponse(responseBody);
 		return responseBean != null && responseBean.isSuccess();
 	}
 
 	@Override
-	public boolean publish(MID id) {
+	public boolean publish(ObjectID id) {
 		return publish(id.getStringID());
 	}
 
@@ -332,7 +332,7 @@ public final class RestServiceClient implements CMService {
 	}
 
 	@Override
-	public JBeanResponse search(final String filter, int index, int i) {
+	public WResponse search(final String filter, int index, int i) {
 		List<String> params = new LinkedList<String>();
 		params.add(filter);
 		params.add("" + index);
@@ -341,7 +341,7 @@ public final class RestServiceClient implements CMService {
 		return getResponses("objects", "search", false, params);
 	}
 
-	private JBeanResponse post(final String service, String method,
+	private WResponse post(final String service, String method,
 			List<String> params, Map<String, String> data) {
 		String sbody = null;
 		try {
@@ -355,11 +355,11 @@ public final class RestServiceClient implements CMService {
 			} else {
 				sbody = "";
 			}
-			return new JBeanResponse(sbody);
+			return new WResponse(sbody);
 		} catch (Exception e) {
 			log.error(e);
 			log.info("exception with response " + sbody);
-			return JBeanResponse.getError("ERROR " + sbody);
+			return WResponse.getError("ERROR " + sbody);
 		}
 	}
 

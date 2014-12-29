@@ -18,18 +18,18 @@ import java.util.UUID;
 import waazdoh.util.HashSource;
 import waazdoh.util.MStringID;
 
-public final class MID {
+public final class ObjectID {
 	private final String id;
 	private HashSource hashsource;
 
-	public MID(final String value, final HashSource hsource) {
+	public ObjectID(final String value, final HashSource hsource) {
 		int i = value.indexOf(".");
 		id = value.substring(0, i);
-		MID.check(id);
+		ObjectID.check(id);
 		hashsource = hsource;
 	}
 
-	public MID(HashSource hsource, final String nprefix) {
+	public ObjectID(HashSource hsource, final String nprefix) {
 		Date date = Calendar.getInstance().getTime();
 		SimpleDateFormat d = new SimpleDateFormat("yyyyMM");
 
@@ -37,7 +37,7 @@ public final class MID {
 		hashsource = hsource;
 	}
 
-	public MID(MStringID oid, HashSource nhashsource) {
+	public ObjectID(MStringID oid, HashSource nhashsource) {
 		this(oid.toString(), nhashsource);
 	}
 
@@ -52,8 +52,8 @@ public final class MID {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof MID) {
-			MID bid = (MID) obj;
+		if (obj instanceof ObjectID) {
+			ObjectID bid = (ObjectID) obj;
 			return bid.id.equals(id)
 					&& getSourceHash().equals(bid.hashsource.getHash());
 		} else if (obj instanceof MStringID) {

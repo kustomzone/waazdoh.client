@@ -1,11 +1,11 @@
 package waazdoh.client;
 
-import waazdoh.client.model.JBean;
+import waazdoh.client.model.WData;
 
 public interface ServiceObjectData {
 
-	boolean parseBean(JBean bean);
+	boolean parseBean(WData bean);
 
-	JBean getBean();
+	WData getBean();
 
 }

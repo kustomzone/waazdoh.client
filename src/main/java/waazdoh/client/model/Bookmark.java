@@ -14,18 +14,18 @@ import org.xml.sax.SAXException;
 
 import waazdoh.util.xml.XML;
 
-public final class WBookmark {
+public final class Bookmark {
 	private String oid;
 	private String created;
 	private String name;
 
-	public WBookmark(String group, String bookmarkname, CMService service)
+	public Bookmark(String group, String bookmarkname, WService service)
 			throws SAXException {
 		this.name = bookmarkname;
 
 		String r = service.readStorageArea("/bookmarks/" + group + "/"
 				+ bookmarkname);
-		JBean bbookmark = new JBean(new XML(r));
+		WData bbookmark = new WData(new XML(r));
 
 		oid = bbookmark.getValue("objectid");
 		created = bbookmark.getValue("created");

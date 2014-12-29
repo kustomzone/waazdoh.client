@@ -13,8 +13,8 @@ package waazdoh.client;
 import java.util.LinkedList;
 import java.util.List;
 
-import waazdoh.client.model.JBean;
-import waazdoh.client.model.MID;
+import waazdoh.client.model.WData;
+import waazdoh.client.model.ObjectID;
 import waazdoh.client.model.UserID;
 import waazdoh.util.HashSource;
 import waazdoh.util.MLogger;
@@ -23,7 +23,7 @@ import waazdoh.util.MStringID;
 public final class ServiceObject implements HashSource {
 	private UserID creatorid;
 
-	private MID id;
+	private ObjectID id;
 	private long created = System.currentTimeMillis();
 	private long modifytime;
 
@@ -35,7 +35,7 @@ public final class ServiceObject implements HashSource {
 
 	private String tagname;
 	private MStringID copyof;
-	private JBean storedbean = new JBean("temp");
+	private WData storedbean = new WData("temp");
 
 	private List<ServiceObjectListener> listeners = new LinkedList<ServiceObjectListener>();
 
@@ -59,16 +59,16 @@ public final class ServiceObject implements HashSource {
 		this.created = System.currentTimeMillis();
 		this.version = version;
 		this.prefix = nprefix;
-		id = new MID(this, prefix);
+		id = new ObjectID(this, prefix);
 	}
 
 	public boolean load(MStringID oid) {
 		log.info("loading " + oid);
 		if (oid != null) {
-			JBean response = env.getService().read(oid);
+			WData response = env.getService().read(oid);
 			if (response != null && response.getBooleanValue("success")
 					&& response.get("data").get(tagname) != null) {
-				id = new MID(oid, this);
+				id = new ObjectID(oid, this);
 				return parseBean(response.get("data").get(tagname));
 			} else {
 				log.info("loading " + tagname + " bean failed " + oid);
@@ -79,8 +79,8 @@ public final class ServiceObject implements HashSource {
 		}
 	}
 
-	private boolean parseBean(JBean bean) {
-		id = new MID(bean.getAttribute("id"), this);
+	private boolean parseBean(WData bean) {
+		id = new ObjectID(bean.getAttribute("id"), this);
 
 		creatorid = bean.getUserAttribute("creator");
 		created = bean.getLongValue("created");
@@ -94,12 +94,12 @@ public final class ServiceObject implements HashSource {
 		return env;
 	}
 
-	public MID getID() {
+	public ObjectID getID() {
 		return id;
 	}
 
-	public JBean getBean() {
-		JBean bt = new JBean(tagname);
+	public WData getBean() {
+		WData bt = new WData(tagname);
 		bt.addValue("created", created);
 		bt.addValue("modified", modifytime);
 		bt.addValue("creator", creatorid.toString());
@@ -130,11 +130,11 @@ public final class ServiceObject implements HashSource {
 
 		if (!env.getUserID().equals(creatorid)) {
 			copyof = getID().getStringID();
-			id = new MID(this, prefix);
+			id = new ObjectID(this, prefix);
 			creatorid = env.getUserID();
 		}
 
-		JBean current = data.getBean();
+		WData current = data.getBean();
 		current.setAttribute("id", id.toString());
 		if (!storedbean.equals(current)) {
 
@@ -144,7 +144,7 @@ public final class ServiceObject implements HashSource {
 			log.info("" + id + " current " + current.getContentHash());
 
 			modified();
-			JBean storing = data.getBean();
+			WData storing = data.getBean();
 			storing.setAttribute("id", id.toString());
 			log.info("" + id + " storing " + storing.toText());
 			//

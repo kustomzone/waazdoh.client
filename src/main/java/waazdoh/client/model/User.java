@@ -12,12 +12,12 @@ package waazdoh.client.model;
 
 import waazdoh.util.MLogger;
 
-public final class WUser {
+public final class User {
 
 	private String name;
 	private String img;
 
-	public WUser(JBean bean) {
+	public User(WData bean) {
 		/*
 		 * <response> <user> <uid>1b32558c-827d-4f4c-83bf-b9ea4a313db6</uid>
 		 * <profile>
@@ -26,10 +26,10 @@ public final class WUser {
 		 * <name>Juuso</name> <info>me!!!</info> </profile> <name>jeukku</name>
 		 * </user> <success>true</success> </response>
 		 */
-		JBean buser = bean.get("user");
+		WData buser = bean.get("user");
 		MLogger.getLogger(this).info("user : " + buser);
 		name = buser.getValue("name");
-		JBean profile = buser.get("profile");
+		WData profile = buser.get("profile");
 		img = profile.getValue("pictureURL");
 	}
 

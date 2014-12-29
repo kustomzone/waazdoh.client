@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 import waazdoh.client.model.Binary;
-import waazdoh.client.model.JBean;
-import waazdoh.client.model.MBinaryID;
+import waazdoh.client.model.WData;
+import waazdoh.client.model.BinaryID;
 import waazdoh.client.model.WaazdohInfo;
 import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;
@@ -196,7 +196,7 @@ public final class Download implements Runnable, MessageResponseListener,
 		synchronized (sentstarts) {
 			MMessage m = source.getMessage(MESSAGENAME_WHOHAS);
 			m.addAttribute("streamid", "" + getID());
-			JBean needed = m.add("needed");
+			WData needed = m.add("needed");
 			if (addNeededPieces(needed) && !isReady()) {
 				return m;
 			} else {
@@ -296,11 +296,11 @@ public final class Download implements Runnable, MessageResponseListener,
 		}
 	}
 
-	private MBinaryID getID() {
+	private BinaryID getID() {
 		return bin.getID();
 	}
 
-	private synchronized boolean addNeededPieces(JBean needed) {
+	private synchronized boolean addNeededPieces(WData needed) {
 		if (missingparts.size() > 0) {
 			int randompart = (int) (Math.random() * missingparts.size());
 			DownloadPart missingpart = missingparts.get(randompart);
@@ -309,7 +309,7 @@ public final class Download implements Runnable, MessageResponseListener,
 					missingpart.end);
 			sentstarts.put(missingpart.start, s);
 			//
-			JBean p = needed.add("piece");
+			WData p = needed.add("piece");
 			p.addValue("start", s.start);
 			p.addValue("end", s.end);
 			log.info("piece needed " + p);

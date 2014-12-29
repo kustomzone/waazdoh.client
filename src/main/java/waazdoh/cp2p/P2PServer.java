@@ -25,8 +25,8 @@ import java.util.StringTokenizer;
 import waazdoh.client.binaries.BinarySource;
 import waazdoh.client.binaries.ReportingService;
 import waazdoh.client.model.Binary;
-import waazdoh.client.model.JBean;
-import waazdoh.client.model.MBinaryID;
+import waazdoh.client.model.WData;
+import waazdoh.client.model.BinaryID;
 import waazdoh.cp2p.common.MHost;
 import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;
@@ -142,7 +142,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		WhoHasHandler whohashandler = new WhoHasHandler(binarysource, this);
 		whohashandler.addListener(new WhoHasListener() {
 			@Override
-			public void binaryRequested(MBinaryID streamid, Integer count) {
+			public void binaryRequested(BinaryID streamid, Integer count) {
 				Download download = getDownload(streamid);
 				if (download == null) {
 					binarysource.getOrDownload(streamid);
@@ -617,10 +617,10 @@ public final class P2PServer implements MMessager, MMessageFactory,
 			log.info(this.toString() + " " + message);
 			MMessageHandler handler = getHandler(message.getName());
 			//
-			JBean nodeinfo = message.get("nodeinfo");
+			WData nodeinfo = message.get("nodeinfo");
 			if (nodeinfo != null) {
-				List<JBean> nodeinfos = nodeinfo.getChildren();
-				for (JBean inode : nodeinfos) {
+				List<WData> nodeinfos = nodeinfo.getChildren();
+				for (WData inode : nodeinfos) {
 					MNodeID nodeinfoid = new MNodeID(inode.getName());
 					if (getNode(nodeinfoid) == null) {
 						MHost host = new MHost(inode.getValue("host"));

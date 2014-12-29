@@ -17,9 +17,9 @@ import waazdoh.client.binaries.BinarySource;
 import waazdoh.client.binaries.LocalBinaryStorage;
 import waazdoh.client.binaries.ReportingService;
 import waazdoh.client.model.Binary;
-import waazdoh.client.model.CMService;
-import waazdoh.client.model.JBean;
-import waazdoh.client.model.MBinaryID;
+import waazdoh.client.model.WService;
+import waazdoh.client.model.WData;
+import waazdoh.client.model.BinaryID;
 import waazdoh.cp2p.network.MBeanStorage;
 import waazdoh.util.MLogger;
 import waazdoh.util.MPreferences;
@@ -33,7 +33,7 @@ public final class P2PBinarySource implements BinarySource {
 	private MBeanStorage beanstorage;
 	private ReportingService reporting;
 	private LocalBinaryStorage storage;
-	private CMService service;
+	private WService service;
 
 	public P2PBinarySource(MPreferences p, Object reportingservice) {
 		this(p, true);
@@ -76,17 +76,17 @@ public final class P2PBinarySource implements BinarySource {
 	}
 
 	@Override
-	public CMService getService() {
+	public WService getService() {
 		return service;
 	}
 
 	@Override
-	public synchronized void addBean(final String id, JBean response) {
+	public synchronized void addBean(final String id, WData response) {
 		beanstorage.addBean(id, response);
 	}
 
 	@Override
-	public void setService(CMService service) {
+	public void setService(WService service) {
 		this.service = service;
 		storage = new LocalBinaryStorage(preferences, service);
 		beanstorage = new MBeanStorage(preferences);
@@ -94,11 +94,11 @@ public final class P2PBinarySource implements BinarySource {
 	}
 
 	@Override
-	public JBean getBean(final String id) {
+	public WData getBean(final String id) {
 		return beanstorage.getBean(id);
 	}
 
-	public synchronized Binary get(MBinaryID streamid) {
+	public synchronized Binary get(BinaryID streamid) {
 		Binary fs = storage.getBinary(streamid);
 		return fs;
 	}
@@ -117,7 +117,7 @@ public final class P2PBinarySource implements BinarySource {
 	}
 
 	@Override
-	public synchronized Binary getOrDownload(MBinaryID fsid) {
+	public synchronized Binary getOrDownload(BinaryID fsid) {
 		Binary fs = get(fsid);
 		if (fs == null) {
 			if (server.waitForDownloadSlot(5000)) {

@@ -20,7 +20,7 @@ public final class Version {
 	}
 
 	public Version(final String substring) {
-		MID.check(substring);
+		ObjectID.check(substring);
 		this.id = substring;
 	}
 

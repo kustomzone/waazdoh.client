@@ -17,17 +17,17 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
-public final class JBeanContentHandler implements ContentHandler {
+public final class WDataContentHandler implements ContentHandler {
 	// private JLogger log = JLogger.getLogger(this);
-	private Stack<JBean> stack = new Stack<JBean>();
-	private JBean last;
-	private JBean org;
+	private Stack<WData> stack = new Stack<WData>();
+	private WData last;
+	private WData org;
 
-	public JBeanContentHandler(JBean b) {
+	public WDataContentHandler(WData b) {
 		org = b;
 	}
 
-	private JBean getCurrent() {
+	private WData getCurrent() {
 		if (!stack.isEmpty()) {
 			return stack.lastElement();
 		} else {
@@ -59,12 +59,12 @@ public final class JBeanContentHandler implements ContentHandler {
 	public void startElement(final String uri, String localName, String qName,
 			Attributes atts) throws SAXException {
 		// log.info("start " + localName + " qn:" + qName + " attrs:" + atts);
-		JBean b;
+		WData b;
 		if (stack.size() == 0) {
 			b = org;
 			b.setName(localName);
 		} else {
-			b = new JBean(localName);
+			b = new WData(localName);
 			getCurrent().add(b);
 		}
 		//

@@ -13,6 +13,6 @@ package waazdoh.client.model;
 
 public interface BookmarksListener {
 
-	void groupAdded(WBookmarkGroup group);
+	void groupAdded(BookmarkGroup group);
 
 }

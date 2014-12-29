@@ -6,23 +6,23 @@ import java.util.List;
 import java.util.Set;
 
 import waazdoh.client.binaries.BinarySource;
-import waazdoh.client.model.CMService;
-import waazdoh.client.model.JBean;
-import waazdoh.client.model.JBeanResponse;
+import waazdoh.client.model.WService;
+import waazdoh.client.model.WData;
+import waazdoh.client.model.WResponse;
 import waazdoh.client.model.UserID;
-import waazdoh.client.model.WBookmarks;
+import waazdoh.client.model.Bookmarks;
 import waazdoh.service.rest.RestServiceClient;
 import waazdoh.util.MPreferences;
 import waazdoh.util.MStringID;
 
 public final class WClient {
-	private CMService service;
+	private WService service;
 	private MPreferences preferences;
 	private BinarySource source;
 	private boolean running = true;
 	//
 	private Set<WClientListener> listeners = new HashSet<WClientListener>();
-	private WBookmarks bookmarks;
+	private Bookmarks bookmarks;
 
 	public WClient(MPreferences p, BinarySource binarysource)
 			throws MalformedURLException {
@@ -31,7 +31,7 @@ public final class WClient {
 		service = new RestServiceClient(getServiceURL(), source);
 	}
 
-	public WClient(MPreferences p, BinarySource binarysource, CMService nservice) {
+	public WClient(MPreferences p, BinarySource binarysource, WService nservice) {
 		this.preferences = p;
 		this.source = binarysource;
 		this.service = nservice;
@@ -47,7 +47,7 @@ public final class WClient {
 				&& service != null && service.isLoggedIn();
 	}
 
-	public WBookmarks getBookmarks() {
+	public Bookmarks getBookmarks() {
 		return bookmarks;
 	}
 
@@ -59,7 +59,7 @@ public final class WClient {
 		return source;
 	}
 
-	public CMService getService() {
+	public WService getService() {
 		return service;
 	}
 
@@ -105,7 +105,7 @@ public final class WClient {
 	}
 
 	private void loggedIn() {
-		bookmarks = new WBookmarks(service);
+		bookmarks = new Bookmarks(service);
 
 		for (WClientListener clientListener : listeners) {
 			clientListener.loggedIn();
@@ -113,12 +113,12 @@ public final class WClient {
 	}
 
 	public WClientAppLogin requestAppLogin() {
-		JBean b = getService().requestAppLogin();
+		WData b = getService().requestAppLogin();
 		return new WClientAppLogin(b);
 	}
 
 	public WClientAppLogin checkAppLogin(MStringID id) {
-		JBean b = getService().checkAppLogin(id);
+		WData b = getService().checkAppLogin(id);
 		WClientAppLogin applogin = new WClientAppLogin(b);
 		if (applogin.getSessionId() != null) {
 			setSession(applogin.getSessionId());
@@ -131,7 +131,7 @@ public final class WClient {
 	}
 
 	public List<MStringID> search(String searchitem, int index, int count) {
-		JBeanResponse bresult = getService().search(searchitem, index, count);
+		WResponse bresult = getService().search(searchitem, index, count);
 		List<MStringID> idlist = bresult.getIDList();
 		return idlist;
 	}

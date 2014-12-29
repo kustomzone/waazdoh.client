@@ -1,6 +1,6 @@
 package waazdoh.client;
 
-import waazdoh.client.model.JBean;
+import waazdoh.client.model.WData;
 import waazdoh.util.MStringID;
 
 public class WClientAppLogin {
@@ -9,7 +9,7 @@ public class WClientAppLogin {
 	private String sessionid;
 	private String url;
 
-	public WClientAppLogin(JBean b) {
+	public WClientAppLogin(WData b) {
 		this.id = b.getIDValue("id");
 		this.sessionid = b.getValue("sessionid");
 		this.url = b.getValue("url");

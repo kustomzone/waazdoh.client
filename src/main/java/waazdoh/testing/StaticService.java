@@ -14,17 +14,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import waazdoh.client.model.CMService;
-import waazdoh.client.model.JBean;
-import waazdoh.client.model.JBeanResponse;
-import waazdoh.client.model.MID;
+import waazdoh.client.model.WService;
+import waazdoh.client.model.WData;
+import waazdoh.client.model.WResponse;
+import waazdoh.client.model.ObjectID;
 import waazdoh.client.model.UserID;
 import waazdoh.util.MStringID;
 import waazdoh.util.MURL;
 
-public final class StaticService implements CMService {
+public final class StaticService implements WService {
 	private UserID userid;
-	private static Map<MStringID, JBean> data = new HashMap<MStringID, JBean>();
+	private static Map<MStringID, WData> data = new HashMap<MStringID, WData>();
 	private static Map<String, String> storage = new HashMap<>();
 
 	@Override
@@ -59,12 +59,12 @@ public final class StaticService implements CMService {
 	}
 
 	@Override
-	public JBeanResponse reportDownload(MStringID id, boolean success) {
+	public WResponse reportDownload(MStringID id, boolean success) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public JBeanResponse getUser(UserID userid) {
+	public WResponse getUser(UserID userid) {
 		return null;
 	};
 
@@ -75,7 +75,7 @@ public final class StaticService implements CMService {
 	}
 
 	@Override
-	public JBean requestAppLogin() {
+	public WData requestAppLogin() {
 		return null;
 	}
 
@@ -84,7 +84,7 @@ public final class StaticService implements CMService {
 	}
 
 	@Override
-	public boolean publish(MID id) {
+	public boolean publish(ObjectID id) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -96,8 +96,8 @@ public final class StaticService implements CMService {
 	}
 
 	@Override
-	public JBean read(MStringID id) {
-		JBean bean = data.get(id);
+	public WData read(MStringID id) {
+		WData bean = data.get(id);
 		return bean;
 	}
 
@@ -108,7 +108,7 @@ public final class StaticService implements CMService {
 	}
 
 	@Override
-	public MURL getURL(final String service, String method, MID id) {
+	public MURL getURL(final String service, String method, ObjectID id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -120,7 +120,7 @@ public final class StaticService implements CMService {
 	}
 
 	@Override
-	public void addBean(MStringID id, JBean b) {
+	public void addBean(MStringID id, WData b) {
 		data.put(id, b);
 	}
 
@@ -133,19 +133,19 @@ public final class StaticService implements CMService {
 	}
 
 	@Override
-	public JBeanResponse search(final String filter, int index, int i) {
+	public WResponse search(final String filter, int index, int i) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public JBean acceptAppLogin(MStringID id) {
+	public WData acceptAppLogin(MStringID id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public JBean checkAppLogin(MStringID id) {
+	public WData checkAppLogin(MStringID id) {
 		// TODO Auto-generated method stub
 		return null;
 	}

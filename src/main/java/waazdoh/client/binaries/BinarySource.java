@@ -14,9 +14,9 @@ import java.io.File;
 import java.util.Set;
 
 import waazdoh.client.model.Binary;
-import waazdoh.client.model.CMService;
-import waazdoh.client.model.JBean;
-import waazdoh.client.model.MBinaryID;
+import waazdoh.client.model.WService;
+import waazdoh.client.model.WData;
+import waazdoh.client.model.BinaryID;
 import waazdoh.util.MStringID;
 
 public interface BinarySource {
@@ -24,19 +24,19 @@ public interface BinarySource {
 
 	boolean isRunning();
 
-	void setService(CMService service);
+	void setService(WService service);
 
-	CMService getService();
+	WService getService();
 
-	Binary get(MBinaryID streamid);
+	Binary get(BinaryID streamid);
 
-	Binary getOrDownload(MBinaryID binaryid);
+	Binary getOrDownload(BinaryID binaryid);
 
 	void clearMemory(int suggestedmemorytreshold);
 
-	JBean getBean(final String string);
+	WData getBean(final String string);
 
-	void addBean(final String string, JBean response);
+	void addBean(final String string, WData response);
 
 	String getInfoText();
 

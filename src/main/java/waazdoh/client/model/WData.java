@@ -32,18 +32,18 @@ import waazdoh.util.MLogger;
 import waazdoh.util.MStringID;
 import waazdoh.util.xml.XML;
 
-public final class JBean implements Comparable<JBean> {
+public final class WData implements Comparable<WData> {
 	private String name, text;
-	private List<JBean> children = new LinkedList<JBean>();
+	private List<WData> children = new LinkedList<WData>();
 	private Map<String, String> attributes = new HashMap<String, String>();
 	private MLogger log = MLogger.getLogger(this);
-	private JBean parent;
+	private WData parent;
 	private List<String> doctypes;
 
 	public List<String> getChildNames() {
 		List<String> ret = new LinkedList<String>();
-		List<JBean> lchildren = children;
-		for (JBean jBean : lchildren) {
+		List<WData> lchildren = children;
+		for (WData jBean : lchildren) {
 			ret.add(jBean.getName());
 		}
 		return ret;
@@ -51,8 +51,8 @@ public final class JBean implements Comparable<JBean> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof JBean) {
-			JBean b = (JBean) obj;
+		if (obj instanceof WData) {
+			WData b = (WData) obj;
 			return toXML().equals(b.toXML());
 		} else {
 			return false;
@@ -85,9 +85,9 @@ public final class JBean implements Comparable<JBean> {
 				sb.append("\n");
 			}
 			//
-			List<JBean> children = new ArrayList<JBean>(getChildren());
+			List<WData> children = new ArrayList<WData>(getChildren());
 			java.util.Collections.sort(children);
-			for (JBean jbean : children) {
+			for (WData jbean : children) {
 				jbean.toXML(indent + 1, sb);
 			}
 			//
@@ -149,7 +149,7 @@ public final class JBean implements Comparable<JBean> {
 			try {
 
 				r = XMLReaderFactory.createXMLReader();
-				r.setContentHandler(new JBeanContentHandler(this));
+				r.setContentHandler(new WDataContentHandler(this));
 				InputSource input = new InputSource(new StringReader(xml));
 				r.parse(input);
 				//
@@ -178,24 +178,24 @@ public final class JBean implements Comparable<JBean> {
 		doctypes.add(line);
 	}
 
-	private JBean() {
+	private WData() {
 		//
 	}
 
-	public JBean(final String name) {
+	public WData(final String name) {
 		setName(name);
 	}
 
-	public JBean(XML xml) throws SAXException {
+	public WData(XML xml) throws SAXException {
 		parseXml(xml);
 	}
 
-	public List<JBean> getChildren() {
-		return new LinkedList<JBean>(children);
+	public List<WData> getChildren() {
+		return new LinkedList<WData>(children);
 	}
 
 	public String getValue(final String string) {
-		JBean child = get(string);
+		WData child = get(string);
 		if (child != null) {
 			return child.getText();
 		} else {
@@ -211,7 +211,7 @@ public final class JBean implements Comparable<JBean> {
 		}
 	}
 
-	public JBean add(JBean b) {
+	public WData add(WData b) {
 		if (b == null) {
 			throw new NullPointerException("Childbean cannot be null");
 		}
@@ -220,19 +220,19 @@ public final class JBean implements Comparable<JBean> {
 		return b;
 	}
 
-	private void setParent(JBean jBean) {
+	private void setParent(WData jBean) {
 		this.parent = jBean;
 	}
 
-	public JBean add(final String string, JBean bean) {
+	public WData add(final String string, WData bean) {
 		bean.setName(string);
 		add(bean);
 		return bean;
 	}
 
-	public JBean get(final String name) {
-		List<JBean> lc = children;
-		for (JBean jBean : lc) {
+	public WData get(final String name) {
+		List<WData> lc = children;
+		for (WData jBean : lc) {
 			if (jBean.getName().equals(name)) {
 				return jBean;
 			}
@@ -280,18 +280,18 @@ public final class JBean implements Comparable<JBean> {
 	}
 
 	private void delete(final String string) {
-		JBean value = get(string);
+		WData value = get(string);
 		if (value != null) {
 			children.remove(value);
 		}
 	}
 
-	public JBean setValue(final String string2) {
+	public WData setValue(final String string2) {
 		text = string2.trim();
 		return this;
 	}
 
-	public int compareTo(JBean o) {
+	public int compareTo(WData o) {
 		if (o == null) {
 			return Integer.MIN_VALUE;
 		} else if (o.getName() == null) {
@@ -308,8 +308,8 @@ public final class JBean implements Comparable<JBean> {
 		return "JBean:" + toXML();
 	}
 
-	public JBean add(final String beanname) {
-		return add(beanname, new JBean());
+	public WData add(final String beanname) {
+		return add(beanname, new WData());
 	}
 
 	public int getIntValue(final String aname) {
@@ -353,7 +353,7 @@ public final class JBean implements Comparable<JBean> {
 		return "true".equals(s);
 	}
 
-	public JBean getFirst() {
+	public WData getFirst() {
 		return getChildren().get(0);
 	}
 
@@ -365,8 +365,8 @@ public final class JBean implements Comparable<JBean> {
 		addValue(string, "" + num);
 	}
 
-	public JBean addList(final String string, Set<String> list) {
-		JBean b = add(string);
+	public WData addList(final String string, Set<String> list) {
+		WData b = add(string);
 		for (final String item : list) {
 			b.add("item").setValue(item);
 		}
@@ -377,7 +377,7 @@ public final class JBean implements Comparable<JBean> {
 		this.addValue(string, "" + bvalue);
 	}
 
-	public JBean find(final String string) {
+	public WData find(final String string) {
 		if (name.equals(string)) {
 			return this;
 		} else {
@@ -385,10 +385,10 @@ public final class JBean implements Comparable<JBean> {
 		}
 	}
 
-	private JBean findChild(final String string) {
-		List<JBean> cs = this.children;
-		for (JBean cb : cs) {
-			JBean findcb = cb.find(string);
+	private WData findChild(final String string) {
+		List<WData> cs = this.children;
+		for (WData cb : cs) {
+			WData findcb = cb.find(string);
 			if (findcb != null) {
 				return findcb;
 			}
@@ -405,7 +405,7 @@ public final class JBean implements Comparable<JBean> {
 		}
 	}
 
-	public void addChildValue(final String string, MID id) {
+	public void addChildValue(final String string, ObjectID id) {
 		this.addValue(string, id.toString());
 	}
 
@@ -417,10 +417,10 @@ public final class JBean implements Comparable<JBean> {
 		this.addValue(name, "" + value);
 	}
 
-	public void addChildren(JBean nb) {
-		for (JBean c : nb.getChildren()) {
+	public void addChildren(WData nb) {
+		for (WData c : nb.getChildren()) {
 			if (!c.getChildren().isEmpty()) {
-				JBean ncb = new JBean(c.getName());
+				WData ncb = new WData(c.getName());
 				add(ncb);
 				ncb.addChildren(c);
 			} else {
@@ -430,7 +430,7 @@ public final class JBean implements Comparable<JBean> {
 
 	}
 
-	public JBean getRoot() {
+	public WData getRoot() {
 		if (parent != null) {
 			return parent.getRoot();
 		} else {
@@ -438,7 +438,7 @@ public final class JBean implements Comparable<JBean> {
 		}
 	}
 
-	public void setValue(MID id) {
+	public void setValue(ObjectID id) {
 		setValue(id.toString());
 	}
 
@@ -450,7 +450,7 @@ public final class JBean implements Comparable<JBean> {
 		return new BytesHash(toXML().toString().getBytes()).toString();
 	}
 
-	public void addValue(final String string, MID id) {
+	public void addValue(final String string, ObjectID id) {
 		this.addValue(string, id.toString());
 	}
 

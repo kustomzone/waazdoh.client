@@ -21,7 +21,7 @@ import java.util.Set;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.client.model.JBean;
+import waazdoh.client.model.WData;
 import waazdoh.client.model.StringIDLocalPath;
 import waazdoh.util.MLogger;
 import waazdoh.util.MPreferences;
@@ -39,7 +39,7 @@ public final class MBeanStorage {
 		file.mkdirs();
 	}
 
-	public JBean getBean(final String id) {
+	public WData getBean(final String id) {
 		try {
 			File f = getFile(id);
 			if (f.exists()) {
@@ -56,7 +56,7 @@ public final class MBeanStorage {
 				//
 				XML xml = new XML(sb.toString());
 
-				return new JBean(xml);
+				return new WData(xml);
 			} else {
 				return null;
 			}
@@ -84,7 +84,7 @@ public final class MBeanStorage {
 		return filepath + id + ".xml";
 	}
 
-	public void addBean(final String id, JBean response) {
+	public void addBean(final String id, WData response) {
 		try {
 			File f = getFile(id);
 			FileWriter fw;

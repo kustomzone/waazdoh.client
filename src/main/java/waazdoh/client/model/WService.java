@@ -15,40 +15,40 @@ import java.util.Set;
 import waazdoh.util.MStringID;
 import waazdoh.util.MURL;
 
-public interface CMService {
+public interface WService {
 	boolean setSession(String session);
 
-	JBean read(MStringID id);
+	WData read(MStringID id);
 
-	void addBean(MStringID id, JBean b);
+	void addBean(MStringID id, WData b);
 
 	boolean publish(MStringID id);
 
 	UserID getUserID();
 
-	JBeanResponse search(final String filter, int index, int i);
+	WResponse search(final String filter, int index, int i);
 
-	MURL getURL(final String service, String method, MID id);
+	MURL getURL(final String service, String method, ObjectID id);
 
 	String getUsername();
 
 	boolean isLoggedIn();
 
-	JBean requestAppLogin();
+	WData requestAppLogin();
 
-	JBean checkAppLogin(MStringID id);
+	WData checkAppLogin(MStringID id);
 
-	JBean acceptAppLogin(MStringID id);
+	WData acceptAppLogin(MStringID id);
 
 	String getSessionID();
 
 	String getInfoText();
 
-	JBeanResponse reportDownload(MStringID id, boolean success);
+	WResponse reportDownload(MStringID id, boolean success);
 
-	JBeanResponse getUser(UserID userid);
+	WResponse getUser(UserID userid);
 
-	boolean publish(MID id);
+	boolean publish(ObjectID id);
 
 	boolean isConnected();
 

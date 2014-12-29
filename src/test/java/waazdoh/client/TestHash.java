@@ -6,8 +6,8 @@ import java.net.MalformedURLException;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.client.model.JBean;
-import waazdoh.client.model.MID;
+import waazdoh.client.model.WData;
+import waazdoh.client.model.ObjectID;
 import waazdoh.client.model.WaazdohInfo;
 import waazdoh.util.xml.XML;
 
@@ -16,11 +16,11 @@ public class TestHash extends WCTestCase {
 	ServiceObject o;
 
 	public void testBeanHash() throws SAXException, IOException {
-		JBean abean = new JBean("test");
+		WData abean = new WData("test");
 		abean.addValue("testvalue", false);
 		String ahash = abean.getContentHash();
 		
-		JBean bbean = new JBean(new XML(new StringReader(abean.toXML()
+		WData bbean = new WData(new XML(new StringReader(abean.toXML()
 				.toString())));
 		
 		String bhash = bbean.getContentHash();
@@ -32,14 +32,14 @@ public class TestHash extends WCTestCase {
 			MalformedURLException {
 		ServiceObjectData so = new ServiceObjectData() {
 			@Override
-			public boolean parseBean(JBean bean) {
+			public boolean parseBean(WData bean) {
 				// FAILS
 				return false;
 			}
 
 			@Override
-			public JBean getBean() {
-				JBean b = o.getBean();
+			public WData getBean() {
+				WData b = o.getBean();
 				return b;
 			}
 		};
@@ -47,7 +47,7 @@ public class TestHash extends WCTestCase {
 		WClient c = getClient(getRandomUserName(), false);
 		o = new ServiceObject("test", c, so, WaazdohInfo.version, "WAAZDOHTEST");
 
-		MID id = o.getID();
+		ObjectID id = o.getID();
 		assertNotNull(id);
 
 		String ahash = o.getHash();

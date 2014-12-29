@@ -20,9 +20,9 @@ import java.util.Set;
 
 import waazdoh.client.binaries.BinarySource;
 import waazdoh.client.model.Binary;
-import waazdoh.client.model.JBean;
-import waazdoh.client.model.MBinaryID;
-import waazdoh.client.model.MID;
+import waazdoh.client.model.WData;
+import waazdoh.client.model.BinaryID;
+import waazdoh.client.model.ObjectID;
 import waazdoh.client.model.WaazdohInfo;
 import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;
@@ -43,7 +43,7 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 	private final BinarySource source;
 	private final MNodeConnection nodeconnection;
 	//
-	private Map<MID, MNodeID> whohas = new HashMap<MID, MNodeID>();
+	private Map<ObjectID, MNodeID> whohas = new HashMap<ObjectID, MNodeID>();
 	private Map<MStringID, Integer> responsecount = new HashMap<MStringID, Integer>();
 	private List<WhoHasListener> listeners = new LinkedList<WhoHasListener>();
 
@@ -56,15 +56,15 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 
 	@Override
 	public MMessage handle(final MMessage childb) {
-		final MBinaryID streamid = new MBinaryID(
+		final BinaryID streamid = new BinaryID(
 				childb.getAttribute("streamid"));
 		if (source.get(streamid) != null) {
 			MMessage m;
 			m = getFactory().newResponseMessage(childb, "stream");
 			m.addIDAttribute("streamid", streamid);
 			//
-			JBean needed = childb.get("needed");
-			List<JBean> neededpieces = needed.getChildren();
+			WData needed = childb.get("needed");
+			List<WData> neededpieces = needed.getChildren();
 			int bytes = 0;
 			while (bytes < WaazdohInfo.WHOHAS_RESPONSE_MAX_PIECE_SIZE
 					&& !neededpieces.isEmpty()) {
@@ -75,7 +75,7 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 					pieceindex = neededpieces.size() - 1;
 				}
 
-				JBean neededpiece = neededpieces.remove(pieceindex);
+				WData neededpiece = neededpieces.remove(pieceindex);
 
 				int start = neededpiece.getIntValue("start");
 				int end = neededpiece.getIntValue("end");
@@ -157,7 +157,7 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 		this.downloadeverything = b;
 	}
 
-	private void fireBinaryRequested(MBinaryID streamid, Integer count) {
+	private void fireBinaryRequested(BinaryID streamid, Integer count) {
 		for (WhoHasListener whoHasListener : listeners) {
 			whoHasListener.binaryRequested(streamid, count);
 		}

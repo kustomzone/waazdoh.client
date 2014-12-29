@@ -4,26 +4,26 @@ import junit.framework.TestCase;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.client.model.JBeanResponse;
+import waazdoh.client.model.WResponse;
 
 public class TestBeanResponse extends TestCase {
 	public void testIDList() throws SAXException {
 		StringBuilder sb = new StringBuilder();
-		sb.append("<response><" + JBeanResponse.IDLIST + ">");
+		sb.append("<response><" + WResponse.IDLIST + ">");
 
-		sb.append("<" + JBeanResponse.IDLIST_ITEM + ">");
+		sb.append("<" + WResponse.IDLIST_ITEM + ">");
 		sb.append("" + Math.random());
-		sb.append("</" + JBeanResponse.IDLIST_ITEM + ">");
+		sb.append("</" + WResponse.IDLIST_ITEM + ">");
 
-		sb.append("<" + JBeanResponse.IDLIST_ITEM + ">");
+		sb.append("<" + WResponse.IDLIST_ITEM + ">");
 		sb.append("" + System.currentTimeMillis());
-		sb.append("</" + JBeanResponse.IDLIST_ITEM + ">");
+		sb.append("</" + WResponse.IDLIST_ITEM + ">");
 
-		sb.append("</" + JBeanResponse.IDLIST + ">");
+		sb.append("</" + WResponse.IDLIST + ">");
 		sb.append("<success>true</success>");
 		sb.append("</response>");
 
-		JBeanResponse r = new JBeanResponse(sb.toString());
+		WResponse r = new WResponse(sb.toString());
 
 		assertTrue(r.isSuccess());
 
@@ -31,17 +31,17 @@ public class TestBeanResponse extends TestCase {
 	}
 
 	public void testTrue() {
-		JBeanResponse r = JBeanResponse.getTrue();
+		WResponse r = WResponse.getTrue();
 		assertTrue(r.isSuccess());
 	}
 
 	public void testFalse() {
-		JBeanResponse r = JBeanResponse.getFalse();
+		WResponse r = WResponse.getFalse();
 		assertFalse(r.isSuccess());
 	}
 
 	public void testError() {
-		JBeanResponse r = JBeanResponse.getError("test");
+		WResponse r = WResponse.getError("test");
 		assertFalse(r.isSuccess());
 		assertEquals("test", r.getBean().getValue("error"));
 	}

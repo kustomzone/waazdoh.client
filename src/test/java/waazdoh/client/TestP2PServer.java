@@ -7,7 +7,7 @@ import org.xml.sax.SAXException;
 import waazdoh.client.binaries.BinaryStorage;
 import waazdoh.client.binaries.ReportingService;
 import waazdoh.client.model.Binary;
-import waazdoh.client.model.MBinaryID;
+import waazdoh.client.model.BinaryID;
 import waazdoh.cp2p.P2PServer;
 import waazdoh.cp2p.common.MHost;
 import waazdoh.cp2p.messaging.MMessage;
@@ -106,10 +106,10 @@ public class TestP2PServer extends WCTestCase {
 		ServiceMock service = new ServiceMock("test", new TestPBinarySource(
 				s.getPreferences()));
 
-		MBinaryID downloadid = null;
+		BinaryID downloadid = null;
 		for (int i = 0; i < MPreferences.NETWORK_MAX_DOWNLOADS_DEFAULT; i++) {
 			assertTrue(s.canDownload());
-			MBinaryID id = new MBinaryID();
+			BinaryID id = new BinaryID();
 			Binary b = new Binary(service, new BinaryStorage() {
 				@Override
 				public String getBinaryPath(Binary b) {

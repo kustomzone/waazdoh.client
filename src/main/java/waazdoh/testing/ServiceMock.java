@@ -18,24 +18,24 @@ import java.util.Set;
 import org.xml.sax.SAXException;
 
 import waazdoh.client.binaries.BinarySource;
-import waazdoh.client.model.CMService;
-import waazdoh.client.model.JBean;
-import waazdoh.client.model.JBeanResponse;
-import waazdoh.client.model.MID;
+import waazdoh.client.model.WService;
+import waazdoh.client.model.WData;
+import waazdoh.client.model.WResponse;
+import waazdoh.client.model.ObjectID;
 import waazdoh.client.model.UserID;
 import waazdoh.util.MLogger;
 import waazdoh.util.MStringID;
 import waazdoh.util.MURL;
 import waazdoh.util.xml.XML;
 
-public final class ServiceMock implements CMService {
+public final class ServiceMock implements WService {
 	final private String username;
 	private String session;
 	private UserID userid;
-	private Map<String, JBean> groups = new HashMap<String, JBean>();
+	private Map<String, WData> groups = new HashMap<String, WData>();
 	final private BinarySource source;
 
-	private static Map<String, JBean> objects = new HashMap<String, JBean>();
+	private static Map<String, WData> objects = new HashMap<String, WData>();
 	private static Map<String, String> storagearea = new HashMap<>();
 
 	private MLogger log = MLogger.getLogger(this);
@@ -88,20 +88,20 @@ public final class ServiceMock implements CMService {
 				+ "		  <created>Thu Sep 20 07:25:19 UTC 2012</created>		  <bookmarkid>6b8f96a2-db16-452f-8038-df8d4c681d2d.15d64b78-4fb0-4948-8543-73cf49cdf627</bookmarkid> </bookmark> </bookmarks> </bookmarkgroup>"
 				+ "		  </response>";
 
-		JBean b = new JBean(new XML(sxml));
+		WData b = new WData(new XML(sxml));
 		groups.put(gid, b);
 	}
 
 	@Override
-	public JBeanResponse getUser(UserID userid) {
+	public WResponse getUser(UserID userid) {
 		String sxml = "<response> <user> <uid>"
 				+ userid
 				+ "</uid><profile><pictureURL>https://twimg0-a.akamaihd.net/profile_images/2297908262/rhp37rm35mul5uf0zom6_reasonably_small.jpeg</pictureURL>	  <name>Juuso</name> <info>me!!!</info> </profile> <name>test"
 				+ userid
 				+ "</name>		  </user> <success>true</success> </response>";
-		JBeanResponse r = JBeanResponse.getTrue();
+		WResponse r = WResponse.getTrue();
 		try {
-			r.setBean(new JBean(new XML(sxml)));
+			r.setBean(new WData(new XML(sxml)));
 		} catch (SAXException e) {
 			MLogger.getLogger(this).error(e);
 		}
@@ -120,17 +120,17 @@ public final class ServiceMock implements CMService {
 	}
 
 	@Override
-	public JBean read(MStringID id) {
+	public WData read(MStringID id) {
 		if (id == null) {
 			return null;
 		} else {
-			JBean b = source.getBean(id.toString());
+			WData b = source.getBean(id.toString());
 			if (b == null) {
 				b = ServiceMock.objects.get(id.toString());
 			}
 
 			if (b != null) {
-				JBean ret = new JBean("object");
+				WData ret = new WData("object");
 				ret.add("data").add(b);
 				ret.addValue("success", true);
 				return ret;
@@ -141,13 +141,13 @@ public final class ServiceMock implements CMService {
 	}
 
 	@Override
-	public void addBean(MStringID id, JBean b) {
+	public void addBean(MStringID id, WData b) {
 		source.addBean(id.toString(), b);
 		ServiceMock.objects.put(id.toString(), b);
 	}
 
 	@Override
-	public boolean publish(MID id) {
+	public boolean publish(ObjectID id) {
 		return publish(id.getStringID());
 	}
 
@@ -162,8 +162,8 @@ public final class ServiceMock implements CMService {
 	}
 
 	@Override
-	public JBeanResponse search(final String filter, int index, int count) {
-		JBeanResponse ret = JBeanResponse.getTrue();
+	public WResponse search(final String filter, int index, int count) {
+		WResponse ret = WResponse.getTrue();
 		HashSet<String> list = new HashSet<String>();
 		for (int i = index; i < count; i++) {
 			list.add("" + new MStringID());
@@ -173,7 +173,7 @@ public final class ServiceMock implements CMService {
 	}
 
 	@Override
-	public MURL getURL(final String service, String method, MID id) {
+	public MURL getURL(final String service, String method, ObjectID id) {
 		return new MURL("localhost");
 	}
 
@@ -188,8 +188,8 @@ public final class ServiceMock implements CMService {
 	}
 
 	@Override
-	public JBean requestAppLogin() {
-		JBean b = new JBean("applogin");
+	public WData requestAppLogin() {
+		WData b = new WData("applogin");
 		b.addValue("id", new MStringID().toString());
 		b.addValue("url", "mockurl");
 		return b;
@@ -216,7 +216,7 @@ public final class ServiceMock implements CMService {
 	}
 
 	@Override
-	public JBeanResponse reportDownload(MStringID id, boolean success) {
+	public WResponse reportDownload(MStringID id, boolean success) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -227,15 +227,15 @@ public final class ServiceMock implements CMService {
 	}
 
 	@Override
-	public JBean acceptAppLogin(MStringID id) {
-		return JBeanResponse.getTrue().getBean();
+	public WData acceptAppLogin(MStringID id) {
+		return WResponse.getTrue().getBean();
 	}
 
 	@Override
-	public JBean checkAppLogin(MStringID id) {
+	public WData checkAppLogin(MStringID id) {
 		createSession();
 		//
-		JBean b = new JBean("mockapplogin");
+		WData b = new WData("mockapplogin");
 		b.addValue("id", id.toString());
 		b.addValue("sessionid", session);
 		return b;

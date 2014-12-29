@@ -10,6 +10,6 @@
  ******************************************************************************/
 package waazdoh.client.model;
 
-public interface WBookmarkGroupListener {
+public interface BookmarkGroupListener {
 
 }

@@ -16,13 +16,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public final class WBookmarks {
+public final class Bookmarks {
 	private List<BookmarksListener> listeners = new LinkedList<BookmarksListener>();
-	private Map<String, WBookmarkGroup> groups = new HashMap<String, WBookmarkGroup>();
+	private Map<String, BookmarkGroup> groups = new HashMap<String, BookmarkGroup>();
 
-	private CMService service;
+	private WService service;
 
-	public WBookmarks(CMService service) {
+	public Bookmarks(WService service) {
 		this.service = service;
 		update();
 	}
@@ -32,18 +32,18 @@ public final class WBookmarks {
 		if (groups != null) {
 			for (final String name : groups) {
 				if (this.groups.get(name) == null) {
-					this.groups.put(name, new WBookmarkGroup(name, service));
+					this.groups.put(name, new BookmarkGroup(name, service));
 					fireGroupAdded(get(name));
 				}
 			}
 		}
 	}
 
-	private WBookmarkGroup get(final String mid) {
+	private BookmarkGroup get(final String mid) {
 		return groups.get(mid);
 	}
 
-	private void fireGroupAdded(WBookmarkGroup group) {
+	private void fireGroupAdded(BookmarkGroup group) {
 		for (BookmarksListener l : listeners) {
 			l.groupAdded(group);
 		}
@@ -53,12 +53,12 @@ public final class WBookmarks {
 		this.listeners.add(bookmarksListener);
 	}
 
-	public List<WBookmarkGroup> getBookmarkGroups() {
-		return new LinkedList<WBookmarkGroup>(groups.values());
+	public List<BookmarkGroup> getBookmarkGroups() {
+		return new LinkedList<BookmarkGroup>(groups.values());
 	}
 
 	public synchronized void addGroup(String string) {
-		WBookmarkGroup g = new WBookmarkGroup(string, service);
+		BookmarkGroup g = new BookmarkGroup(string, service);
 		this.groups.put(string, g);
 		fireGroupAdded(g);
 	}

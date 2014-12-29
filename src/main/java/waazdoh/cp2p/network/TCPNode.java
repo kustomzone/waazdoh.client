@@ -19,7 +19,7 @@ import io.netty.channel.socket.oio.OioSocketChannel;
 import java.net.ConnectException;
 import java.util.List;
 
-import waazdoh.client.model.JBean;
+import waazdoh.client.model.WData;
 import waazdoh.cp2p.common.MHost;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MMessageList;
@@ -137,8 +137,8 @@ public final class TCPNode {
 
 	public void addInfoTo(MMessage message) {
 		if (host != null) {
-			JBean nodeinfo = message.add("nodeinfo");
-			JBean nodeid = nodeinfo.add(node.getID().toString());
+			WData nodeinfo = message.add("nodeinfo");
+			WData nodeid = nodeinfo.add(node.getID().toString());
 			nodeid.add("host").setValue(host.toString());
 			nodeid.add("port").setValue("" + port);
 		}

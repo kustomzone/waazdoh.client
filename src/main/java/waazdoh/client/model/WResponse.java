@@ -19,17 +19,17 @@ import waazdoh.util.MLogger;
 import waazdoh.util.MStringID;
 import waazdoh.util.xml.XML;
 
-public final class JBeanResponse {
+public final class WResponse {
 	public static final String IDLIST_ITEM = "item";
 	public static final String IDLIST = "idlist";
 
 	private static final String AUTHENTICATION_FAILED_MESSAGE = "auth failed";
-	private JBean bean = new JBean("response");
+	private WData bean = new WData("response");
 	private MLogger log = MLogger.getLogger(this);
 
-	public JBeanResponse(final String o) throws SAXException {
+	public WResponse(final String o) throws SAXException {
 		String string = (String) o;
-		JBean nbean = new JBean(new XML(string));
+		WData nbean = new WData(new XML(string));
 		if (nbean.getName().equals("response")) {
 			this.bean = nbean;
 		} else {
@@ -37,11 +37,11 @@ public final class JBeanResponse {
 		}
 	}
 
-	public JBeanResponse() {
+	public WResponse() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public JBeanResponse(Error error) {
+	public WResponse(Error error) {
 		bean.addValue("error", "" + error);
 		log.error(error);
 	}
@@ -55,32 +55,32 @@ public final class JBeanResponse {
 		return bean.toXML();
 	}
 
-	public JBean getBean() {
+	public WData getBean() {
 		return bean;
 	}
 
-	public void setBean(JBean bean) {
+	public void setBean(WData bean) {
 		this.bean = bean;
 	}
 
-	public static JBeanResponse getTrue() {
-		JBeanResponse ret = new JBeanResponse();
+	public static WResponse getTrue() {
+		WResponse ret = new WResponse();
 		ret.bean.addValue("success", "true");
 		return ret;
 	}
 
-	public static JBeanResponse getError(final String s) {
-		JBeanResponse ret = getFalse();
+	public static WResponse getError(final String s) {
+		WResponse ret = getFalse();
 		ret.bean.addValue("error", s);
 		return ret;
 	}
 
 	public List<MStringID> getIDList() {
 		List<MStringID> ret = new LinkedList<MStringID>();
-		JBean items = bean.get(IDLIST);
+		WData items = bean.get(IDLIST);
 		if (items != null) {
-			List<JBean> ids = items.getChildren();
-			for (JBean cb : ids) {
+			List<WData> ids = items.getChildren();
+			for (WData cb : ids) {
 				if (cb.getName().equals(IDLIST_ITEM)) {
 					ret.add(new MStringID(cb.getText()));
 				}
@@ -91,14 +91,14 @@ public final class JBeanResponse {
 		}
 	}
 
-	public static JBeanResponse getFalse() {
-		JBeanResponse ret = new JBeanResponse();
+	public static WResponse getFalse() {
+		WResponse ret = new WResponse();
 		ret.bean.addValue("success", "false");
 		return ret;
 	}
 
-	public static JBeanResponse getAuthenticationError() {
-		JBeanResponse f = getError(AUTHENTICATION_FAILED_MESSAGE);
+	public static WResponse getAuthenticationError() {
+		WResponse f = getError(AUTHENTICATION_FAILED_MESSAGE);
 		return f;
 	}
 
@@ -106,7 +106,7 @@ public final class JBeanResponse {
 		return bean.getBooleanValue("success");
 	}
 
-	public JBean find(String string) {
+	public WData find(String string) {
 		return getBean().find(string);
 	}
 }

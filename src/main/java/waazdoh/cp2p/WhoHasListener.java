@@ -1,9 +1,9 @@
 package waazdoh.cp2p;
 
-import waazdoh.client.model.MBinaryID;
+import waazdoh.client.model.BinaryID;
 
 public interface WhoHasListener {
 
-	void binaryRequested(MBinaryID streamid, Integer count);
+	void binaryRequested(BinaryID streamid, Integer count);
 
 }
