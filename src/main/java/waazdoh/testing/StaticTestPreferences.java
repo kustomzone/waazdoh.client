@@ -127,8 +127,17 @@ public final class StaticTestPreferences implements MPreferences {
 	}
 
 	public String get(final String string) {
-
 		return getPrefs().get(string, "");
+	}
+
+	@Override
+	public double getDouble(String string, double d) {
+		String sdouble = get(string, "" + d);
+		if (sdouble != null) {
+			return Double.parseDouble(sdouble);
+		} else {
+			return 0;
+		}
 	}
 
 	public static void resetPorts() {

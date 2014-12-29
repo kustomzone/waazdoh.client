@@ -104,4 +104,14 @@ public final class AppPreferences implements MPreferences {
 	public boolean getBoolean(final String valuename, boolean defaultvalue) {
 		return "true".equals("" + get(valuename, "" + defaultvalue));
 	}
+
+	@Override
+	public double getDouble(String string, double d) {
+		String sdouble = get(string, "" + d);
+		if (sdouble != null) {
+			return Double.parseDouble(sdouble);
+		} else {
+			return 0;
+		}
+	}
 }

@@ -38,4 +38,6 @@ public interface MPreferences {
 
 	Set<String> getNames();
 
+	double getDouble(String string, double d);
+
 }

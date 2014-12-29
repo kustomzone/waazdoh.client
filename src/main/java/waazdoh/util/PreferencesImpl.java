@@ -51,4 +51,14 @@ public final class PreferencesImpl implements MPreferences {
 	public void set(final String name, boolean b) {
 		set(name, "" + b);
 	}
+	
+	@Override
+	public double getDouble(String string, double d) {
+		String sdouble = get(string, "" + d);
+		if (sdouble != null) {
+			return Double.parseDouble(sdouble);
+		} else {
+			return 0;
+		}
+	}
 }
