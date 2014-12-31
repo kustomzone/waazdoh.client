@@ -6,11 +6,12 @@ import java.util.List;
 import java.util.Set;
 
 import waazdoh.client.binaries.BinarySource;
-import waazdoh.client.model.WService;
+import waazdoh.client.model.Bookmarks;
+import waazdoh.client.model.UserID;
 import waazdoh.client.model.WData;
 import waazdoh.client.model.WResponse;
-import waazdoh.client.model.UserID;
-import waazdoh.client.model.Bookmarks;
+import waazdoh.client.model.WService;
+import waazdoh.cp2p.network.MBeanStorage;
 import waazdoh.service.rest.RestServiceClient;
 import waazdoh.util.MPreferences;
 import waazdoh.util.MStringID;
@@ -23,6 +24,7 @@ public final class WClient {
 	//
 	private Set<WClientListener> listeners = new HashSet<WClientListener>();
 	private Bookmarks bookmarks;
+	private MBeanStorage beanstorage;
 
 	public WClient(MPreferences p, BinarySource binarysource)
 			throws MalformedURLException {
@@ -134,5 +136,9 @@ public final class WClient {
 		WResponse bresult = getService().search(searchitem, index, count);
 		List<MStringID> idlist = bresult.getIDList();
 		return idlist;
+	}
+
+	public MBeanStorage getBeanStorage() {
+		return this.beanstorage;
 	}
 }

@@ -12,6 +12,7 @@ import org.xml.sax.SAXException;
 
 import waazdoh.cp2p.P2PBinarySource;
 import waazdoh.cp2p.P2PServer;
+import waazdoh.cp2p.network.MBeanStorage;
 import waazdoh.testing.ServiceMock;
 import waazdoh.testing.StaticTestPreferences;
 import waazdoh.util.ConditionWaiter;
@@ -97,7 +98,8 @@ public class WCTestCase extends TestCase {
 			throws MalformedURLException, SAXException {
 		MPreferences p = new StaticTestPreferences("waazdohclienttests",
 				username);
-		P2PBinarySource source = new P2PBinarySource(p, bind);
+		P2PBinarySource source = new P2PBinarySource(p, new MBeanStorage(p),
+				bind);
 		ServiceMock service = new ServiceMock(username, source);
 		service.createSession();
 
@@ -110,7 +112,7 @@ public class WCTestCase extends TestCase {
 			boolean bind) throws SAXException {
 		MPreferences p1 = new StaticTestPreferences("waazdohclienttests",
 				username1);
-		P2PBinarySource source1 = new P2PBinarySource(p1, bind);
+		P2PBinarySource source1 = new P2PBinarySource(p1, new MBeanStorage(p1), bind);
 		ServiceMock service1 = new ServiceMock(username1, source1);
 
 		service1.setSession("" + new MStringID());
