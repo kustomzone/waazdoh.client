@@ -11,30 +11,27 @@
 package waazdoh.cp2p;
 
 import java.io.File;
-import java.util.Set;
 
 import waazdoh.client.binaries.BinarySource;
 import waazdoh.client.binaries.LocalBinaryStorage;
 import waazdoh.client.binaries.ReportingService;
+import waazdoh.client.impl.FileBeanStorage;
 import waazdoh.client.model.Binary;
 import waazdoh.client.model.BinaryID;
-import waazdoh.client.model.WData;
 import waazdoh.client.model.WService;
-import waazdoh.cp2p.network.MBeanStorage;
 import waazdoh.util.MLogger;
 import waazdoh.util.MPreferences;
-import waazdoh.util.MStringID;
 
 public final class P2PBinarySource implements BinarySource {
 	P2PServer server;
 	//
 	MLogger log = MLogger.getLogger(this);
 	private MPreferences preferences;
-	final private MBeanStorage beanstorage;
+	final private FileBeanStorage beanstorage;
 	private LocalBinaryStorage storage;
 	private WService service;
 
-	public P2PBinarySource(MPreferences p, MBeanStorage beanstorage,
+	public P2PBinarySource(MPreferences p, FileBeanStorage beanstorage,
 			boolean bind2) {
 		this.server = new P2PServer(p, bind2, this);
 		this.beanstorage = beanstorage;
@@ -77,20 +74,10 @@ public final class P2PBinarySource implements BinarySource {
 	}
 
 	@Override
-	public synchronized void addBean(final String id, WData response) {
-		beanstorage.addBean(id, response);
-	}
-
-	@Override
 	public void setService(WService service) {
 		this.service = service;
 		storage = new LocalBinaryStorage(preferences, service);
 		server.start();
-	}
-
-	@Override
-	public WData getBean(final String id) {
-		return beanstorage.getBean(id);
 	}
 
 	public synchronized Binary get(BinaryID streamid) {
@@ -104,11 +91,6 @@ public final class P2PBinarySource implements BinarySource {
 			storage.clearMemory(suggestedmemorytreshold);
 		if (service != null)
 			server.clearMemory(suggestedmemorytreshold);
-	}
-
-	@Override
-	public Set<MStringID> getLocalObjectIDs() {
-		return beanstorage.getLocalSetIDs();
 	}
 
 	@Override

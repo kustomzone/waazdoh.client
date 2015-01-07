@@ -11,13 +11,10 @@
 package waazdoh.client.binaries;
 
 import java.io.File;
-import java.util.Set;
 
 import waazdoh.client.model.Binary;
-import waazdoh.client.model.WService;
-import waazdoh.client.model.WData;
 import waazdoh.client.model.BinaryID;
-import waazdoh.util.MStringID;
+import waazdoh.client.model.WService;
 
 public interface BinarySource {
 	void close();
@@ -34,10 +31,6 @@ public interface BinarySource {
 
 	void clearMemory(int suggestedmemorytreshold);
 
-	WData getBean(final String string);
-
-	void addBean(final String string, WData response);
-
 	String getInfoText();
 
 	String getMemoryUsageInfo();
@@ -49,8 +42,6 @@ public interface BinarySource {
 	Binary newBinary(final String comment, String extension);
 
 	File getBinaryFile(Binary bin);
-
-	Set<MStringID> getLocalObjectIDs();
 
 	void waitUntilReady();
 

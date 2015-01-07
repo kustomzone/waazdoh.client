@@ -11,39 +11,25 @@
 package waazdoh.testing;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
+import waazdoh.client.BeanStorage;
 import waazdoh.client.binaries.BinarySource;
 import waazdoh.client.binaries.LocalBinaryStorage;
 import waazdoh.client.binaries.ReportingService;
 import waazdoh.client.model.Binary;
-import waazdoh.client.model.WService;
-import waazdoh.client.model.WData;
 import waazdoh.client.model.BinaryID;
+import waazdoh.client.model.WService;
 import waazdoh.util.MPreferences;
-import waazdoh.util.MStringID;
 
 public final class TestPBinarySource implements BinarySource {
 	private MPreferences preferences;
 	private LocalBinaryStorage storage;
 	private WService service;
-	private Map<String, WData> beans = new HashMap<String, WData>();
+	private BeanStorage beanstorage;
 
-	public TestPBinarySource(MPreferences p) {
+	public TestPBinarySource(MPreferences p, BeanStorage beanstorage) {
 		this.preferences = p;
-	}
-
-	@Override
-	public Set<MStringID> getLocalObjectIDs() {
-		Set<MStringID> ret = new HashSet<MStringID>();
-		Set<String> keys = beans.keySet();
-		for (final String string : keys) {
-			ret.add(new MStringID(string));
-		}
-		return ret;
+		this.beanstorage = beanstorage;
 	}
 
 	public void addBinary(Binary stream) {
@@ -97,16 +83,6 @@ public final class TestPBinarySource implements BinarySource {
 	public void startClosing() {
 		// TODO Auto-generated method stub
 
-	}
-
-	@Override
-	public void addBean(final String id, WData response) {
-		beans.put(id, response);
-	}
-
-	@Override
-	public WData getBean(final String id) {
-		return beans.get(id);
 	}
 
 	public Binary get(BinaryID fsid) {

@@ -14,6 +14,7 @@ import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.SimpleMessageHandler;
 import waazdoh.cp2p.network.Node;
 import waazdoh.cp2p.network.SourceListener;
+import waazdoh.testing.MockBeanStorage;
 import waazdoh.testing.ServiceMock;
 import waazdoh.testing.StaticTestPreferences;
 import waazdoh.testing.TestPBinarySource;
@@ -104,7 +105,7 @@ public class TestP2PServer extends WCTestCase {
 		P2PServer s = getServer();
 		assertTrue(s.canDownload());
 		ServiceMock service = new ServiceMock("test", new TestPBinarySource(
-				s.getPreferences()));
+				s.getPreferences(), new MockBeanStorage()));
 
 		BinaryID downloadid = null;
 		for (int i = 0; i < MPreferences.NETWORK_MAX_DOWNLOADS_DEFAULT; i++) {

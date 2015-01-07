@@ -21,12 +21,13 @@ import java.util.StringTokenizer;
 
 import org.xml.sax.SAXException;
 
+import waazdoh.client.BeanStorage;
 import waazdoh.client.binaries.BinarySource;
-import waazdoh.client.model.WService;
-import waazdoh.client.model.WData;
-import waazdoh.client.model.WResponse;
 import waazdoh.client.model.ObjectID;
 import waazdoh.client.model.UserID;
+import waazdoh.client.model.WData;
+import waazdoh.client.model.WResponse;
+import waazdoh.client.model.WService;
 import waazdoh.util.MLogger;
 import waazdoh.util.MStringID;
 import waazdoh.util.MURL;
@@ -41,11 +42,14 @@ public final class RestServiceClient implements WService {
 	private String username;
 	private boolean loggedin;
 	private BinarySource source;
+	private BeanStorage beanstorage;
 
-	public RestServiceClient(final String localurl, BinarySource source)
+	public RestServiceClient(final String localurl,
+			final BeanStorage beanstorage, final BinarySource source)
 			throws MalformedURLException {
 		this.url = new MURL(localurl);
 		this.source = source;
+		this.beanstorage = beanstorage;
 	}
 
 	@Override
@@ -126,8 +130,8 @@ public final class RestServiceClient implements WService {
 		if (session != null && session.length() > 0) {
 			sessionid = session;
 			List<String> params = new LinkedList<String>();
-			WResponse response = getResponses("users", "checksession",
-					true, params);
+			WResponse response = getResponses("users", "checksession", true,
+					params);
 			log.info("checksession response " + response);
 			WData buid = response.find("userid");
 			if (response.isSuccess() && buid != null) {
@@ -174,21 +178,20 @@ public final class RestServiceClient implements WService {
 		params.add(sessionid.toString());
 		params.add(id.toString());
 		params.add("" + success);
-		WResponse response = getResponses("objects", "reportdownload",
-				false, params);
+		WResponse response = getResponses("objects", "reportdownload", false,
+				params);
 		return response;
 	}
 
 	@Override
 	public WResponse getUser(UserID userid) {
-		WData b = source.getBean(userid.toString());
+		WData b = beanstorage.getBean(userid.toString());
 		if (b == null) {
 			List<String> params = new LinkedList<String>();
 			params.add(userid.toString());
-			WResponse getresponse = getResponses("users", "get", true,
-					params);
+			WResponse getresponse = getResponses("users", "get", true, params);
 			if (getresponse.isSuccess()) {
-				source.addBean(userid.toString(), b);
+				beanstorage.addBean(userid.toString(), b);
 				WResponse resp = WResponse.getTrue();
 				resp.setBean(b);
 				return resp;
@@ -219,19 +222,19 @@ public final class RestServiceClient implements WService {
 			params.add(id.toString());
 			WData response = getBean("objects", "read", false, params);
 			if (response.get("object") != null) {
-				source.addBean(id.toString(), response.get("object"));
+				beanstorage.addBean(id.toString(), response.get("object"));
 			}
 			return response;
 		}
 	}
 
 	private WData getBean(MStringID id) {
-		return source.getBean(id.toString());
+		return beanstorage.getBean(id.toString());
 	}
 
 	@Override
 	public void addBean(MStringID id, WData b) {
-		source.addBean(id.toString(), b);
+		beanstorage.addBean(id.toString(), b);
 	}
 
 	private WResponse store(MStringID id, WData bean) {

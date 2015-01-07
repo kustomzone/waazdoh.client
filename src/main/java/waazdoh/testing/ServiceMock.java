@@ -17,12 +17,13 @@ import java.util.Set;
 
 import org.xml.sax.SAXException;
 
+import waazdoh.client.BeanStorage;
 import waazdoh.client.binaries.BinarySource;
-import waazdoh.client.model.WService;
-import waazdoh.client.model.WData;
-import waazdoh.client.model.WResponse;
 import waazdoh.client.model.ObjectID;
 import waazdoh.client.model.UserID;
+import waazdoh.client.model.WData;
+import waazdoh.client.model.WResponse;
+import waazdoh.client.model.WService;
 import waazdoh.util.MLogger;
 import waazdoh.util.MStringID;
 import waazdoh.util.MURL;
@@ -39,12 +40,14 @@ public final class ServiceMock implements WService {
 	private static Map<String, String> storagearea = new HashMap<>();
 
 	private MLogger log = MLogger.getLogger(this);
+	private BeanStorage beanstorage;
 
 	public ServiceMock(String username, BinarySource nsource)
 			throws SAXException {
 		this.username = username;
 		MStringID gusersid = new MStringID();
 		this.source = nsource;
+		this.beanstorage = new MockBeanStorage();
 		nsource.setService(this);
 		//
 		String gname = "users";
@@ -124,7 +127,7 @@ public final class ServiceMock implements WService {
 		if (id == null) {
 			return null;
 		} else {
-			WData b = source.getBean(id.toString());
+			WData b = beanstorage.getBean(id.toString());
 			if (b == null) {
 				b = ServiceMock.objects.get(id.toString());
 			}
@@ -142,7 +145,7 @@ public final class ServiceMock implements WService {
 
 	@Override
 	public void addBean(MStringID id, WData b) {
-		source.addBean(id.toString(), b);
+		beanstorage.addBean(id.toString(), b);
 		ServiceMock.objects.put(id.toString(), b);
 	}
 

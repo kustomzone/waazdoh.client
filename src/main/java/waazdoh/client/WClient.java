@@ -11,7 +11,6 @@ import waazdoh.client.model.UserID;
 import waazdoh.client.model.WData;
 import waazdoh.client.model.WResponse;
 import waazdoh.client.model.WService;
-import waazdoh.cp2p.network.MBeanStorage;
 import waazdoh.service.rest.RestServiceClient;
 import waazdoh.util.MPreferences;
 import waazdoh.util.MStringID;
@@ -24,13 +23,13 @@ public final class WClient {
 	//
 	private Set<WClientListener> listeners = new HashSet<WClientListener>();
 	private Bookmarks bookmarks;
-	private MBeanStorage beanstorage;
+	private BeanStorage beanstorage;
 
 	public WClient(MPreferences p, BinarySource binarysource)
 			throws MalformedURLException {
 		this.preferences = p;
 		this.source = binarysource;
-		service = new RestServiceClient(getServiceURL(), source);
+		service = new RestServiceClient(getServiceURL(), beanstorage, source);
 	}
 
 	public WClient(MPreferences p, BinarySource binarysource, WService nservice) {
@@ -138,7 +137,7 @@ public final class WClient {
 		return idlist;
 	}
 
-	public MBeanStorage getBeanStorage() {
+	public BeanStorage getBeanStorage() {
 		return this.beanstorage;
 	}
 }
