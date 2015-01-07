@@ -126,7 +126,7 @@ public final class ITTestBinaryTransfer extends WCTestCase {
 		try {
 			this.wait(i);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			log.error(e);
 		}
 	}
 
