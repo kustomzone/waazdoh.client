@@ -16,9 +16,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Iterator;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
 import org.xml.sax.SAXException;
 
 import waazdoh.client.BeanStorage;
@@ -98,29 +99,66 @@ public final class FileBeanStorage implements BeanStorage {
 		}
 	}
 
-	public Set<MStringID> getLocalSetIDs(String search) {
-		Set<MStringID> ret = new HashSet<MStringID>();
-		String listpath = path;
-
-		searchLocalSetIDs(search, ret, listpath);
-		return ret;
+	public Iterable<MStringID> getLocalSetIDs(final String search) {
+		final Iterator<File> fileiterator = getFileItarator(search);
+		Iterable<MStringID> ids = getStringIDIterator(fileiterator);
+		return ids;
 	}
 
-	private void searchLocalSetIDs(String search, Set<MStringID> ret,
-			String listpath) {
-		File f = new File(listpath);
-		String[] list = f.list();
-		for (final String childname : list) {
-			if (search.indexOf(childname) >= 0) {
-				File child = new File(childname);
-				if (child.isDirectory()) {
-					searchLocalSetIDs(search, ret, listpath + File.separator
-							+ childname);
-				} else {
-					ret.add(new MStringID(childname));
-				}
+	private Iterable<MStringID> getStringIDIterator(
+			final Iterator<File> fileiterator) {
+		return new Iterable<MStringID>() {
+
+			@Override
+			public Iterator<MStringID> iterator() {
+				return new Iterator<MStringID>() {
+
+					@Override
+					public boolean hasNext() {
+						log.info("iditerator hasnext " + fileiterator.hasNext());
+						return fileiterator.hasNext();
+					}
+
+					@Override
+					public MStringID next() {
+						File f = fileiterator.next();
+						log.info("iditerator next " + f);
+						return new MStringID(f.getName());
+					}
+				};
 			}
-		}
+		};
+	}
+
+	private Iterator<File> getFileItarator(final String search) {
+		return FileUtils.iterateFiles(new File(path), new IOFileFilter() {
+
+			@Override
+			public boolean accept(File f) {
+				String path = f.getAbsolutePath().replace(File.separator, "");
+				log.info("fileiterator accept " + f);
+				return path.indexOf(search) >= 0;
+			}
+
+			@Override
+			public boolean accept(File arg0, String arg1) {
+				log.info("not accepting " + arg0);
+
+				return false;
+			}
+
+		}, new IOFileFilter() {
+
+			@Override
+			public boolean accept(File arg0, String arg1) {
+				return true;
+			}
+
+			@Override
+			public boolean accept(File arg0) {
+				return true;
+			}
+		});
 	}
 
 }
