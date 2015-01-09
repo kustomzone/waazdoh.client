@@ -115,15 +115,14 @@ public final class FileBeanStorage implements BeanStorage {
 
 					@Override
 					public boolean hasNext() {
-						log.info("iditerator hasnext " + fileiterator.hasNext());
 						return fileiterator.hasNext();
 					}
 
 					@Override
 					public MStringID next() {
 						File f = fileiterator.next();
-						log.info("iditerator next " + f);
-						return new MStringID(f.getName());
+						String name = f.getName();
+						return new MStringID(name.replace(".xml", ""));
 					}
 				};
 			}
