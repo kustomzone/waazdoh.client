@@ -7,6 +7,7 @@ import java.util.Set;
 
 import waazdoh.client.binaries.BinarySource;
 import waazdoh.client.model.Bookmarks;
+import waazdoh.client.model.User;
 import waazdoh.client.model.UserID;
 import waazdoh.client.model.WData;
 import waazdoh.client.model.WResponse;
@@ -142,5 +143,10 @@ public final class WClient {
 
 	public BeanStorage getBeanStorage() {
 		return this.beanstorage;
+	}
+
+	public User getUser(UserID userID) {
+		WResponse r = getService().getUser(userID);
+		return new User(r.getBean());
 	}
 }
