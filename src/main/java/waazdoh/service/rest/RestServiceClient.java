@@ -22,7 +22,6 @@ import java.util.StringTokenizer;
 import org.xml.sax.SAXException;
 
 import waazdoh.client.BeanStorage;
-import waazdoh.client.binaries.BinarySource;
 import waazdoh.client.model.ObjectID;
 import waazdoh.client.model.UserID;
 import waazdoh.client.model.WData;
@@ -41,14 +40,11 @@ public final class RestServiceClient implements WService {
 	private UserID userid;
 	private String username;
 	private boolean loggedin;
-	private BinarySource source;
 	private BeanStorage beanstorage;
 
 	public RestServiceClient(final String localurl,
-			final BeanStorage beanstorage, final BinarySource source)
-			throws MalformedURLException {
+			final BeanStorage beanstorage) throws MalformedURLException {
 		this.url = new MURL(localurl);
-		this.source = source;
 		this.beanstorage = beanstorage;
 	}
 
@@ -185,13 +181,13 @@ public final class RestServiceClient implements WService {
 
 	@Override
 	public WResponse getUser(UserID userid) {
-		WData b = beanstorage.getBean(userid.toString());
+		WData b = beanstorage.getBean(userid);
 		if (b == null) {
 			List<String> params = new LinkedList<String>();
 			params.add(userid.toString());
 			WResponse getresponse = getResponses("users", "get", true, params);
 			if (getresponse.isSuccess()) {
-				beanstorage.addBean(userid.toString(), b);
+				beanstorage.addBean(userid, b);
 				WResponse resp = WResponse.getTrue();
 				resp.setBean(b);
 				return resp;
@@ -222,19 +218,19 @@ public final class RestServiceClient implements WService {
 			params.add(id.toString());
 			WData response = getBean("objects", "read", false, params);
 			if (response.get("object") != null) {
-				beanstorage.addBean(id.toString(), response.get("object"));
+				beanstorage.addBean(id, response.get("object"));
 			}
 			return response;
 		}
 	}
 
 	private WData getBean(MStringID id) {
-		return beanstorage.getBean(id.toString());
+		return beanstorage.getBean(id);
 	}
 
 	@Override
 	public void addBean(MStringID id, WData b) {
-		beanstorage.addBean(id.toString(), b);
+		beanstorage.addBean(id, b);
 	}
 
 	private WResponse store(MStringID id, WData bean) {

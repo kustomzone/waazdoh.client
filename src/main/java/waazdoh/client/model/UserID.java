@@ -10,30 +10,10 @@
  ******************************************************************************/
 package waazdoh.client.model;
 
-public final class UserID {
-	private String id;
+import waazdoh.util.MStringID;
 
+public final class UserID extends MStringID {
 	public UserID(final String id) {
-		this.id = id.toString();
-	}
-
-	@Override
-	public int hashCode() {
-		return id.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof UserID && obj != null) {
-			UserID nid = (UserID) obj;
-			return id.equals(nid.id);
-		} else {
-			return false;
-		}
-	}
-
-	@Override
-	public String toString() {
-		return id;
+		super(id);
 	}
 }

@@ -1,11 +1,12 @@
 package waazdoh.client;
 
 import waazdoh.client.model.WData;
+import waazdoh.util.MStringID;
 
 public interface BeanStorage {
 
-	WData getBean(String string);
+	WData getBean(MStringID id);
 
-	void addBean(String string, WData b);
+	void addBean(MStringID id, WData b);
 
 }

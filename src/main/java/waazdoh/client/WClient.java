@@ -18,23 +18,26 @@ import waazdoh.util.MStringID;
 public final class WClient {
 	private WService service;
 	private MPreferences preferences;
-	private BinarySource source;
 	private boolean running = true;
 	//
 	private Set<WClientListener> listeners = new HashSet<WClientListener>();
 	private Bookmarks bookmarks;
-	private BeanStorage beanstorage;
+	private final BeanStorage beanstorage;
+	private final BinarySource source;
 
-	public WClient(MPreferences p, BinarySource binarysource)
-			throws MalformedURLException {
+	public WClient(MPreferences p, BinarySource binarysource,
+			BeanStorage beanstorage) throws MalformedURLException {
 		this.preferences = p;
+		this.beanstorage = beanstorage;
 		this.source = binarysource;
-		service = new RestServiceClient(getServiceURL(), beanstorage, source);
+		service = new RestServiceClient(getServiceURL(), beanstorage);
 	}
 
-	public WClient(MPreferences p, BinarySource binarysource, WService nservice) {
+	public WClient(MPreferences p, BinarySource binarysource,
+			BeanStorage beanstorage, WService nservice) {
 		this.preferences = p;
 		this.source = binarysource;
+		this.beanstorage = beanstorage;
 		this.service = nservice;
 	}
 

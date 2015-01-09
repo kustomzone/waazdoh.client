@@ -41,7 +41,7 @@ public final class FileBeanStorage implements BeanStorage {
 		file.mkdirs();
 	}
 
-	public WData getBean(final String id) {
+	public WData getBean(final MStringID id) {
 		try {
 			File f = getFile(id);
 			if (f.exists()) {
@@ -71,12 +71,12 @@ public final class FileBeanStorage implements BeanStorage {
 		}
 	}
 
-	private File getFile(final String id) {
+	private File getFile(final MStringID id) {
 		File f = new File(getFilePath(id));
 		return f;
 	}
 
-	private String getFilePath(final String id) {
+	private String getFilePath(final MStringID id) {
 		String filepath = new StringIDLocalPath(this.path, id).getPath();
 		File fpath = new File(filepath);
 		if (!fpath.isDirectory()) {
@@ -86,7 +86,7 @@ public final class FileBeanStorage implements BeanStorage {
 		return filepath + id + ".xml";
 	}
 
-	public void addBean(final String id, WData response) {
+	public void addBean(final MStringID id, WData response) {
 		try {
 			File f = getFile(id);
 			FileWriter fw;

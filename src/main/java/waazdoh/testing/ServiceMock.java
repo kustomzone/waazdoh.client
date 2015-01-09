@@ -127,7 +127,7 @@ public final class ServiceMock implements WService {
 		if (id == null) {
 			return null;
 		} else {
-			WData b = beanstorage.getBean(id.toString());
+			WData b = beanstorage.getBean(id);
 			if (b == null) {
 				b = ServiceMock.objects.get(id.toString());
 			}
@@ -145,7 +145,7 @@ public final class ServiceMock implements WService {
 
 	@Override
 	public void addBean(MStringID id, WData b) {
-		beanstorage.addBean(id.toString(), b);
+		beanstorage.addBean(id, b);
 		ServiceMock.objects.put(id.toString(), b);
 	}
 

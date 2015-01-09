@@ -2,19 +2,21 @@ package waazdoh.client.model;
 
 import java.io.File;
 
+import waazdoh.util.MStringID;
+
 public class StringIDLocalPath {
 
 	private String localpath;
-	private String id;
+	private MStringID id;
 
 	public StringIDLocalPath(String localpath, BinaryID mBinaryID) {
 		this.localpath = localpath.toString();
-		this.id = mBinaryID.toString();
+		this.id = mBinaryID;
 	}
 
-	public StringIDLocalPath(String path, String id2) {
+	public StringIDLocalPath(String path, MStringID nid) {
 		this.localpath = path;
-		this.id = id2;
+		this.id = nid;
 	}
 
 	public String getPath() {

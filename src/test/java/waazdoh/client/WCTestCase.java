@@ -13,6 +13,7 @@ import org.xml.sax.SAXException;
 import waazdoh.client.impl.FileBeanStorage;
 import waazdoh.cp2p.P2PBinarySource;
 import waazdoh.cp2p.P2PServer;
+import waazdoh.testing.MockBeanStorage;
 import waazdoh.testing.ServiceMock;
 import waazdoh.testing.StaticTestPreferences;
 import waazdoh.util.ConditionWaiter;
@@ -103,7 +104,9 @@ public class WCTestCase extends TestCase {
 		ServiceMock service = new ServiceMock(username, source);
 		service.createSession();
 
-		WClient c = new WClient(p, source, service);
+		MockBeanStorage bs = new MockBeanStorage();
+
+		WClient c = new WClient(p, source, bs, service);
 		c.setSession(service.getSessionID());
 		return c;
 	}
@@ -112,7 +115,8 @@ public class WCTestCase extends TestCase {
 			boolean bind) throws SAXException {
 		MPreferences p1 = new StaticTestPreferences("waazdohclienttests",
 				username1);
-		P2PBinarySource source1 = new P2PBinarySource(p1, new FileBeanStorage(p1), bind);
+		P2PBinarySource source1 = new P2PBinarySource(p1, new FileBeanStorage(
+				p1), bind);
 		ServiceMock service1 = new ServiceMock(username1, source1);
 
 		service1.setSession("" + new MStringID());
