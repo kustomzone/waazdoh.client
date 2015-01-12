@@ -27,7 +27,7 @@ import waazdoh.util.MLogger;
 import waazdoh.util.MTimedFlag;
 
 public final class TCPNode {
-	private static final long MAX_GIVEUP_TIME = 6000;
+	private static final long MAX_GIVEUP_TIME = 30000;
 
 	private Channel channel;
 	private MLogger log = MLogger.getLogger(this);
