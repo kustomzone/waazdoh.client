@@ -147,6 +147,10 @@ public final class WClient {
 
 	public User getUser(UserID userID) {
 		WResponse r = getService().getUser(userID);
-		return new User(r.getBean());
+		if (r != null && r.getBean() != null) {
+			return new User(r.getBean());
+		} else {
+			return null;
+		}
 	}
 }

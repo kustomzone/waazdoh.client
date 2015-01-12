@@ -9,4 +9,6 @@ public interface BeanStorage {
 
 	void addBean(MStringID id, WData b);
 
+	Iterable<MStringID> getLocalSetIDs(String search);
+
 }

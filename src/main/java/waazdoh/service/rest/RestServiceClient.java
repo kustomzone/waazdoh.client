@@ -187,7 +187,7 @@ public final class RestServiceClient implements WService {
 			params.add(userid.toString());
 			WResponse getresponse = getResponses("users", "get", true, params);
 			if (getresponse.isSuccess()) {
-				beanstorage.addBean(userid, b);
+				beanstorage.addBean(userid, getresponse.getBean());
 				WResponse resp = WResponse.getTrue();
 				resp.setBean(b);
 				return resp;

@@ -21,4 +21,8 @@ public class MockBeanStorage implements BeanStorage {
 		return beans.get(id);
 	}
 
+	@Override
+	public Iterable<MStringID> getLocalSetIDs(String search) {
+		return beans.keySet();
+	}
 }

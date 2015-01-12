@@ -30,7 +30,9 @@ public final class User {
 		MLogger.getLogger(this).info("user : " + buser);
 		name = buser.getValue("name");
 		WData profile = buser.get("profile");
-		img = profile.getValue("pictureURL");
+		if (profile != null) {
+			img = profile.getValue("pictureURL");
+		}
 	}
 
 	public String getName() {
