@@ -399,6 +399,10 @@ public final class WData implements Comparable<WData> {
 	public MStringID getIDValue(final String string) {
 		String sid = getValue(string);
 		if (sid == null || sid.equals("null")) {
+			sid = getAttribute(string);
+		}
+		
+		if (sid == null || sid.equals("null")) {
 			return null;
 		} else {
 			return new MStringID(sid);
