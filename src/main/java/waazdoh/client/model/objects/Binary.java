@@ -8,7 +8,7 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.client.model;
+package waazdoh.client.model.objects;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -20,7 +20,12 @@ import java.io.RandomAccessFile;
 import java.util.LinkedList;
 import java.util.List;
 
-import waazdoh.client.binaries.BinaryStorage;
+import waazdoh.client.model.BinaryID;
+import waazdoh.client.model.StringIDLocalPath;
+import waazdoh.client.model.UserID;
+import waazdoh.client.model.WData;
+import waazdoh.client.model.WaazdohInfo;
+import waazdoh.client.service.WService;
 import waazdoh.util.HashSource;
 import waazdoh.util.MCRC;
 import waazdoh.util.MLogger;
@@ -47,14 +52,14 @@ public final class Binary implements HashSource {
 	private BinaryID id;
 
 	private RandomAccessFile access;
-	private BinaryStorage storage;
+	private String storage;
 
 	private static int count = 0;
 
-	public Binary(WService service, BinaryStorage storage, String comment,
+	public Binary(WService service, String storagepath, String comment,
 			String extension) {
 		this.service = service;
-		this.storage = storage;
+		this.storage = storagepath;
 
 		this.id = new BinaryID();
 		creatorid = service.getUserID();
@@ -114,22 +119,33 @@ public final class Binary implements HashSource {
 
 	private synchronized void newFile() throws IOException {
 		log.info("new file");
-		RandomAccessFile a = getFile();
+		RandomAccessFile a = getAccessFile();
 		a.seek(0);
 		a.setLength(0);
 	}
 
-	private RandomAccessFile getFile() throws IOException {
+	private RandomAccessFile getAccessFile() throws IOException {
 		if (access == null) {
-			String filepath = storage.getBinaryPath(this);
+			String filepath = getBinaryPath();
 			log.info("accessing file " + filepath);
 			access = new RandomAccessFile(new File(filepath), "rw");
 		}
 		return access;
 	}
 
+	private String getBinaryPath() {
+		StringIDLocalPath p = new StringIDLocalPath(storage, id);
+
+		File f = new File(p.getPath());
+		if (!f.isDirectory()) {
+			f.mkdirs();
+		}
+
+		return p.getPath() + File.separator + id + "." + extension;
+	}
+
 	public synchronized void addAt(int index, byte[] nbytes) throws IOException {
-		RandomAccessFile file = getFile();
+		RandomAccessFile file = getAccessFile();
 		file.seek(index);
 		file.write(nbytes, 0, nbytes.length);
 		//
@@ -139,7 +155,7 @@ public final class Binary implements HashSource {
 	}
 
 	public void addAt(int index, byte[] nbytes, int length) throws IOException {
-		RandomAccessFile file = getFile();
+		RandomAccessFile file = getAccessFile();
 		file.seek(index);
 		file.write(nbytes, 0, length);
 		//
@@ -150,7 +166,7 @@ public final class Binary implements HashSource {
 
 	public synchronized void add(byte[] nbytes, int length) throws IOException {
 		used();
-		RandomAccessFile f = getFile();
+		RandomAccessFile f = getAccessFile();
 		f.write(nbytes, 0, length);
 
 		log.debug("added " + nbytes.length + ". File size now " + f.length());
@@ -161,22 +177,22 @@ public final class Binary implements HashSource {
 	public synchronized void add(byte[] bytes) throws FileNotFoundException,
 			IOException {
 		used();
-		getFile().write(bytes);
+		getAccessFile().write(bytes);
 		log.debug("added " + bytes.length + ". File size now "
-				+ getFile().length());
+				+ getAccessFile().length());
 
 		resetCRC();
 	}
 
 	public synchronized void add(Byte b) throws IOException {
-		getFile().write(b.intValue());
+		getAccessFile().write(b.intValue());
 
 		resetCRC();
 	}
 
 	public synchronized void read(int start, byte[] bs) throws IOException {
 		if (isReady()) {
-			RandomAccessFile f = getFile();
+			RandomAccessFile f = getAccessFile();
 			f.seek(start);
 			f.read(bs);
 			closeFile();
@@ -272,7 +288,7 @@ public final class Binary implements HashSource {
 
 	synchronized MCRC currentCRC() {
 		try {
-			String binaryPath = this.storage.getBinaryPath(this);
+			String binaryPath = getBinaryPath();
 			if (new File(binaryPath).exists()) {
 				MCRC ncrc = new MCRC(getInputStream());
 				return ncrc;
@@ -287,8 +303,7 @@ public final class Binary implements HashSource {
 	}
 
 	public InputStream getInputStream() throws FileNotFoundException {
-		return new BufferedInputStream(new FileInputStream(
-				storage.getBinaryPath(this)));
+		return new BufferedInputStream(new FileInputStream(getBinaryPath()));
 	}
 
 	public BinaryID getID() {
@@ -351,7 +366,7 @@ public final class Binary implements HashSource {
 		used();
 
 		try {
-			length = getFile().length();
+			length = getAccessFile().length();
 			closeFile();
 			storedcrc = currentCRC();
 			fireReady();
@@ -445,5 +460,9 @@ public final class Binary implements HashSource {
 		} catch (IOException e) {
 			log.error(e);
 		}
+	}
+
+	public File getFile() {
+		return new File(getBinaryPath());
 	}
 }

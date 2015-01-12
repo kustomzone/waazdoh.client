@@ -8,11 +8,8 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.client.binaries;
+package waazdoh.client.storage.local;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -20,10 +17,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import waazdoh.client.model.Binary;
-import waazdoh.client.model.WService;
 import waazdoh.client.model.BinaryID;
-import waazdoh.client.model.StringIDLocalPath;
+import waazdoh.client.model.objects.Binary;
+import waazdoh.client.service.WService;
+import waazdoh.client.storage.BinaryStorage;
 import waazdoh.util.MCRC;
 import waazdoh.util.MLogger;
 import waazdoh.util.MPreferences;
@@ -113,7 +110,7 @@ public final class LocalBinaryStorage implements BinaryStorage {
 			throws IOException {
 		synchronized (streams) {
 			Binary bin;
-			bin = new Binary(service, this, "default", "default");
+			bin = new Binary(service, getLocalPath(), "default", "default");
 			bin.load(streamid);
 
 			if (bin.isOK() && bin.checkCRC()) {
@@ -138,29 +135,6 @@ public final class LocalBinaryStorage implements BinaryStorage {
 				return null;
 			}
 		}
-	}
-
-	private String getBinaryFolderPath(BinaryID id) {
-		String binarypath = new StringIDLocalPath(getLocalPath(), id).getPath();
-
-		//
-		File file = new File(binarypath);
-		file.mkdirs();
-		//
-		return binarypath;
-	}
-
-	private String getFileName(Binary bin) {
-		return bin.getID() + "." + bin.getExtension();
-	}
-
-	public String getBinaryPath(Binary bin) {
-		return getBinaryFolderPath(bin.getID()) + File.separator
-				+ getFileName(bin);
-	}
-
-	public File getBinaryFile(Binary b) {
-		return new File(getBinaryPath(b));
 	}
 
 	@Override
@@ -202,7 +176,7 @@ public final class LocalBinaryStorage implements BinaryStorage {
 		synchronized (streams) {
 			log.info("Adding a new binary. memory usage:"
 					+ getMemoryUsageInfo());
-			Binary b = new Binary(service, this, comment, extension);
+			Binary b = new Binary(service, getLocalPath(), comment, extension);
 			addNewBinary(b);
 			return b;
 		}

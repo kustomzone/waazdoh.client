@@ -8,7 +8,7 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.util.xml;
+package waazdoh.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,14 +1,12 @@
 package waazdoh.client;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.client.binaries.BinaryStorage;
-import waazdoh.client.model.Binary;
-import waazdoh.client.model.BinaryListener;
+import waazdoh.client.model.objects.Binary;
+import waazdoh.client.model.objects.BinaryListener;
 import waazdoh.cp2p.P2PBinarySource;
 import waazdoh.testing.StaticService;
 import waazdoh.util.ConditionWaiter;
@@ -16,12 +14,13 @@ import waazdoh.util.MCRC;
 import waazdoh.util.MLogger;
 import waazdoh.util.MPreferences;
 
-public final class TestBinary extends WCTestCase implements BinaryStorage {
+public final class TestBinary extends WCTestCase {
 	private MLogger log = MLogger.getLogger(this);
 
 	public void testBinary() throws IOException {
 
-		Binary binary = new Binary(new StaticService(), this, "test", "test");
+		Binary binary = new Binary(new StaticService(), getTempPath(), "test",
+				"test");
 		addData(binary);
 
 		MCRC fcrc = binary.getCRC();
@@ -39,7 +38,8 @@ public final class TestBinary extends WCTestCase implements BinaryStorage {
 		assertNotNull(crc);
 		assertNotSame(fcrc, crc);
 		// second binary read with inputstream.
-		Binary binary2 = new Binary(new StaticService(), this, "test2", "test");
+		Binary binary2 = new Binary(new StaticService(), getTempPath(),
+				"test2", "test");
 		binary2.importStream(binary.getInputStream());
 
 		assertEquals(crc, binary2.getCRC());
@@ -103,7 +103,7 @@ public final class TestBinary extends WCTestCase implements BinaryStorage {
 
 		assertNotNull(a.getCRC());
 
-		Binary b = new Binary(a.getService(), this, "test", "test");
+		Binary b = new Binary(a.getService(), getTempPath(), "test", "test");
 		b.add(bs, bs.length);
 
 		assertEquals(a.getCRC(), b.getCRC());
@@ -114,18 +114,12 @@ public final class TestBinary extends WCTestCase implements BinaryStorage {
 		return tempDir;
 	}
 
-	@Override
-	public String getBinaryPath(Binary b) {
-		return getTempPath() + File.separator + b.getID() + "."
-				+ b.getExtension();
-	}
-
 	public void testBinaryBean() throws IOException {
 		Binary a = getNewBinary();
 		byte[] bs = new byte[1000];
 		a.add(bs);
 		assertNotNull(a.getID());
-		Binary b = new Binary(a.getService(), this, "test", "test");
+		Binary b = new Binary(a.getService(), getTempPath(), "test", "test");
 		b.add(bs);
 
 		assertEquals(a.getBean().toText(), b.getBean().toText());
@@ -153,7 +147,7 @@ public final class TestBinary extends WCTestCase implements BinaryStorage {
 
 	private Binary getNewBinary() {
 		StaticService service = new StaticService();
-		return new Binary(service, this, "test", "test");
+		return new Binary(service, getTempPath(), "test", "test");
 	}
 
 	public void testLoadSharedFile() throws SAXException, IOException {

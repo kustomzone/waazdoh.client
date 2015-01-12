@@ -18,12 +18,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import waazdoh.client.binaries.BinarySource;
-import waazdoh.client.model.Binary;
-import waazdoh.client.model.WData;
+import waazdoh.client.BinarySource;
 import waazdoh.client.model.BinaryID;
 import waazdoh.client.model.ObjectID;
+import waazdoh.client.model.WData;
 import waazdoh.client.model.WaazdohInfo;
+import waazdoh.client.model.objects.Binary;
 import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MessageResponseListener;

@@ -1,4 +1,4 @@
-package waazdoh.client;
+package waazdoh.client.storage;
 
 import waazdoh.client.model.WData;
 import waazdoh.util.MStringID;

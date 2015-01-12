@@ -8,7 +8,7 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.client.impl;
+package waazdoh.client.storage.local;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -22,13 +22,13 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.xml.sax.SAXException;
 
-import waazdoh.client.BeanStorage;
 import waazdoh.client.model.StringIDLocalPath;
 import waazdoh.client.model.WData;
+import waazdoh.client.storage.BeanStorage;
 import waazdoh.util.MLogger;
 import waazdoh.util.MPreferences;
 import waazdoh.util.MStringID;
-import waazdoh.util.xml.XML;
+import waazdoh.util.XML;
 
 public final class FileBeanStorage implements BeanStorage {
 	private MLogger log = MLogger.getLogger(this);

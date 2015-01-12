@@ -9,11 +9,6 @@ public class StringIDLocalPath {
 	private String localpath;
 	private MStringID id;
 
-	public StringIDLocalPath(String localpath, BinaryID mBinaryID) {
-		this.localpath = localpath.toString();
-		this.id = mBinaryID;
-	}
-
 	public StringIDLocalPath(String path, MStringID nid) {
 		this.localpath = path;
 		this.id = nid;

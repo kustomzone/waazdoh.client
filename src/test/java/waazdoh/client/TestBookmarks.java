@@ -1,8 +1,8 @@
 package waazdoh.client;
 
-import waazdoh.client.model.BookmarksListener;
-import waazdoh.client.model.BookmarkGroup;
-import waazdoh.client.model.Bookmarks;
+import waazdoh.client.model.objects.BookmarkGroup;
+import waazdoh.client.model.objects.Bookmarks;
+import waazdoh.client.model.objects.BookmarksListener;
 import waazdoh.testing.StaticService;
 
 public class TestBookmarks extends WCTestCase {

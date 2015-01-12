@@ -8,11 +8,12 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.client.model;
+package waazdoh.client;
 
+import waazdoh.util.MStringID;
 
-public interface BookmarksListener {
+public interface ReportingService {
 
-	void groupAdded(BookmarkGroup group);
+	void reportDownload(MStringID id, boolean success);
 
 }

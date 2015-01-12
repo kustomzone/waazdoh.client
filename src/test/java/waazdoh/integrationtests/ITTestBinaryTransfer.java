@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.xml.sax.SAXException;
 
 import waazdoh.client.WCTestCase;
-import waazdoh.client.model.Binary;
+import waazdoh.client.model.objects.Binary;
 import waazdoh.cp2p.P2PBinarySource;
 import waazdoh.testing.StaticTestPreferences;
 import waazdoh.util.MLogger;

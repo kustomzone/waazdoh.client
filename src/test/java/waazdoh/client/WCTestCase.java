@@ -10,7 +10,7 @@ import junit.framework.TestCase;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.client.impl.FileBeanStorage;
+import waazdoh.client.storage.local.FileBeanStorage;
 import waazdoh.cp2p.P2PBinarySource;
 import waazdoh.cp2p.P2PServer;
 import waazdoh.testing.MockBeanStorage;

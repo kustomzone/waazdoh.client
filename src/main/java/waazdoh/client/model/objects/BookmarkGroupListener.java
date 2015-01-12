@@ -8,7 +8,7 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.client.model;
+package waazdoh.client.model.objects;
 
 public interface BookmarkGroupListener {
 

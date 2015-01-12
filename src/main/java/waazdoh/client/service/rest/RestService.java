@@ -8,7 +8,7 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.service.rest;
+package waazdoh.client.service.rest;
 
 import java.net.MalformedURLException;
 import java.util.HashMap;
@@ -21,19 +21,19 @@ import java.util.StringTokenizer;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.client.BeanStorage;
 import waazdoh.client.model.ObjectID;
 import waazdoh.client.model.UserID;
 import waazdoh.client.model.WData;
 import waazdoh.client.model.WResponse;
-import waazdoh.client.model.WService;
+import waazdoh.client.service.WService;
+import waazdoh.client.storage.BeanStorage;
 import waazdoh.util.MLogger;
 import waazdoh.util.MStringID;
 import waazdoh.util.MURL;
 import waazdoh.util.URLCaller;
-import waazdoh.util.xml.XML;
+import waazdoh.util.XML;
 
-public final class RestServiceClient implements WService {
+public final class RestService implements WService {
 	private MURL url;
 	private MLogger log = MLogger.getLogger(this);
 	private String sessionid;
@@ -42,7 +42,7 @@ public final class RestServiceClient implements WService {
 	private boolean loggedin;
 	private BeanStorage beanstorage;
 
-	public RestServiceClient(final String localurl,
+	public RestService(final String localurl,
 			final BeanStorage beanstorage) throws MalformedURLException {
 		this.url = new MURL(localurl);
 		this.beanstorage = beanstorage;

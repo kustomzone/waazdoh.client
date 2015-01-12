@@ -10,15 +10,13 @@
  ******************************************************************************/
 package waazdoh.cp2p;
 
-import java.io.File;
-
-import waazdoh.client.binaries.BinarySource;
-import waazdoh.client.binaries.LocalBinaryStorage;
-import waazdoh.client.binaries.ReportingService;
-import waazdoh.client.impl.FileBeanStorage;
-import waazdoh.client.model.Binary;
+import waazdoh.client.BinarySource;
+import waazdoh.client.ReportingService;
 import waazdoh.client.model.BinaryID;
-import waazdoh.client.model.WService;
+import waazdoh.client.model.objects.Binary;
+import waazdoh.client.service.WService;
+import waazdoh.client.storage.local.FileBeanStorage;
+import waazdoh.client.storage.local.LocalBinaryStorage;
 import waazdoh.util.MLogger;
 import waazdoh.util.MPreferences;
 
@@ -36,11 +34,6 @@ public final class P2PBinarySource implements BinarySource {
 		this.server = new P2PServer(p, bind2, this);
 		this.beanstorage = beanstorage;
 		this.preferences = p;
-	}
-
-	@Override
-	public File getBinaryFile(Binary bin) {
-		return this.storage.getBinaryFile(bin);
 	}
 
 	@Override
@@ -99,10 +92,11 @@ public final class P2PBinarySource implements BinarySource {
 		if (fs == null) {
 			if (server.waitForDownloadSlot(5000)) {
 				log.info("new Binary " + fsid);
-				fs = new Binary(service, storage, "", "");
+
+				fs = storage.newBinary("", "");
 
 				if (fs.load(fsid) && fs.isOK()) {
-					addBinary(fs);
+					// addBinary(fs);
 					addDownload(fs);
 				} else {
 					fs = null;

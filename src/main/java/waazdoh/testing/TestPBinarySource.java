@@ -10,35 +10,25 @@
  ******************************************************************************/
 package waazdoh.testing;
 
-import java.io.File;
-
-import waazdoh.client.BeanStorage;
-import waazdoh.client.binaries.BinarySource;
-import waazdoh.client.binaries.LocalBinaryStorage;
-import waazdoh.client.binaries.ReportingService;
-import waazdoh.client.model.Binary;
+import waazdoh.client.BinarySource;
+import waazdoh.client.ReportingService;
 import waazdoh.client.model.BinaryID;
-import waazdoh.client.model.WService;
+import waazdoh.client.model.objects.Binary;
+import waazdoh.client.service.WService;
+import waazdoh.client.storage.local.LocalBinaryStorage;
 import waazdoh.util.MPreferences;
 
 public final class TestPBinarySource implements BinarySource {
 	private MPreferences preferences;
 	private LocalBinaryStorage storage;
 	private WService service;
-	private BeanStorage beanstorage;
 
-	public TestPBinarySource(MPreferences p, BeanStorage beanstorage) {
+	public TestPBinarySource(MPreferences p) {
 		this.preferences = p;
-		this.beanstorage = beanstorage;
 	}
 
 	public void addBinary(Binary stream) {
 		storage.addNewBinary(stream);
-	}
-
-	@Override
-	public File getBinaryFile(Binary b) {
-		return storage.getBinaryFile(b);
 	}
 
 	@Override

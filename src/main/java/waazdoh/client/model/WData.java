@@ -30,7 +30,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import waazdoh.util.BytesHash;
 import waazdoh.util.MLogger;
 import waazdoh.util.MStringID;
-import waazdoh.util.xml.XML;
+import waazdoh.util.XML;
 
 public final class WData implements Comparable<WData> {
 	private String name, text;

@@ -1,22 +1,20 @@
 package waazdoh.client;
 
-import java.net.MalformedURLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import waazdoh.client.binaries.BinarySource;
-import waazdoh.client.model.Bookmarks;
 import waazdoh.client.model.User;
 import waazdoh.client.model.UserID;
 import waazdoh.client.model.WData;
 import waazdoh.client.model.WResponse;
-import waazdoh.client.model.WService;
-import waazdoh.service.rest.RestServiceClient;
+import waazdoh.client.model.objects.Bookmarks;
+import waazdoh.client.service.WService;
+import waazdoh.client.storage.BeanStorage;
 import waazdoh.util.MPreferences;
 import waazdoh.util.MStringID;
 
-public final class WClient {
+public class WClient {
 	private WService service;
 	private MPreferences preferences;
 	private boolean running = true;
@@ -27,24 +25,11 @@ public final class WClient {
 	private final BinarySource source;
 
 	public WClient(MPreferences p, BinarySource binarysource,
-			BeanStorage beanstorage) throws MalformedURLException {
-		this.preferences = p;
-		this.beanstorage = beanstorage;
-		this.source = binarysource;
-		service = new RestServiceClient(getServiceURL(), beanstorage);
-	}
-
-	public WClient(MPreferences p, BinarySource binarysource,
 			BeanStorage beanstorage, WService nservice) {
 		this.preferences = p;
 		this.source = binarysource;
 		this.beanstorage = beanstorage;
 		this.service = nservice;
-	}
-
-	private String getServiceURL() {
-		MPreferences p = getPreferences();
-		return p.get(MPreferences.SERVICE_URL, "THIS_SHOULD_BE_SERVICE_URL");
 	}
 
 	public boolean isRunning() {

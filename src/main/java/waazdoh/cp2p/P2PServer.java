@@ -22,11 +22,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import waazdoh.client.binaries.BinarySource;
-import waazdoh.client.binaries.ReportingService;
-import waazdoh.client.model.Binary;
-import waazdoh.client.model.WData;
+import waazdoh.client.BinarySource;
+import waazdoh.client.ReportingService;
 import waazdoh.client.model.BinaryID;
+import waazdoh.client.model.WData;
+import waazdoh.client.model.objects.Binary;
 import waazdoh.cp2p.common.MHost;
 import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;

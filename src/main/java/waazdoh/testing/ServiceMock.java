@@ -17,17 +17,17 @@ import java.util.Set;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.client.BeanStorage;
-import waazdoh.client.binaries.BinarySource;
+import waazdoh.client.BinarySource;
 import waazdoh.client.model.ObjectID;
 import waazdoh.client.model.UserID;
 import waazdoh.client.model.WData;
 import waazdoh.client.model.WResponse;
-import waazdoh.client.model.WService;
+import waazdoh.client.service.WService;
+import waazdoh.client.storage.BeanStorage;
 import waazdoh.util.MLogger;
 import waazdoh.util.MStringID;
 import waazdoh.util.MURL;
-import waazdoh.util.xml.XML;
+import waazdoh.util.XML;
 
 public final class ServiceMock implements WService {
 	final private String username;

@@ -3,8 +3,8 @@ package waazdoh.testing;
 import java.util.HashMap;
 import java.util.Map;
 
-import waazdoh.client.BeanStorage;
 import waazdoh.client.model.WData;
+import waazdoh.client.storage.BeanStorage;
 import waazdoh.util.MStringID;
 
 public class MockBeanStorage implements BeanStorage {

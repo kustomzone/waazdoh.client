@@ -8,11 +8,13 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.client.model;
+package waazdoh.client.model.objects;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.util.xml.XML;
+import waazdoh.client.model.WData;
+import waazdoh.client.service.WService;
+import waazdoh.util.XML;
 
 public final class Bookmark {
 	private String oid;

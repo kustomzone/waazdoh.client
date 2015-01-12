@@ -26,7 +26,7 @@ import waazdoh.client.model.WData;
 import waazdoh.cp2p.common.MNodeID;
 import waazdoh.util.MLogger;
 import waazdoh.util.MStringID;
-import waazdoh.util.xml.XML;
+import waazdoh.util.XML;
 
 public final class MMessage {
 	private WData bean;

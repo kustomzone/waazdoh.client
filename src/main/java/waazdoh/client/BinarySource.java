@@ -8,13 +8,11 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.client.binaries;
+package waazdoh.client;
 
-import java.io.File;
-
-import waazdoh.client.model.Binary;
 import waazdoh.client.model.BinaryID;
-import waazdoh.client.model.WService;
+import waazdoh.client.model.objects.Binary;
+import waazdoh.client.service.WService;
 
 public interface BinarySource {
 	void close();
@@ -40,8 +38,6 @@ public interface BinarySource {
 	void setReportingService(ReportingService rservice);
 
 	Binary newBinary(final String comment, String extension);
-
-	File getBinaryFile(Binary bin);
 
 	void waitUntilReady();
 

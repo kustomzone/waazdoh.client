@@ -17,7 +17,7 @@ import org.xml.sax.SAXException;
 
 import waazdoh.util.MLogger;
 import waazdoh.util.MStringID;
-import waazdoh.util.xml.XML;
+import waazdoh.util.XML;
 
 public final class WResponse {
 	public static final String IDLIST_ITEM = "item";

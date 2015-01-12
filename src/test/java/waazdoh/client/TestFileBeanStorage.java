@@ -1,8 +1,8 @@
 package waazdoh.client;
 
 import junit.framework.TestCase;
-import waazdoh.client.impl.FileBeanStorage;
 import waazdoh.client.model.WData;
+import waazdoh.client.storage.local.FileBeanStorage;
 import waazdoh.testing.StaticTestPreferences;
 import waazdoh.util.MStringID;
 

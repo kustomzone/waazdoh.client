@@ -1,20 +1,15 @@
 package waazdoh.client;
 
-import java.io.File;
-
 import org.xml.sax.SAXException;
 
-import waazdoh.client.binaries.BinaryStorage;
-import waazdoh.client.binaries.ReportingService;
-import waazdoh.client.model.Binary;
 import waazdoh.client.model.BinaryID;
+import waazdoh.client.model.objects.Binary;
 import waazdoh.cp2p.P2PServer;
 import waazdoh.cp2p.common.MHost;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.SimpleMessageHandler;
 import waazdoh.cp2p.network.Node;
 import waazdoh.cp2p.network.SourceListener;
-import waazdoh.testing.MockBeanStorage;
 import waazdoh.testing.ServiceMock;
 import waazdoh.testing.StaticTestPreferences;
 import waazdoh.testing.TestPBinarySource;
@@ -105,19 +100,13 @@ public class TestP2PServer extends WCTestCase {
 		P2PServer s = getServer();
 		assertTrue(s.canDownload());
 		ServiceMock service = new ServiceMock("test", new TestPBinarySource(
-				s.getPreferences(), new MockBeanStorage()));
+				s.getPreferences()));
 
 		BinaryID downloadid = null;
 		for (int i = 0; i < MPreferences.NETWORK_MAX_DOWNLOADS_DEFAULT; i++) {
 			assertTrue(s.canDownload());
 			BinaryID id = new BinaryID();
-			Binary b = new Binary(service, new BinaryStorage() {
-				@Override
-				public String getBinaryPath(Binary b) {
-					return getTempPath() + File.separator + b.getID() + "."
-							+ b.getExtension();
-				}
-			}, "", "");
+			Binary b = new Binary(service, getTempPath(), "", "");
 			b.load(id);
 			s.addDownload(b);
 			downloadid = id;

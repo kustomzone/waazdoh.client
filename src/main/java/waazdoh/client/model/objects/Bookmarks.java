@@ -8,13 +8,15 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.client.model;
+package waazdoh.client.model.objects;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import waazdoh.client.service.WService;
 
 public final class Bookmarks {
 	private List<BookmarksListener> listeners = new LinkedList<BookmarksListener>();
