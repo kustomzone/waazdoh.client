@@ -13,12 +13,17 @@ package waazdoh.util;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class MLogger {
 	private static long starttime;
 	private Logger log;
 	private Object o;
+
+	static {
+		MLogger.starttime = System.currentTimeMillis();
+	}
 
 	public MLogger(Object o) {
 		this.o = o;
@@ -42,7 +47,7 @@ public final class MLogger {
 			string = string.replace('\n', '-');
 		}
 		return "" + o + " - "
-				+ (System.currentTimeMillis() - MLogger.starttime) + " --"
+				+ (System.currentTimeMillis() - MLogger.starttime) + " -- "
 				+ string;
 	}
 
@@ -80,7 +85,7 @@ public final class MLogger {
 
 	public void error(Throwable cause) {
 		getLog().severe(cause.toString());
-		getLog().throwing("" + o, "", cause);
+		getLog().log(Level.SEVERE, "", cause);
 	}
 
 	public void error(final String string) {

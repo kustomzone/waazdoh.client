@@ -139,6 +139,8 @@ public final class P2PServer implements MMessager, MMessageFactory,
 
 	private void initHandlers() {
 		handlers.put("ping", new PingHandler());
+		handlers.put("hello", new HelloHandler());
+		
 		WhoHasHandler whohashandler = new WhoHasHandler(binarysource, this);
 		whohashandler.addListener(new WhoHasListener() {
 			@Override

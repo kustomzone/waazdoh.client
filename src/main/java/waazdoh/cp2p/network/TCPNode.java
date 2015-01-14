@@ -14,7 +14,6 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.socket.oio.OioSocketChannel;
 
 import java.net.ConnectException;
 import java.util.List;
@@ -27,7 +26,7 @@ import waazdoh.util.MLogger;
 import waazdoh.util.MTimedFlag;
 
 public final class TCPNode {
-	private static final long MAX_GIVEUP_TIME = 30000;
+	private static final long MAX_GIVEUP_TIME = 6000;
 
 	private Channel channel;
 	private MLogger log = MLogger.getLogger(this);
@@ -41,7 +40,7 @@ public final class TCPNode {
 
 	private Node node;
 
-	private long lastmessage = System.currentTimeMillis();
+	private long touch = System.currentTimeMillis();
 
 	private boolean closed;
 
@@ -56,7 +55,7 @@ public final class TCPNode {
 	}
 
 	public synchronized int sendMessages(MMessageList smessages) {
-		if (isConnected()) {
+		if (checkConnection()) {
 			if (!smessages.isEmpty()) {
 				log.debug("writing messages " + smessages);
 
@@ -73,18 +72,12 @@ public final class TCPNode {
 				return 0;
 			}
 		} else {
-			log.info("not sending messages because not connected");
+			log.info("Not sending. Connection not ok.");
 			return 0;
 		}
 	}
 
-	public synchronized boolean isConnected() {
-		checkConnection();
-		OioSocketChannel oio = (OioSocketChannel) channel;
-		return channel != null && isactive && channel.isOpen() && oio.localAddress()!=null && oio.remoteAddress()!=null;
-	}
-
-	private synchronized void checkConnection() {
+	public synchronized boolean checkConnection() {
 		// if closed and connectionwaiter is triggered, create new connection
 		if (!closed && !offline && channel == null
 				&& (connectionwaiter == null || connectionwaiter.isTriggered())) {
@@ -94,16 +87,19 @@ public final class TCPNode {
 			connectionwaiter = new MTimedFlag(10000);
 			touch();
 		}
+
+		return channel != null;
 	}
 
 	@Override
 	public String toString() {
 		return "TCPNode[" + host + ":" + port + "]["
-				+ (System.currentTimeMillis() - lastmessage) + "]";
+				+ (System.currentTimeMillis() - touch) + "]";
 	}
 
 	private void touch() {
-		lastmessage = System.currentTimeMillis();
+		touch = System.currentTimeMillis();
+		isactive = true;
 	}
 
 	public synchronized void close() {
@@ -113,10 +109,9 @@ public final class TCPNode {
 	}
 
 	public boolean shouldGiveUp() {
-		if (!isConnected()
-				&& (System.currentTimeMillis() - lastmessage) > MAX_GIVEUP_TIME) {
-			log.info("Should give up " + lastmessage + " "
-					+ (System.currentTimeMillis() - lastmessage));
+		if ((System.currentTimeMillis() - touch) > MAX_GIVEUP_TIME) {
+			log.info("Should give up " + touch + " "
+					+ (System.currentTimeMillis() - touch));
 			return true;
 		} else {
 			return false;
@@ -151,6 +146,7 @@ public final class TCPNode {
 	}
 
 	public synchronized void channelDisconnected() {
+		log.info("Channel disconnected");
 		channel = null;
 		trigger();
 	}
@@ -159,7 +155,7 @@ public final class TCPNode {
 			Throwable e) {
 		if (!(e.getCause() instanceof ConnectException)) {
 			log.info("Exception with " + host + ":" + port + " e:" + e);
-			log.error(e.getCause());
+			log.error(e);
 		} else {
 			log.debug("Connection failed " + ctx);
 		}
@@ -168,8 +164,10 @@ public final class TCPNode {
 		trigger();
 	}
 
-	void messagesReceived(List<MMessage> messages) {
+	void messagesReceived(Channel channel, List<MMessage> messages) {
 		log.debug("got " + messages.size() + " messages");
+		this.channel = channel;
+
 		touch();
 		MMessageList response = node.incomingMessages(messages);
 		sendMessages(response);
@@ -203,7 +201,8 @@ public final class TCPNode {
 	}
 
 	void channelActive(Channel c) {
-		lastmessage = System.currentTimeMillis();
+		log.info("channelActive " + c);
+		touch = System.currentTimeMillis();
 		isactive = true;
 		touch();
 		channel = c;
@@ -213,8 +212,9 @@ public final class TCPNode {
 		//
 	}
 
-	void cannelRegistered(Channel c) {
-		channelActive(c);
+	void channelRegistered(Channel c) {
+		log.info("channelRegistered " + c);
+		channel = c;
 	}
 
 	void channelInactive(Channel ctx) {

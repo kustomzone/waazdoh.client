@@ -53,6 +53,8 @@ public final class NodeConnectionFactory {
 			_bootstrap.handler(new ChannelInitializer<SocketChannel>() {
 				@Override
 				public void initChannel(SocketChannel ch) throws Exception {
+					log.info("init client channel " + ch);
+
 					ChannelPipeline pipeline = ch.pipeline();
 					pipeline.addLast("zipencoder", new JZlibEncoder());
 					pipeline.addLast("zipdecoder", new JZlibDecoder());
@@ -60,6 +62,8 @@ public final class NodeConnectionFactory {
 					pipeline.addLast("messagedecoder", new MessageDecoder());
 					pipeline.addLast("channels", new NodeHandler());
 
+					ch.writeAndFlush("<init>" + System.currentTimeMillis()
+							+ "</init>");
 				}
 			});
 		}
@@ -74,7 +78,6 @@ public final class NodeConnectionFactory {
 		future.awaitUninterruptibly(100);
 		nodes.put(future.channel(), node);
 		Channel c = future.channel();
-		node.channelActive(c);
 		log.info("node " + node + " with channel " + c);
 		return c;
 	}
@@ -87,7 +90,7 @@ public final class NodeConnectionFactory {
 		@Override
 		public void channelActive(ChannelHandlerContext ctx) throws Exception {
 			super.channelActive(ctx);
-			// getNode(ctx).nodeChannelActive(ctx.channel());
+			getNode(ctx).channelActive(ctx.channel());
 		}
 
 		@Override
@@ -100,7 +103,7 @@ public final class NodeConnectionFactory {
 		public void channelRegistered(ChannelHandlerContext ctx)
 				throws Exception {
 			super.channelRegistered(ctx);
-			// getNode(ctx).nodeChannelRegistered(ctx.channel());
+			getNode(ctx).channelRegistered(ctx.channel());
 		}
 
 		@Override
@@ -113,7 +116,7 @@ public final class NodeConnectionFactory {
 		protected void channelRead0(ChannelHandlerContext ctx, MMessageList msgs)
 				throws Exception {
 			log.info("messageReceived size " + msgs.size());
-			getNode(ctx).messagesReceived(msgs);
+			getNode(ctx).messagesReceived(ctx.channel(), msgs);
 		}
 
 	}

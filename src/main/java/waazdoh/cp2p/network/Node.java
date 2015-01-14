@@ -141,7 +141,7 @@ public final class Node {
 		long maxpingdelay = getPingDelay();
 		if (outgoingmessages.size() == 0
 				&& System.currentTimeMillis() - lastping > maxpingdelay
-				&& tcpnode != null) {
+				&& tcpnode != null && tcpnode.checkConnection()) {
 			log.info("should ping " + (System.currentTimeMillis() - lastping)
 					+ " > " + maxpingdelay);
 			lastping = System.currentTimeMillis();
@@ -205,7 +205,7 @@ public final class Node {
 		final TCPNode checknode = tcpnode;
 		if (checknode != null) {
 			synchronized (checknode) {
-				if (checknode.isConnected() && getMessagesSize() > 0) {
+				if (checknode.checkConnection() && getMessagesSize() > 0) {
 					log.debug("node ok and has messages " + tcpnode);
 					outputbytecount += checknode.sendMessages(getMessages());
 				}
@@ -260,8 +260,6 @@ public final class Node {
 	}
 
 	public boolean isConnected() {
-		log.info("isConnected reccount:" + getReceivedMessages() + " id:"
-				+ getID() + " isclosed:" + isClosed());
 		return getReceivedMessages() > 0 && !isClosed() && getID() != null;
 	}
 
@@ -271,6 +269,7 @@ public final class Node {
 
 	public void messageReceived(String name) {
 		receivedmessages++;
+		touch();
 
 		if (name.toLowerCase().indexOf("ping") < 0) {
 			// received ping messages do not effect time between pings.

@@ -76,6 +76,10 @@ public final class TCPListener {
 								pipe.addLast("messagedecoder",
 										new MessageDecoder());
 								pipe.addLast("server", new MServerHandler());
+								//
+								MMessageList mlist = new MMessageList();
+								mlist.add(messager.getMessage("hello"));
+								ch.writeAndFlush(mlist);
 							} else {
 								log.info("InitChannel on closed listener. Closing channel.");
 								ch.close();
