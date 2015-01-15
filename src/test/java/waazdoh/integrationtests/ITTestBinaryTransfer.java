@@ -105,7 +105,7 @@ public final class ITTestBinaryTransfer extends WCTestCase {
 		log.info("wait until ready");
 
 		long st = System.currentTimeMillis();
-		while (!b2.isReady() && System.currentTimeMillis() - st < 60000) {
+		while (!b2.isReady() && System.currentTimeMillis() - st < 120000) {
 			doWait(100);
 		}
 

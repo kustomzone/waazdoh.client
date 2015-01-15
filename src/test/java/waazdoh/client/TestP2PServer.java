@@ -127,7 +127,7 @@ public class TestP2PServer extends WCTestCase {
 		log.info("time servera " + System.currentTimeMillis());
 		P2PServer servera = getServer();
 		log.info("time serverb " + System.currentTimeMillis());
-		P2PServer serverb = getOtherServer();
+		P2PServer serverb = getOtherServerNoBind();
 		log.info("time getting servers done");
 		try {
 			log.info("time addnode " + System.currentTimeMillis());

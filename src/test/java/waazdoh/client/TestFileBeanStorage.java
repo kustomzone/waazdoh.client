@@ -13,6 +13,8 @@ public class TestFileBeanStorage extends TestCase {
 				"test" + getClass(), "test" + System.currentTimeMillis()));
 		MStringID madeupid = new MStringID("" + System.currentTimeMillis());
 
+		assertNull(s.getBean(madeupid));
+
 		String beanname = "test" + madeupid;
 		s.addBean(madeupid, new WData(beanname));
 		Iterable<MStringID> i = s.getLocalSetIDs("2"); // TODO what about next
@@ -25,4 +27,5 @@ public class TestFileBeanStorage extends TestCase {
 		WData b = s.getBean(id);
 		assertEquals(beanname, b.getName());
 	}
+
 }

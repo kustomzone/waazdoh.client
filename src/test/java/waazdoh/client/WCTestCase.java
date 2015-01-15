@@ -86,15 +86,6 @@ public class WCTestCase extends TestCase {
 		return s;
 	}
 
-	private P2PServer getServerNoBind() {
-		P2PServer s = new P2PServer(getPreferences("p2pservertests"), false,
-				null);
-		s.start();
-		servers.add(s);
-		log.info("returning " + s);
-		return s;
-	}
-
 	protected WClient getClient(final String username, final boolean bind)
 			throws MalformedURLException, SAXException {
 		MPreferences p = new StaticTestPreferences("waazdohclienttests",
