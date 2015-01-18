@@ -123,7 +123,7 @@ public final class Node {
 
 	public MMessageList getMessages() {
 		synchronized (outgoingmessages) {
-			if (outgoingmessages.size() > 0) {
+			if (!outgoingmessages.isEmpty()) {
 				MMessageList ret = new MMessageList(outgoingmessages);
 				outgoingmessages = new MMessageList();
 				return ret;
@@ -222,7 +222,7 @@ public final class Node {
 	public MMessageList incomingMessages(List<MMessage> incomingmessages) {
 		if (source == null) {
 			close();
-		} else if (incomingmessages.size() > 0) {
+		} else if (!incomingmessages.isEmpty()) {
 			updatePing();
 			receivedmessages += incomingmessages.size();
 
