@@ -75,7 +75,6 @@ public final class NodeConnectionFactory {
 		Bootstrap bs = getBootstrap();
 		ChannelFuture future = bs.connect(new InetSocketAddress(
 				host.toString(), port));
-		future.awaitUninterruptibly(100);
 		nodes.put(future.channel(), node);
 		Channel c = future.channel();
 		log.info("node " + node + " with channel " + c);
@@ -89,8 +88,13 @@ public final class NodeConnectionFactory {
 	private class NodeHandler extends SimpleChannelInboundHandler<MMessageList> {
 		@Override
 		public void channelActive(ChannelHandlerContext ctx) throws Exception {
-			super.channelActive(ctx);
-			getNode(ctx).channelActive(ctx.channel());
+			TCPNode node = getNode(ctx);
+			if (node != null) {
+				super.channelActive(ctx);
+				node.channelActive(ctx.channel());
+			} else {
+				ctx.close();
+			}
 		}
 
 		@Override
