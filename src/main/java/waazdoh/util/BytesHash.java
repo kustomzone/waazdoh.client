@@ -11,7 +11,7 @@ public final class BytesHash {
 	public BytesHash(byte[] bytes) {
 		MessageDigest md;
 		try {
-			md = MessageDigest.getInstance("SHA-1");
+			md = MessageDigest.getInstance("SHA-256");
 			hash = md.digest(bytes);
 		} catch (NoSuchAlgorithmException e) {
 			MLogger.getLogger(this).error(e);
