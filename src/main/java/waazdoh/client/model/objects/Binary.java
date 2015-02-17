@@ -54,7 +54,7 @@ public final class Binary implements HashSource {
 	private RandomAccessFile access;
 	private String storage;
 
-	private static int count = 0;
+	private static int binarycount = 0;
 
 	public Binary(WService service, String storagepath, String comment,
 			String extension) {
@@ -71,7 +71,7 @@ public final class Binary implements HashSource {
 		this.extension = extension;
 		this.comment = comment;
 
-		count++;
+		binarycount++;
 
 		used();
 	}
@@ -201,22 +201,21 @@ public final class Binary implements HashSource {
 		}
 	}
 
-	// public FloatStream(JBean b, CMService service) {
-	// this.service = service;
-	// load(b);
-	// }
-	private void load(WData b) {
-		if (b.get(BEAN_TAG) != null) {
-			b = b.get(BEAN_TAG);
-			id = new BinaryID(b.getAttribute("id"));
+	private void load(WData d) {
+		WData data;
+		if (d.get(BEAN_TAG) != null) {
+			data = d.get(BEAN_TAG);
+			id = new BinaryID(d.getAttribute("id"));
+		} else {
+			data = d;
 		}
 		//
-		this.length = b.getIntValue("length");
-		this.storedcrc = new MCRC(b.getLongValue("crc"));
-		this.creatorid = new UserID(b.getValue("creator"));
-		this.version = b.getValue("version");
-		this.extension = b.getValue("extension");
-		this.comment = b.getValue("comment");
+		this.length = data.getIntValue("length");
+		this.storedcrc = new MCRC(d.getLongValue("crc"));
+		this.creatorid = new UserID(d.getValue("creator"));
+		this.version = d.getValue("version");
+		this.extension = d.getValue("extension");
+		this.comment = d.getValue("comment");
 	}
 
 	private synchronized boolean loadFromService(MStringID pid) {
@@ -248,9 +247,9 @@ public final class Binary implements HashSource {
 
 	@Override
 	public String toString() {
-		return "Binary[" + super.toString() + ":" + getID() + "][no:" + count
-				+ "][" + length() + "][scrc:" + storedcrc + "][crc:" + crc
-				+ "][" + comment + "]";
+		return "Binary[" + super.toString() + ":" + getID() + "][no:"
+				+ binarycount + "][" + length() + "][scrc:" + storedcrc
+				+ "][crc:" + crc + "][" + comment + "]";
 	}
 
 	public boolean isOK() {
@@ -271,12 +270,6 @@ public final class Binary implements HashSource {
 		b.addValue("extension", extension);
 		return b;
 	}
-
-	/*
-	 * public synchronized int read(int index, byte bs[]) throws IOException {
-	 * used(); RandomAccessFile f = getFile(); return f.read(bs, index,
-	 * bs.length); }
-	 */
 
 	public long length() {
 		return length;
@@ -346,10 +339,11 @@ public final class Binary implements HashSource {
 	public boolean equals(Object obj) {
 		if (obj instanceof Binary) {
 			Binary bin = (Binary) obj;
-			if (!bin.getID().equals(getID()))
+			if (!bin.getID().equals(getID())) {
 				return false;
-			if (!getCRC().equals(bin.getCRC()))
+			} else if (!getCRC().equals(bin.getCRC())) {
 				return false;
+			}
 			return true;
 		}
 		return false;
