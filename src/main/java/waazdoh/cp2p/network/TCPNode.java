@@ -80,7 +80,7 @@ public final class TCPNode {
 	public synchronized boolean checkConnection() {
 		// if closed and connectionwaiter is triggered, create new connection
 		if (!closed && !offline && channel == null
-				&& (connectionwaiter == null || connectionwaiter.isTriggered())) {
+				&& isConnectionWaiterTriggered()) {
 			log.info("creating connection " + this + " trigger "
 					+ connectionwaiter);
 			TCPNode.connectionfactory.connect(this, host, port);
@@ -89,6 +89,10 @@ public final class TCPNode {
 		}
 
 		return channel != null;
+	}
+
+	private boolean isConnectionWaiterTriggered() {
+		return connectionwaiter == null || connectionwaiter.isTriggered();
 	}
 
 	@Override

@@ -79,11 +79,10 @@ public final class AppPreferences implements MPreferences {
 	}
 
 	private String parse(final String name, String value) {
-		if (name.indexOf(".home.") > 0) {
-			if (value != null && value.indexOf("/") != 0) {
-				value = System.getProperty("user.home") + File.separator
-						+ value;
-			}
+		if (name.indexOf(".home.") > 0 && value != null
+				&& value.indexOf("/") != 0) {
+			value = System.getProperty("user.home") + File.separator + value;
+
 		}
 		return value;
 	}

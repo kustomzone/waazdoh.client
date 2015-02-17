@@ -96,7 +96,6 @@ public final class P2PBinarySource implements BinarySource {
 				fs = storage.newBinary("", "");
 
 				if (fs.load(fsid) && fs.isOK()) {
-					// addBinary(fs);
 					addDownload(fs);
 				} else {
 					fs = null;

@@ -56,11 +56,12 @@ public final class TCPListener {
 
 	public void start() {
 		if (!isClosed()) {
-			EventLoopGroup bossGroup = new NioEventLoopGroup(); // (1)
+			EventLoopGroup bossGroup = new NioEventLoopGroup();
 			EventLoopGroup workerGroup = new NioEventLoopGroup();
 
 			bootstrap = new ServerBootstrap();
-			bootstrap.group(bossGroup, workerGroup)
+			bootstrap
+					.group(bossGroup, workerGroup)
 					.channel(NioServerSocketChannel.class)
 					.childHandler(new ChannelInitializer<SocketChannel>() {
 						@Override
@@ -85,8 +86,8 @@ public final class TCPListener {
 								ch.close();
 							}
 						}
-					}).option(ChannelOption.SO_BACKLOG, 128) // (5)
-					.childOption(ChannelOption.SO_KEEPALIVE, true); // (6);
+					}).option(ChannelOption.SO_BACKLOG, 128)
+					.childOption(ChannelOption.SO_KEEPALIVE, true);
 			//
 			port = preferences.getInteger(MPreferences.NETWORK_SERVER_PORT,
 					DEFAULT_PORT);

@@ -140,7 +140,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	private void initHandlers() {
 		handlers.put("ping", new PingHandler());
 		handlers.put("hello", new HelloHandler());
-		
+
 		WhoHasHandler whohashandler = new WhoHasHandler(binarysource, this);
 		whohashandler.addListener(new WhoHasListener() {
 			@Override
@@ -358,7 +358,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	private Iterator<Node> getNodesIterator() {
 		Iterator<Node> iterator;
 		synchronized (nodes) {
-			if (nodes.size() == 0) {
+			if (nodes.isEmpty()) {
 				addDefaultNodes();
 			}
 			iterator = new LinkedList<Node>(this.nodes).iterator();
@@ -489,17 +489,17 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		nodes = null;
 		log.info("closing done");
 	}
-	
+
 	public void forceClose() {
 		closed = true;
 		List<Node> ns = new LinkedList<>(nodes);
 		nodes = null;
-		if (ns!= null) {
+		if (ns != null) {
 			for (Node node : ns) {
 				node.forceClose();
 			}
 		}
-		
+
 		closeListener();
 	}
 

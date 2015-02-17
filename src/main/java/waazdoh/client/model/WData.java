@@ -75,11 +75,11 @@ public final class WData implements Comparable<WData> {
 		sb.append("<" + getName());
 		appendAttributes(sb);
 		//
-		if (text == null && getChildren().size() == 0) {
+		if (text == null && getChildren().isEmpty()) {
 			sb.append(" />\n");
 		} else {
 			sb.append(">");
-			if (text != null && getChildren().size() == 0) {
+			if (text != null && getChildren().isEmpty()) {
 				sb.append(text);
 			} else {
 				sb.append("\n");
@@ -401,7 +401,7 @@ public final class WData implements Comparable<WData> {
 		if (sid == null || sid.equals("null")) {
 			sid = getAttribute(string);
 		}
-		
+
 		if (sid == null || sid.equals("null")) {
 			return null;
 		} else {

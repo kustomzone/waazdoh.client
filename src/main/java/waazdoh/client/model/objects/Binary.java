@@ -190,14 +190,15 @@ public final class Binary implements HashSource {
 		resetCRC();
 	}
 
-	public synchronized void read(int start, byte[] bs) throws IOException {
+	public synchronized boolean read(int start, byte[] bs) throws IOException {
 		if (isReady()) {
 			RandomAccessFile f = getAccessFile();
 			f.seek(start);
 			f.read(bs);
 			closeFile();
+			return true;
 		} else {
-			throw new RuntimeException("Binary is not ready to be read");
+			return false;
 		}
 	}
 

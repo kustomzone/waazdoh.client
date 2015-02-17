@@ -209,7 +209,7 @@ public final class MMessage {
 			return byteArray;
 		} catch (IOException e) {
 			MLogger.getLogger(this).error(e);
-			return null;
+			return new byte[0];
 		}
 	}
 

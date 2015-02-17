@@ -43,12 +43,6 @@ public final class ServiceObject implements HashSource {
 
 	private String prefix;
 
-	@Deprecated
-	public ServiceObject(final String string, WClient env,
-			ServiceObjectData data, String version) {
-		this(string, env, data, version, "WZH");
-	}
-
 	public ServiceObject(final String tagname, final WClient env,
 			final ServiceObjectData data, final String version,
 			final String nprefix) {

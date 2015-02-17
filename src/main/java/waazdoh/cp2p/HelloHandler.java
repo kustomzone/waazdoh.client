@@ -7,17 +7,17 @@ import waazdoh.util.MLogger;
 
 public class HelloHandler implements MMessageHandler {
 	private MLogger log = MLogger.getLogger(this);
+	private MMessageFactory factory;
 
 	@Override
 	public MMessage handle(MMessage childb) {
 		log.info("Hello received " + childb);
-		// no response
-		return null;
+		return factory.newResponseMessage(childb, "hola");
 	}
 
 	@Override
 	public void setFactory(MMessageFactory factory) {
-		// not needed
+		this.factory = factory;
 	}
 
 }

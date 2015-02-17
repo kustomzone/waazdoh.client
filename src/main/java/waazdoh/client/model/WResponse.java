@@ -87,7 +87,7 @@ public final class WResponse {
 			}
 			return ret;
 		} else {
-			return null;
+			return new LinkedList<MStringID>();
 		}
 	}
 

@@ -34,7 +34,6 @@ public final class ServiceMock implements WService {
 	private String session;
 	private UserID userid;
 	private Map<String, WData> groups = new HashMap<String, WData>();
-	final private BinarySource source;
 
 	private static Map<String, WData> objects = new HashMap<String, WData>();
 	private static Map<String, String> storagearea = new HashMap<>();
@@ -46,7 +45,6 @@ public final class ServiceMock implements WService {
 			throws SAXException {
 		this.username = username;
 		MStringID gusersid = new MStringID();
-		this.source = nsource;
 		this.beanstorage = new MockBeanStorage();
 		nsource.setService(this);
 		//
@@ -167,7 +165,7 @@ public final class ServiceMock implements WService {
 	@Override
 	public WResponse search(final String filter, int index, int count) {
 		WResponse ret = WResponse.getTrue();
-		HashSet<String> list = new HashSet<String>();
+		Set<String> list = new HashSet<String>();
 		for (int i = index; i < count; i++) {
 			list.add("" + new MStringID());
 		}

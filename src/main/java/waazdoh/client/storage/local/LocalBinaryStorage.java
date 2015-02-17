@@ -121,11 +121,6 @@ public final class LocalBinaryStorage implements BinaryStorage {
 		}
 	}
 
-	/*
-	 * public File getBinaryFile(Binary bin) { return new
-	 * File(getDataPath(bin)); }
-	 */
-
 	private Binary getPersistentStream(BinaryID streamid) {
 		synchronized (streams) {
 			try {

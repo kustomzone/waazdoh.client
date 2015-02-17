@@ -66,7 +66,7 @@ public final class StaticTestPreferences implements MPreferences {
 			return ret;
 		} catch (BackingStoreException e) {
 			MLogger.getLogger(this).error(e);
-			return null;
+			return new HashSet<String>();
 		}
 	}
 

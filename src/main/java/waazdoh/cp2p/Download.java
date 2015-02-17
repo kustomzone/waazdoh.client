@@ -301,7 +301,7 @@ public final class Download implements Runnable, MessageResponseListener,
 	}
 
 	private synchronized boolean addNeededPieces(WData needed) {
-		if (missingparts.size() > 0) {
+		if (!missingparts.isEmpty()) {
 			int randompart = (int) (Math.random() * missingparts.size());
 			DownloadPart missingpart = missingparts.get(randompart);
 

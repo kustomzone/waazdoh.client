@@ -47,12 +47,6 @@ public final class Node {
 		touch();
 	}
 
-	/*
-	 * public Node(MID id2, MHost string, int port2, P2PServer source) { this.id
-	 * = id2; this.host = string; this.port = port2; this.source = source;
-	 * touch(); }
-	 */
-
 	public Node(MNodeID id2, MMessager source) {
 		this.id = id2;
 		this.source = source;
@@ -139,7 +133,7 @@ public final class Node {
 
 	public synchronized boolean checkPing() {
 		long maxpingdelay = getPingDelay();
-		if (outgoingmessages.size() == 0
+		if (outgoingmessages.isEmpty()
 				&& System.currentTimeMillis() - lastping > maxpingdelay
 				&& tcpnode != null && tcpnode.checkConnection()) {
 			log.info("should ping " + (System.currentTimeMillis() - lastping)

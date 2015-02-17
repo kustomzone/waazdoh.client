@@ -76,10 +76,7 @@ public final class WDataContentHandler implements ContentHandler {
 
 	public void endElement(final String uri, String localName, String qName)
 			throws SAXException {
-		// log.info("end " + localName + " qn:" + qName);
 		last = stack.pop();
-		// log.info("current "+ (getCurrent() != null ? getCurrent().toXML() :
-		// "null"));
 	}
 
 	public void characters(char[] ch, int start, int length)
