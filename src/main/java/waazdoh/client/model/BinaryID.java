@@ -2,7 +2,6 @@ package waazdoh.client.model;
 
 import waazdoh.util.MStringID;
 
-
 public final class BinaryID extends MStringID {
 
 	public BinaryID(final MStringID idValue) {
@@ -14,6 +13,6 @@ public final class BinaryID extends MStringID {
 	}
 
 	public BinaryID(final String sid) {
-		super(sid);
+		this(new MStringID(sid));
 	}
 }

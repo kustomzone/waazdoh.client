@@ -98,8 +98,7 @@ public final class WResponse {
 	}
 
 	public static WResponse getAuthenticationError() {
-		WResponse f = getError(AUTHENTICATION_FAILED_MESSAGE);
-		return f;
+		return getError(AUTHENTICATION_FAILED_MESSAGE);
 	}
 
 	public boolean isSuccess() {
