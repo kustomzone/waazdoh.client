@@ -92,7 +92,7 @@ public class TestP2PServer extends WCTestCase {
 		s.addNode(new MHost("localhost"), 20000);
 		assertTrue(t.isTriggered());
 		// sourcelisteners are removed if they are "done" when clearing memory
-		s.clearMemory(0);
+		s.clearMemory();
 		assertTrue(doneflag.isTriggered());
 	}
 

@@ -33,8 +33,15 @@ public class WClient {
 	}
 
 	public boolean isRunning() {
-		return running && source != null && source.isRunning()
-				&& service != null && service.isLoggedIn();
+		if (source == null || !source.isRunning()) {
+			return false;
+		}
+
+		if (service == null || !service.isLoggedIn()) {
+			return false;
+		}
+
+		return running;
 	}
 
 	public Bookmarks getBookmarks() {

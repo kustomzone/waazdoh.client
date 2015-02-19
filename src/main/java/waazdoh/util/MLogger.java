@@ -39,13 +39,19 @@ public final class MLogger {
 		getLog().finest(getLine(string));
 	}
 
-	private String getLine(String string) {
-		if (string != null) {
-			string = string.replace('\n', '-');
+	private String getLine(final String message) {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("" + o);
+		sb.append(" - ");
+		sb.append(System.currentTimeMillis() - MLogger.starttime);
+		sb.append(" -- ");
+		if (message != null) {
+			sb.append(message.replace('\n', '-'));
+		} else {
+			sb.append("null message");
 		}
-		return "" + o + " - "
-				+ (System.currentTimeMillis() - MLogger.starttime) + " -- "
-				+ string;
+		return sb.toString();
 	}
 
 	private Logger getLog() {

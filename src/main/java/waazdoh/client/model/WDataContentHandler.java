@@ -10,7 +10,8 @@
  ******************************************************************************/
 package waazdoh.client.model;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -18,9 +19,7 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
 public final class WDataContentHandler implements ContentHandler {
-	// private JLogger log = JLogger.getLogger(this);
-	private Stack<WData> stack = new Stack<WData>();
-	private WData last;
+	private Deque<WData> stack = new ArrayDeque<WData>();
 	private WData org;
 
 	public WDataContentHandler(WData b) {
@@ -29,27 +28,27 @@ public final class WDataContentHandler implements ContentHandler {
 
 	private WData getCurrent() {
 		if (!stack.isEmpty()) {
-			return stack.lastElement();
+			return stack.peek();
 		} else {
 			return null;
 		}
 	}
 
 	public void setDocumentLocator(Locator locator) {
-		// TODO Auto-generated method stub
+		// nothing to do
 	}
 
 	public void startDocument() throws SAXException {
-		// TODO Auto-generated method stub
+		// nothing to do
 	}
 
 	public void endDocument() throws SAXException {
-		// TODO Auto-generated method stub
+		// nothing to do
 	}
 
 	public void startPrefixMapping(final String prefix, String uri)
 			throws SAXException {
-		// TODO Auto-generated method stub
+		// nothing to do
 	}
 
 	public void endPrefixMapping(final String prefix) throws SAXException {
@@ -58,9 +57,9 @@ public final class WDataContentHandler implements ContentHandler {
 
 	public void startElement(final String uri, String localName, String qName,
 			Attributes atts) throws SAXException {
-		// log.info("start " + localName + " qn:" + qName + " attrs:" + atts);
+
 		WData b;
-		if (stack.size() == 0) {
+		if (stack.isEmpty()) {
 			b = org;
 			b.setName(localName);
 		} else {
@@ -76,7 +75,7 @@ public final class WDataContentHandler implements ContentHandler {
 
 	public void endElement(final String uri, String localName, String qName)
 			throws SAXException {
-		last = stack.pop();
+		stack.pop();
 	}
 
 	public void characters(char[] ch, int start, int length)
@@ -91,15 +90,15 @@ public final class WDataContentHandler implements ContentHandler {
 
 	public void ignorableWhitespace(char[] ch, int start, int length)
 			throws SAXException {
-		// TODO Auto-generated method stub
+		// nothing to do
 	}
 
 	public void processingInstruction(final String target, String data)
 			throws SAXException {
-		// TODO Auto-generated method stub
+		// nothing to do
 	}
 
 	public void skippedEntity(final String name) throws SAXException {
-		// TODO Auto-generated method stub
+		// nothing to do
 	}
 }

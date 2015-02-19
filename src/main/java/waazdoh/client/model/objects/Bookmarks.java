@@ -30,9 +30,9 @@ public final class Bookmarks {
 	}
 
 	private synchronized void update() {
-		Set<String> groups = service.listStorageArea("bookmarks");
-		if (groups != null) {
-			for (final String name : groups) {
+		Set<String> servicegroups = service.listStorageArea("bookmarks");
+		if (servicegroups != null) {
+			for (final String name : servicegroups) {
 				if (this.groups.get(name) == null) {
 					this.groups.put(name, new BookmarkGroup(name, service));
 					fireGroupAdded(get(name));

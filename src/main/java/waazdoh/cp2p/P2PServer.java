@@ -165,13 +165,14 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		handlers.put(name, h);
 	}
 
-	private void sleep(long time) {
+	private void sleep(final long time) {
 		synchronized (this) {
+			long waittime = time;
 			try {
-				if (time < 10) {
-					time = 10;
+				if (waittime < 10) {
+					waittime = 10;
 				}
-				this.wait(time);
+				this.wait(waittime);
 			} catch (InterruptedException e) {
 				log.error(e);
 			}
@@ -317,9 +318,9 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	}
 
 	private void checkDefaultNodes() throws InterruptedException {
-		if (nodes.size() == 0) {
+		if (nodes.isEmpty()) {
 			addDefaultNodes();
-			if (nodes.size() == 0) {
+			if (nodes.isEmpty()) {
 				int maxwaittime = 5000;
 				log.info("nodes size still zero. Waiting " + maxwaittime
 						+ "msec");
@@ -416,7 +417,9 @@ public final class P2PServer implements MMessager, MMessageFactory,
 					nodes.notifyAll();
 				}
 			} catch (IllegalMonitorStateException e) {
-				// TODO not sure what happens here.
+				// TODO not sure what happens here or if it is still happening.
+				// Logging added.
+				log.error(e);
 			}
 		}
 	}
@@ -617,19 +620,10 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		try {
 			inputbytecount += message.getByteCount();
 			log.info(this.toString() + " " + message);
-			MMessageHandler handler = getHandler(message.getName());
 			//
 			WData nodeinfo = message.get("nodeinfo");
 			if (nodeinfo != null) {
-				List<WData> nodeinfos = nodeinfo.getChildren();
-				for (WData inode : nodeinfos) {
-					MNodeID nodeinfoid = new MNodeID(inode.getName());
-					if (getNode(nodeinfoid) == null) {
-						MHost host = new MHost(inode.getValue("host"));
-						int port = inode.getIntValue("port");
-						addNode(nodeinfoid, host, port);
-					}
-				}
+				handleNodeInfo(nodeinfo);
 			}
 			//
 			MessageID responseto = message.getResponseTo();
@@ -640,29 +634,50 @@ public final class P2PServer implements MMessager, MMessageFactory,
 			} else {
 				MNodeID to = message.getTo("to");
 				if (to == null || to.equals(getID())) {
-					if (handler != null) {
-						MMessage returnmessage = handler.handle(message);
-						if (returnmessage != null) {
-							node.addMessage(returnmessage);
-							addResponseListener(returnmessage);
-						}
-					} else {
-						log.error("unknown message " + message);
-					}
+					handleMyMessage(message, node);
 				} else {
-					Node tonode = getNode(to);
-					log.info("redirecting message to " + tonode);
-					if (tonode != null) {
-						node.addInfoTo(message);
-						tonode.addMessage(message);
-					} else {
-						log.error("message received in wrong node " + message);
-					}
+					redirectMessageTo(message, node, to);
 				}
 			}
 		} catch (Exception e) {
 			log.error(e);
 			node.warning();
+		}
+	}
+
+	private void redirectMessageTo(MMessage message, Node node, MNodeID to) {
+		Node tonode = getNode(to);
+		log.info("redirecting message to " + tonode);
+		if (tonode != null) {
+			node.addInfoTo(message);
+			tonode.addMessage(message);
+		} else {
+			log.error("message received in wrong node " + message);
+		}
+	}
+
+	private void handleMyMessage(MMessage message, Node node) {
+		MMessageHandler handler = getHandler(message.getName());
+		if (handler != null) {
+			MMessage returnmessage = handler.handle(message);
+			if (returnmessage != null) {
+				node.addMessage(returnmessage);
+				addResponseListener(returnmessage);
+			}
+		} else {
+			log.error("unknown message " + message);
+		}
+	}
+
+	private void handleNodeInfo(WData nodeinfo) {
+		List<WData> nodeinfos = nodeinfo.getChildren();
+		for (WData inode : nodeinfos) {
+			MNodeID nodeinfoid = new MNodeID(inode.getName());
+			if (getNode(nodeinfoid) == null) {
+				MHost host = new MHost(inode.getValue("host"));
+				int port = inode.getIntValue("port");
+				addNode(nodeinfoid, host, port);
+			}
 		}
 	}
 
@@ -771,9 +786,9 @@ public final class P2PServer implements MMessager, MMessageFactory,
 				MPreferences.NETWORK_MAX_DOWNLOADS_DEFAULT);
 	}
 
-	public void clearMemory(int suggestedmemorytreshold) {
+	public void clearMemory() {
 		synchronized (responselisteners) {
-			HashMap<MessageID, MessageResponseListener> nresponselisteners = new HashMap<MessageID, MessageResponseListener>(
+			Map<MessageID, MessageResponseListener> nresponselisteners = new HashMap<MessageID, MessageResponseListener>(
 					responselisteners);
 			for (MessageID id : nresponselisteners.keySet()) {
 				MessageResponseListener l = getResponseListener(id);
@@ -807,12 +822,13 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		//
 	}
 
-	public boolean waitForDownloadSlot(int i) {
+	public boolean waitForDownloadSlot(final int i) {
 		try {
-			while (!canDownload() && i > 0) {
+			int waittime = i;
+			while (!canDownload() && waittime > 0) {
 				synchronized (this) {
 					this.wait(100);
-					i -= 100;
+					waittime -= 100;
 				}
 			}
 		} catch (InterruptedException e) {
