@@ -13,6 +13,7 @@ package waazdoh.util;
 public final class MTimedFlag {
 	private long lastreset;
 	private int delaytime;
+	private boolean trigger;
 
 	public MTimedFlag(int readytimer) {
 		delaytime = readytimer;
@@ -24,11 +25,11 @@ public final class MTimedFlag {
 	}
 
 	public boolean isTriggered() {
-		return System.currentTimeMillis() - lastreset > delaytime;
+		return trigger || System.currentTimeMillis() - lastreset > delaytime;
 	}
 
 	public void trigger() {
-		lastreset = 0;
+		trigger = true;
 		synchronized (this) {
 			notifyAll();
 		}
@@ -50,5 +51,9 @@ public final class MTimedFlag {
 				}
 			}
 		}
+	}
+
+	public boolean wasTriggerCalled() {
+		return trigger;
 	}
 }

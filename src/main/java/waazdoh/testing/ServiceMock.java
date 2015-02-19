@@ -46,7 +46,9 @@ public final class ServiceMock implements WService {
 		this.username = username;
 		MStringID gusersid = new MStringID();
 		this.beanstorage = new MockBeanStorage();
-		nsource.setService(this);
+		if (nsource != null) {
+			nsource.setService(this);
+		}
 		//
 		String gname = "users";
 		addBGroup(gusersid.toString(), gname);
