@@ -96,9 +96,9 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	}
 
 	public String getInfoText() {
-		if (nodes != null) {
-			String s = "nodes:" + nodes.size() + " downloads:"
-					+ downloads.size();
+		List<Node> ns = nodes;
+		if (ns != null) {
+			String s = "nodes:" + ns.size() + " downloads:" + downloads.size();
 			s += " " + tcplistener + " messagereceived:"
 					+ (System.currentTimeMillis() - lastmessagereceived)
 					+ "ms ago ";
@@ -249,14 +249,16 @@ public final class P2PServer implements MMessager, MMessageFactory,
 
 	public void addNode(Node n) {
 		log.info("adding node " + n);
-		synchronized (nodes) {
-			nodes.add(n);
-			log.info("node added " + n);
-		}
-		//
-		Set<SourceListener> listeners = sourcelisteners;
-		for (SourceListener sourceListener : listeners) {
-			sourceListener.nodeAdded(n);
+		if (nodes != null) {
+			synchronized (nodes) {
+				nodes.add(n);
+				log.info("node added " + n);
+			}
+			//
+			Set<SourceListener> listeners = sourcelisteners;
+			for (SourceListener sourceListener : listeners) {
+				sourceListener.nodeAdded(n);
+			}
 		}
 	}
 
@@ -293,9 +295,12 @@ public final class P2PServer implements MMessager, MMessageFactory,
 					}
 				} else if (node.shouldDie()) {
 					log.info("Killing node " + node);
-					synchronized (nodes) {
-						node.close();
-						nodes.remove(node);
+					if (nodes != null) {
+						List<Node> ns = nodes;
+						synchronized (ns) {
+							node.close();
+							ns.remove(node);
+						}
 					}
 				} else {
 					node.check();
@@ -358,11 +363,12 @@ public final class P2PServer implements MMessager, MMessageFactory,
 
 	private Iterator<Node> getNodesIterator() {
 		Iterator<Node> iterator;
+		List<Node> ns = this.nodes;
 		synchronized (nodes) {
-			if (nodes.isEmpty()) {
+			if (ns.isEmpty()) {
 				addDefaultNodes();
 			}
-			iterator = new LinkedList<Node>(this.nodes).iterator();
+			iterator = new LinkedList<Node>(ns).iterator();
 		}
 		return iterator;
 	}
@@ -490,13 +496,19 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		//
 		shutdown();
 		nodes = null;
+
 		log.info("closing done");
 	}
 
 	public void forceClose() {
 		closed = true;
-		List<Node> ns = new LinkedList<>(nodes);
+		List<Node> ns;
+		synchronized (nodes) {
+			ns = new LinkedList<>(nodes);
+		}
+
 		nodes = null;
+
 		if (ns != null) {
 			for (Node node : ns) {
 				node.forceClose();

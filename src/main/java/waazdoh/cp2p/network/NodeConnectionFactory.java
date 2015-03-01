@@ -107,7 +107,10 @@ public final class NodeConnectionFactory {
 		public void channelRegistered(ChannelHandlerContext ctx)
 				throws Exception {
 			super.channelRegistered(ctx);
-			getNode(ctx).channelRegistered(ctx.channel());
+			TCPNode node = getNode(ctx);
+			if (node != null) {
+				node.channelRegistered(ctx.channel());
+			}
 		}
 
 		@Override
