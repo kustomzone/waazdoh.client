@@ -127,23 +127,23 @@ public class TestP2PServer extends WCTestCase {
 		log.info("time servera " + System.currentTimeMillis());
 		P2PServer servera = getServer();
 		log.info("time serverb " + System.currentTimeMillis());
-		P2PServer serverb = getOtherServerNoBind();
+		final P2PServer serverb = getOtherServerNoBind();
 		log.info("time getting servers done");
 		try {
 			log.info("time addnode " + System.currentTimeMillis());
-			final Node n = serverb.addNode(new MHost("localhost"),
-					servera.getPort());
+			// final Node n = serverb.addNode(new MHost("localhost"),
+			// servera.getPort());
 			log.info("time waiting");
 			new ConditionWaiter(new Condition() {
 				public boolean test() {
-					return n.isConnected();
+					// connected to some node
+					return serverb.isConnected();
 				}
 			}, 20000);
 
 			log.info("time check node " + System.currentTimeMillis());
-			assertNotNull(n.getID());
-			log.info("time getrecmessages " + System.currentTimeMillis());
-			assertTrue(n.getReceivedMessages() > 0);
+			assertNotNull(serverb.getNode(servera.getID()));
+			assertNotNull(servera.getNode(serverb.getID()));
 		} finally {
 			log.info("time closing " + System.currentTimeMillis());
 			log.info("time closing");

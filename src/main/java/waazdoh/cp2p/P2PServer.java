@@ -54,8 +54,8 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	//
 	private MLogger log = MLogger.getLogger(this);
 	private final Map<MStringID, Download> downloads = new HashMap<MStringID, Download>();
-	MStringID networkid;
-	Map<String, MMessageHandler> handlers = new HashMap<String, MMessageHandler>();
+	private MNodeID networkid;
+	private Map<String, MMessageHandler> handlers = new HashMap<String, MMessageHandler>();
 	//
 	List<Node> nodes = new LinkedList<Node>();
 	Set<SourceListener> sourcelisteners = new HashSet<SourceListener>();
@@ -220,7 +220,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 			//
 			lastmessagereceived = System.currentTimeMillis();
 			if (networkid == null) {
-				networkid = new MStringID();
+				networkid = new MNodeID(new MStringID());
 			}
 			//
 			if (dobind) {
@@ -306,13 +306,12 @@ public final class P2PServer implements MMessager, MMessageFactory,
 					node.check();
 				}
 			}
-			if (nodes != null) {
-				synchronized (nodes) {
+			List<Node> ns = nodes;
+			if (ns != null) {
+				synchronized (ns) {
 					try {
 						checkDefaultNodes();
-						//
-						nodes.wait(100 + (int) (Math.random() * 100
-								* nodes.size() * MESSAGESENDLOOP_COUNT));
+						ns.wait(100 + (int) (Math.random() * 100 * nodes.size() * MESSAGESENDLOOP_COUNT));
 					} catch (InterruptedException e) {
 						log.error(e);
 					}
@@ -759,7 +758,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		broadcastMessage(m, null, exceptions);
 	}
 
-	public MStringID getID() {
+	public MNodeID getID() {
 		return networkid;
 	}
 
