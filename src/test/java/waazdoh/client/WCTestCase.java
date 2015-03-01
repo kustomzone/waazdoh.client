@@ -20,6 +20,7 @@ import waazdoh.util.ConditionWaiter;
 import waazdoh.util.MLogger;
 import waazdoh.util.MPreferences;
 import waazdoh.util.MStringID;
+import waazdoh.util.ThreadChecker;
 
 public class WCTestCase extends TestCase {
 	private static final String PREFERENCES_PREFIX = "wcclienttests";
@@ -37,6 +38,23 @@ public class WCTestCase extends TestCase {
 	};
 
 	protected void tearDown() throws Exception {
+		log.info("************************* CLOSIN " + this + " "
+				+ this.getName() + " ********");
+
+		new ThreadChecker(new ThreadChecker.IChecker() {
+
+			@Override
+			public boolean check() {
+
+				for (P2PServer s : servers) {
+					if (s.isRunning()) {
+						return true;
+					}
+				}
+				return false;
+			}
+		});
+
 		Set<P2PServer> ss = this.servers;
 		for (P2PServer p2pServer : ss) {
 			p2pServer.close();
