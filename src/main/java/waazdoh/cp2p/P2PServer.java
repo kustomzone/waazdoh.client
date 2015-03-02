@@ -486,7 +486,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	}
 
 	public boolean isRunning() {
-		return !closed;
+		return !closed || nodes != null;
 	}
 
 	public void close() {

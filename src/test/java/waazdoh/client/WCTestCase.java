@@ -38,7 +38,7 @@ public class WCTestCase extends TestCase {
 	};
 
 	protected void tearDown() throws Exception {
-		log.info("************************* CLOSIN " + this + " "
+		log.info("************************* CLOSING " + this + " "
 				+ this.getName() + " ********");
 
 		new ThreadChecker(new ThreadChecker.IChecker() {
@@ -56,6 +56,10 @@ public class WCTestCase extends TestCase {
 		});
 
 		Set<P2PServer> ss = this.servers;
+		for (P2PServer p2pServer : ss) {
+			p2pServer.startClosing();
+		}
+
 		for (P2PServer p2pServer : ss) {
 			p2pServer.close();
 		}

@@ -125,7 +125,7 @@ public class TestP2PServer extends WCTestCase {
 
 	public void testTwoNodes() {
 		log.info("time servera " + System.currentTimeMillis());
-		P2PServer servera = getServer();
+		final P2PServer servera = getServer();
 		log.info("time serverb " + System.currentTimeMillis());
 		final P2PServer serverb = getOtherServerNoBind();
 		log.info("time getting servers done");
@@ -137,7 +137,7 @@ public class TestP2PServer extends WCTestCase {
 			new ConditionWaiter(new Condition() {
 				public boolean test() {
 					// connected to some node
-					return serverb.isConnected();
+					return serverb.isConnected() && servera.isConnected();
 				}
 			}, 20000);
 
