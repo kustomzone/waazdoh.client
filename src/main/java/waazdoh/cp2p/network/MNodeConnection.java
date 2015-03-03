@@ -29,9 +29,9 @@ public interface MNodeConnection {
 	void broadcastMessage(MMessage notification,
 			MessageResponseListener messageResponseListener);
 
-	Node getNode(MNodeID throughtid);
+	WNode getNode(MNodeID throughtid);
 
-	Node addNode(MHost mHost, int nport);
+	WNode addNode(MHost mHost, int nport);
 
 	void broadcastMessage(MMessage childb,
 			MessageResponseListener messageResponseListener,

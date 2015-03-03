@@ -10,8 +10,9 @@
  ******************************************************************************/
 package waazdoh.cp2p.network;
 
+import java.util.List;
+
 import waazdoh.cp2p.messaging.MMessage;
-import waazdoh.cp2p.messaging.MMessageList;
 import waazdoh.cp2p.messaging.MessageID;
 import waazdoh.cp2p.messaging.MessageResponseListener;
 import waazdoh.util.MStringID;
@@ -22,7 +23,7 @@ public interface MMessager {
 
 	void broadcastMessage(MMessage b);
 
-	MMessageList handle(MMessageList ms);
+	List<MMessage> handle(List<MMessage> ms);
 
 	void notifyNodes();
 

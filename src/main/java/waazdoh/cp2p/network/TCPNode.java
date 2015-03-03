@@ -16,16 +16,17 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 
 import java.net.ConnectException;
+import java.util.LinkedList;
 import java.util.List;
 
 import waazdoh.client.model.WData;
 import waazdoh.cp2p.common.MHost;
+import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;
-import waazdoh.cp2p.messaging.MMessageList;
 import waazdoh.util.MLogger;
 import waazdoh.util.MTimedFlag;
 
-public final class TCPNode {
+public final class TCPNode implements WNode {
 	private static final long MAX_GIVEUP_TIME = 6000;
 
 	private Channel channel;
@@ -38,34 +39,29 @@ public final class TCPNode {
 	private MHost host;
 	private int port;
 
-	private Node node;
-
 	private long touch = System.currentTimeMillis();
-
 	private boolean closed;
+
+	private MNodeID id;
+
+	private MMessager source;
 
 	private boolean isactive;
 
 	public final static NodeConnectionFactory connectionfactory = new NodeConnectionFactory();
 
-	public TCPNode(MHost host2, int port2, Node node) {
+	public TCPNode(MHost host2, int port2, MMessager nsource) {
 		this.host = host2;
 		this.port = port2;
-		this.node = node;
+		this.source = nsource;
 	}
 
-	public synchronized int sendMessages(MMessageList smessages) {
+	public synchronized int sendMessages(List<MMessage> smessages) {
 		if (checkConnection()) {
 			if (!smessages.isEmpty()) {
 				log.debug("writing messages " + smessages);
 
-				channel.writeAndFlush(smessages).addListener(
-						ChannelFutureListener.CLOSE_ON_FAILURE); //
-				int bytecount = 0;
-				for (MMessage mMessage : smessages) {
-					bytecount += mMessage.getByteCount();
-				}
-				log.debug("messages written " + bytecount + " bytes");
+				int bytecount = writeMessages(smessages);
 				return bytecount;
 			} else {
 				log.info("not writing zero messages");
@@ -75,6 +71,24 @@ public final class TCPNode {
 			log.info("Not sending. Connection not ok.");
 			return 0;
 		}
+	}
+
+	private int writeMessages(List<MMessage> smessages) {
+		channel.writeAndFlush(smessages).addListener(
+				ChannelFutureListener.CLOSE_ON_FAILURE); //
+		int bytecount = 0;
+		for (MMessage mMessage : smessages) {
+			bytecount += mMessage.getByteCount();
+		}
+		log.debug("messages written " + bytecount + " bytes");
+		return bytecount;
+	}
+
+	@Override
+	public void sendMessage(MMessage message) {
+		List<MMessage> ms = new LinkedList<MMessage>();
+		ms.add(message);
+		writeMessages(ms);
 	}
 
 	public synchronized boolean checkConnection() {
@@ -112,14 +126,19 @@ public final class TCPNode {
 		closeChannel();
 	}
 
-	public boolean shouldGiveUp() {
-		if ((System.currentTimeMillis() - touch) > MAX_GIVEUP_TIME) {
-			log.info("Should give up " + touch + " "
-					+ (System.currentTimeMillis() - touch));
-			return true;
-		} else {
-			return false;
-		}
+	@Override
+	public boolean isClosed() {
+		return closed;
+	}
+
+	@Override
+	public List<MMessage> getOutgoingMessages() {
+		return null;
+	}
+
+	@Override
+	public boolean isConnected() {
+		return !closed && isactive && channel != null;
 	}
 
 	public void logChannel() {
@@ -137,10 +156,14 @@ public final class TCPNode {
 	public void addInfoTo(MMessage message) {
 		if (host != null) {
 			WData nodeinfo = message.add("nodeinfo");
-			WData nodeid = nodeinfo.add(node.getID().toString());
+			WData nodeid = nodeinfo.add(getID().toString());
 			nodeid.add("host").setValue(host.toString());
 			nodeid.add("port").setValue("" + port);
 		}
+	}
+
+	public MNodeID getID() {
+		return id;
 	}
 
 	public void trigger() {
@@ -173,7 +196,14 @@ public final class TCPNode {
 		this.channel = channel;
 
 		touch();
-		MMessageList response = node.incomingMessages(messages);
+
+		if (messages.size() > 0) {
+			MMessage m = messages.get(0);
+			id = m.getLastHandler();
+		}
+
+		List<MMessage> response = this.source.handle(messages);
+
 		sendMessages(response);
 	}
 

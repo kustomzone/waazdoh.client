@@ -11,7 +11,7 @@
 package waazdoh.cp2p.network;
 
 public interface SourceListener {
-	void nodeAdded(Node n);
+	void nodeAdded(WNode n);
 
 	boolean isDone();
 }

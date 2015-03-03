@@ -25,8 +25,8 @@ import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MessageResponseListener;
 import waazdoh.cp2p.network.MNodeConnection;
-import waazdoh.cp2p.network.Node;
 import waazdoh.cp2p.network.SourceListener;
+import waazdoh.cp2p.network.WNode;
 import waazdoh.util.MLogger;
 import waazdoh.util.MStringID;
 import waazdoh.util.MTimedFlag;
@@ -113,7 +113,7 @@ public final class Download implements Runnable, MessageResponseListener,
 	}
 
 	@Override
-	public void nodeAdded(Node n) {
+	public void nodeAdded(WNode n) {
 		sendWhoHasMessage(n);
 	}
 
@@ -151,14 +151,14 @@ public final class Download implements Runnable, MessageResponseListener,
 		sentstarts = new HashMap<Integer, Download.DownloadPart>();
 	}
 
-	private void sendWhoHasMessage(Node n) {
+	private void sendWhoHasMessage(WNode n) {
 		if (!isReady()) {
 			if (n != null) {
 				MMessage whoHasMessage = getWhoHasMessage();
 				log.info("whohas to node[" + n + "] " + whoHasMessage);
 				if (whoHasMessage != null) {
 					whoHasMessage.addResponseListener(this);
-					n.addMessage(whoHasMessage);
+					n.sendMessage(whoHasMessage);
 				} else {
 					log.info("Got null WhoHasMessage. is ready?(" + isReady()
 							+ ") isDone?(" + isDone() + ")");
@@ -232,7 +232,7 @@ public final class Download implements Runnable, MessageResponseListener,
 		}
 		//
 		String sthrough = b.getAttribute("through");
-		Node lasthandlernode = source.getNode(b.getSentBy());
+		WNode lasthandlernode = source.getNode(b.getSentBy());
 		if (sthrough != null) {
 			MNodeID throughid = new MNodeID(sthrough);
 			sendWhoHasMessage(source.getNode(throughid));

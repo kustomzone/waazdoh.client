@@ -29,7 +29,7 @@ import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MessageResponseListener;
 import waazdoh.cp2p.messaging.SimpleMessageHandler;
 import waazdoh.cp2p.network.MNodeConnection;
-import waazdoh.cp2p.network.Node;
+import waazdoh.cp2p.network.WNode;
 import waazdoh.util.MLogger;
 import waazdoh.util.MStringID;
 
@@ -56,8 +56,7 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 
 	@Override
 	public MMessage handle(final MMessage childb) {
-		final BinaryID streamid = new BinaryID(
-				childb.getAttribute("streamid"));
+		final BinaryID streamid = new BinaryID(childb.getAttribute("streamid"));
 		if (source.get(streamid) != null) {
 			MMessage m;
 			m = getFactory().newResponseMessage(childb, "stream");
@@ -145,8 +144,8 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 						exceptions);
 			} else {
 				childb.addResponseListener(responselistener);
-				Node knownnode = nodeconnection.getNode(knownwhohas);
-				knownnode.addMessage(childb);
+				WNode knownnode = nodeconnection.getNode(knownwhohas);
+				knownnode.sendMessage(childb);
 			}
 			//
 			return null;

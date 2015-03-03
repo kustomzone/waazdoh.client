@@ -17,13 +17,14 @@ import io.netty.handler.codec.MessageToByteEncoder;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 import waazdoh.util.MLogger;
 
-public final class MessageEncoder extends MessageToByteEncoder<MMessageList> {
+public final class MessageEncoder extends MessageToByteEncoder<List<MMessage>> {
 	private MLogger log = MLogger.getLogger(this);
 
-	protected void encode(ChannelHandlerContext arg0, MMessageList list,
+	protected void encode(ChannelHandlerContext arg0, List<MMessage> list,
 			ByteBuf bb) throws Exception {
 		log.debug("encoding message " + list);
 		try {

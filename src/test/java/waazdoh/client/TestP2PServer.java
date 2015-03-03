@@ -8,8 +8,8 @@ import waazdoh.cp2p.P2PServer;
 import waazdoh.cp2p.common.MHost;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.SimpleMessageHandler;
-import waazdoh.cp2p.network.Node;
 import waazdoh.cp2p.network.SourceListener;
+import waazdoh.cp2p.network.WNode;
 import waazdoh.testing.ServiceMock;
 import waazdoh.testing.StaticTestPreferences;
 import waazdoh.testing.TestPBinarySource;
@@ -43,7 +43,7 @@ public class TestP2PServer extends WCTestCase {
 	public void testAddSelfAsNode() {
 		final P2PServer s = getServer();
 		assertNotNull(s);
-		final Node n = s.addNode(new MHost("localhost"), s.getPort());
+		final WNode n = s.addNode(new MHost("localhost"), s.getPort());
 		assertNotNull(n);
 		assertFalse(n.isConnected());
 		assertNull(n.getID());
@@ -79,7 +79,7 @@ public class TestP2PServer extends WCTestCase {
 		s.addSourceListener(new SourceListener() {
 
 			@Override
-			public void nodeAdded(Node n) {
+			public void nodeAdded(WNode n) {
 				t.trigger();
 			}
 
@@ -147,8 +147,6 @@ public class TestP2PServer extends WCTestCase {
 		} finally {
 			log.info("time closing " + System.currentTimeMillis());
 			log.info("time closing");
-			servera.forceClose();
-			serverb.forceClose();
 		}
 	}
 
@@ -166,7 +164,7 @@ public class TestP2PServer extends WCTestCase {
 		servera = getServer();
 		serverb = getOtherServerNoBind();
 		log.info("getting servers done");
-		final Node n = serverb.addNode(new MHost("localhost"),
+		final WNode n = serverb.addNode(new MHost("localhost"),
 				servera.getPort());
 		log.info("waiting");
 
@@ -179,7 +177,7 @@ public class TestP2PServer extends WCTestCase {
 		}, 20000);
 
 		assertNotNull(n.getID());
-		assertTrue(n.getReceivedMessages() > 0);
+		assertTrue(serverb.getNodeStatus(n).getReceivedMessages() > 0);
 	}
 
 	public void testBroadcast() {

@@ -18,6 +18,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.xml.sax.SAXException;
@@ -50,9 +51,9 @@ public final class MessageDecoder extends ByteToMessageDecoder {
 		msgs.add(parse(dis));
 	}
 
-	private MMessageList parse(DataInputStream dis) throws IOException {
+	private List<MMessage> parse(DataInputStream dis) throws IOException {
 		//
-		MMessageList ret = new MMessageList();
+		List<MMessage> ret = new LinkedList<MMessage>();
 		int messagecount = dis.readInt();
 		log.debug("messagecount : " + messagecount);
 		for (int i = 0; i < messagecount; i++) {

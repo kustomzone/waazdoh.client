@@ -24,8 +24,11 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.compression.JZlibDecoder;
 import io.netty.handler.codec.compression.JZlibEncoder;
+
+import java.util.LinkedList;
+import java.util.List;
+
 import waazdoh.cp2p.messaging.MMessage;
-import waazdoh.cp2p.messaging.MMessageList;
 import waazdoh.cp2p.messaging.MessageDecoder;
 import waazdoh.cp2p.messaging.MessageEncoder;
 import waazdoh.util.MLogger;
@@ -78,7 +81,7 @@ public final class TCPListener {
 										new MessageDecoder());
 								pipe.addLast("server", new MServerHandler());
 								//
-								MMessageList mlist = new MMessageList();
+								List<MMessage> mlist = new LinkedList<MMessage>();
 								mlist.add(messager.getMessage("hello"));
 								ch.writeAndFlush(mlist);
 							} else {
@@ -166,13 +169,13 @@ public final class TCPListener {
 		closed = true;
 	}
 
-	class MServerHandler extends SimpleChannelInboundHandler<MMessageList> {
+	class MServerHandler extends SimpleChannelInboundHandler<List<MMessage>> {
 		@Override
-		protected void channelRead0(ChannelHandlerContext ctx, MMessageList ms)
+		protected void channelRead0(ChannelHandlerContext ctx, List<MMessage> ms)
 				throws Exception {
 			log.info("messageReceived " + ms);
 			if (!closed) {
-				MMessageList response = messager.handle(ms);
+				List<MMessage> response = messager.handle(ms);
 				if (response != null) {
 					log.debug("sending back response " + response);
 					ctx.writeAndFlush(response).addListener(

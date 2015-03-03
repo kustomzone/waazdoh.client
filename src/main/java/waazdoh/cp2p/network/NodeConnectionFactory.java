@@ -27,10 +27,11 @@ import io.netty.handler.codec.compression.JZlibEncoder;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import waazdoh.cp2p.common.MHost;
-import waazdoh.cp2p.messaging.MMessageList;
+import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MessageDecoder;
 import waazdoh.cp2p.messaging.MessageEncoder;
 import waazdoh.util.MLogger;
@@ -85,7 +86,7 @@ public final class NodeConnectionFactory {
 		return nodes.get(ctx.channel());
 	}
 
-	private class NodeHandler extends SimpleChannelInboundHandler<MMessageList> {
+	private class NodeHandler extends SimpleChannelInboundHandler<List<MMessage>> {
 		@Override
 		public void channelActive(ChannelHandlerContext ctx) throws Exception {
 			TCPNode node = getNode(ctx);
@@ -120,7 +121,7 @@ public final class NodeConnectionFactory {
 		}
 
 		@Override
-		protected void channelRead0(ChannelHandlerContext ctx, MMessageList msgs)
+		protected void channelRead0(ChannelHandlerContext ctx, List<MMessage> msgs)
 				throws Exception {
 			log.info("messageReceived size " + msgs.size());
 			getNode(ctx).messagesReceived(ctx.channel(), msgs);
