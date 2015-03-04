@@ -730,8 +730,12 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	public void addResponseListener(MessageID id,
 			MessageResponseListener messageResponseListener) {
 		synchronized (responselisteners) {
-			if (messageResponseListener != null) {
+			if (messageResponseListener != null
+					&& responselisteners.get(id) == null) {
 				responselisteners.put(id, messageResponseListener);
+			} else {
+				log.debug("not adding responselistener " + id + " -> "
+						+ messageResponseListener);
 			}
 		}
 	}

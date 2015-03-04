@@ -67,7 +67,7 @@ public final class ITTestBinaryTransfer extends WCTestCase {
 	@Test
 	public void testTransfer(int binarysize, boolean bind1, boolean bind2)
 			throws SAXException, InterruptedException, IOException {
-		log.info("test transferm " + binarysize);
+		log.info("test transfer " + binarysize);
 		String username1 = "test1" + Math.random();
 		log.info("service1 with " + username1);
 		P2PBinarySource source1 = getServiceSource(username1, bind1);

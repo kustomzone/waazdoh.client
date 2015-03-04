@@ -23,6 +23,7 @@ import waazdoh.client.model.WData;
 import waazdoh.cp2p.common.MHost;
 import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;
+import waazdoh.cp2p.messaging.MessageResponseListener;
 import waazdoh.util.MLogger;
 import waazdoh.util.MStringID;
 import waazdoh.util.MTimedFlag;
@@ -76,6 +77,11 @@ public final class TCPNode implements WNode {
 	}
 
 	private int writeMessages(List<MMessage> smessages) {
+		for (MMessage m : smessages) {
+			MessageResponseListener listener = m.getResponseListener();
+			this.source.addResponseListener(m.getID(), listener);
+		}
+		
 		channel.writeAndFlush(smessages).addListener(
 				ChannelFutureListener.CLOSE_ON_FAILURE); //
 		int bytecount = 0;
