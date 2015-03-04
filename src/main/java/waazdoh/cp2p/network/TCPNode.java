@@ -24,6 +24,7 @@ import waazdoh.cp2p.common.MHost;
 import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.util.MLogger;
+import waazdoh.util.MStringID;
 import waazdoh.util.MTimedFlag;
 
 public final class TCPNode implements WNode {
@@ -43,6 +44,7 @@ public final class TCPNode implements WNode {
 	private boolean closed;
 
 	private MNodeID id;
+	final private MStringID localid = new MStringID();
 
 	private MMessager source;
 
@@ -54,8 +56,6 @@ public final class TCPNode implements WNode {
 		this.host = host2;
 		this.port = port2;
 		this.source = nsource;
-
-		checkConnection();
 	}
 
 	public synchronized int sendMessages(List<MMessage> smessages) {
@@ -114,7 +114,9 @@ public final class TCPNode implements WNode {
 	@Override
 	public String toString() {
 		return "TCPNode[" + host + ":" + port + "]["
-				+ (System.currentTimeMillis() - touch) + "]";
+				+ (System.currentTimeMillis() - touch) + "][closed:" + closed
+				+ ",id:" + getID() + ", channel:" + channel + "][localid:"
+				+ localid + "]";
 	}
 
 	private void touch() {
@@ -140,7 +142,8 @@ public final class TCPNode implements WNode {
 
 	@Override
 	public boolean isConnected() {
-		return !closed && isactive && channel != null;
+		checkConnection();
+		return !closed && isactive && channel != null && getID() != null;
 	}
 
 	public void logChannel() {
@@ -201,12 +204,21 @@ public final class TCPNode implements WNode {
 
 		if (messages.size() > 0) {
 			MMessage m = messages.get(0);
-			id = m.getLastHandler();
+			MNodeID nid = m.getLastHandler();
+			if (nid == null) {
+				nid = m.getSentBy();
+			}
+
+			if (this.source.getID().equals(nid)) {
+				log.info("Connected to self  " + nid);
+				close();
+			} else {
+				id = nid;
+				List<MMessage> response = this.source.handle(messages);
+				sendMessages(response);
+			}
+
 		}
-
-		List<MMessage> response = this.source.handle(messages);
-
-		sendMessages(response);
 	}
 
 	private void closeChannel() {
@@ -251,10 +263,26 @@ public final class TCPNode implements WNode {
 	void channelRegistered(Channel c) {
 		log.info("channelRegistered " + c);
 		channel = c;
+
+		// sendMessage(this.source.getMessage(HelloHandler.HELLO));
 	}
 
 	void channelInactive(Channel ctx) {
 		isactive = false;
 	}
 
+	@Override
+	public int hashCode() {
+		return localid.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof TCPNode) {
+			TCPNode n = (TCPNode) obj;
+			return n.localid.equals(localid);
+		} else {
+			return false;
+		}
+	}
 }

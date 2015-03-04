@@ -45,31 +45,27 @@ public class TestP2PServer extends WCTestCase {
 		assertNotNull(s);
 		final WNode n = s.addNode(new MHost("localhost"), s.getPort());
 		assertNotNull(n);
+		assertFalse(n.isClosed());
 		assertFalse(n.isConnected());
 		assertNull(n.getID());
-		// the node gets and id, but it's the same id with server
-		new ConditionWaiter(new Condition() {
-			public boolean test() {
-				return n.getID() != null;
-			}
-		}, 20000);
 
-		assertNotNull(n.getID());
-		// node gets disconnected
+		// the node gets closed
 		new ConditionWaiter(new Condition() {
 			public boolean test() {
-				return !n.isConnected();
+				return n.isClosed();
 			}
-		}, 10000);
+		}, getWaitTime());
 
-		assertFalse(n.isConnected());
-		// and finally node is removed
+		assertTrue(n.isClosed());
+		assertNull(n.getID());
+		// node gets removed
 		new ConditionWaiter(new Condition() {
 			public boolean test() {
-				return s.getNode(n.getID()) == null;
+				return s.getNodeStatus(n) == null;
 			}
-		}, 40000);
-		assertNull(s.getNode(n.getID()));
+		}, getWaitTime());
+
+		assertNull(s.getNodeStatus(n));
 	}
 
 	public void testNodeListener() {
@@ -175,20 +171,20 @@ public class TestP2PServer extends WCTestCase {
 		servera = getServer();
 		serverb = getOtherServerNoBind();
 		log.info("getting servers done");
-		final WNode n = serverb.addNode(new MHost("localhost"),
-				servera.getPort());
+		// final WNode n = serverb.addNode(new MHost("localhost"),
+		// servera.getPort());
 		log.info("waiting");
 
 		new ConditionWaiter(new Condition() {
 
 			@Override
 			public boolean test() {
-				return n.isConnected();
+				return servera.isConnected() && serverb.isConnected();
 			}
 		}, getWaitTime());
 
-		assertNotNull(n.getID());
-		assertTrue(serverb.getNodeStatus(n).getReceivedMessages() > 0);
+		assertNotNull(servera.isConnected());
+		assertNotNull(serverb.isConnected());
 	}
 
 	public void testBroadcast() {
@@ -204,8 +200,51 @@ public class TestP2PServer extends WCTestCase {
 		});
 		serverb.broadcastMessage(serverb.getMessage("test"));
 		//
-		waitForValue("testbroadcast", 10000);
+		waitForValue("testbroadcast", getWaitTime());
 		assertValue("testbroadcast");
+	}
+
+	public void testPingPong() {
+		createTwoServers();
+		class Count {
+			int count = 0;
+		}
+		final Count c = new Count();
+		final int maxcount = 20;
+
+		servera.addMessageHandler("pingpong", new SimpleMessageHandler() {
+
+			@Override
+			public MMessage handle(MMessage childb) {
+				if (c.count++ < maxcount) {
+					return servera.getMessage("pingpong");
+				} else {
+					return null;
+				}
+			}
+		});
+
+		serverb.addMessageHandler("pingpong", new SimpleMessageHandler() {
+
+			@Override
+			public MMessage handle(MMessage childb) {
+				if (c.count++ < maxcount) {
+					return serverb.getMessage("pingpong");
+				} else {
+					return null;
+				}
+			}
+		});
+
+		servera.broadcastMessage(servera.getMessage("pingpong"));
+
+		new ConditionWaiter(new Condition() {
+			public boolean test() {
+				return c.count >= maxcount;
+			}
+		}, getWaitTime());
+
+		assertTrue("count " + c.count, c.count >= maxcount);
 	}
 
 	public void testReporting() {

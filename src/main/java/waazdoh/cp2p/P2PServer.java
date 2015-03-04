@@ -253,6 +253,9 @@ public final class P2PServer implements MMessager, MMessageFactory,
 			synchronized (nodes) {
 				nodes.add(n);
 				log.info("node added " + n);
+
+				NodeStatus status = new NodeStatus();
+				nodestatuses.put(n, status);
 			}
 			//
 			Set<SourceListener> listeners = sourcelisteners;
@@ -296,12 +299,13 @@ public final class P2PServer implements MMessager, MMessageFactory,
 						nodes.remove(node);
 					}
 				} else if (getNodeStatus(node).shouldDie() || node.isClosed()) {
-					log.info("Killing node " + node);
+					log.info("Removing node " + node + " nodes:" + nodes);
 					if (nodes != null) {
 						List<WNode> ns = nodes;
 						synchronized (ns) {
 							node.close();
 							ns.remove(node);
+							nodestatuses.remove(node);
 						}
 					}
 				}
@@ -322,12 +326,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	}
 
 	public NodeStatus getNodeStatus(WNode node) {
-		NodeStatus status = nodestatuses.get(node);
-		if (status == null) {
-			status = new NodeStatus();
-			nodestatuses.put(node, status);
-		}
-		return status;
+		return nodestatuses.get(node);
 	}
 
 	private void checkDefaultNodes() throws InterruptedException {
@@ -367,6 +366,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		});
 
 		node.sendMessage(message);
+		getNodeStatus(node).pingSent();
 	}
 
 	private Iterator<WNode> getNodesIterator() {
