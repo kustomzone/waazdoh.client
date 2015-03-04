@@ -139,14 +139,25 @@ public class TestP2PServer extends WCTestCase {
 					// connected to some node
 					return serverb.isConnected() && servera.isConnected();
 				}
-			}, 20000);
+			}, getWaitTime());
 
 			log.info("time check node " + System.currentTimeMillis());
+			assertTrue(servera.isConnected());
+			assertTrue(serverb.isConnected());
+
 			assertNotNull(serverb.getNode(servera.getID()));
 			assertNotNull(servera.getNode(serverb.getID()));
 		} finally {
 			log.info("time closing " + System.currentTimeMillis());
 			log.info("time closing");
+		}
+	}
+
+	private int getWaitTime() {
+		if (System.getProperty("extended.debug") != null) {
+			return 360000;
+		} else {
+			return 20000;
 		}
 	}
 
@@ -174,7 +185,7 @@ public class TestP2PServer extends WCTestCase {
 			public boolean test() {
 				return n.isConnected();
 			}
-		}, 20000);
+		}, getWaitTime());
 
 		assertNotNull(n.getID());
 		assertTrue(serverb.getNodeStatus(n).getReceivedMessages() > 0);

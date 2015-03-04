@@ -54,11 +54,13 @@ public final class TCPNode implements WNode {
 		this.host = host2;
 		this.port = port2;
 		this.source = nsource;
+
+		checkConnection();
 	}
 
 	public synchronized int sendMessages(List<MMessage> smessages) {
 		if (checkConnection()) {
-			if (!smessages.isEmpty()) {
+			if (smessages != null && !smessages.isEmpty()) {
 				log.debug("writing messages " + smessages);
 
 				int bytecount = writeMessages(smessages);

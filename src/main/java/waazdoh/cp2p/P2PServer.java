@@ -36,11 +36,11 @@ import waazdoh.cp2p.messaging.MessageID;
 import waazdoh.cp2p.messaging.MessageResponseListener;
 import waazdoh.cp2p.network.MMessager;
 import waazdoh.cp2p.network.MNodeConnection;
-import waazdoh.cp2p.network.WNode;
 import waazdoh.cp2p.network.PassiveNode;
 import waazdoh.cp2p.network.SourceListener;
 import waazdoh.cp2p.network.TCPListener;
 import waazdoh.cp2p.network.TCPNode;
+import waazdoh.cp2p.network.WNode;
 import waazdoh.util.ConditionWaiter;
 import waazdoh.util.MLogger;
 import waazdoh.util.MPreferences;
@@ -137,7 +137,9 @@ public final class P2PServer implements MMessager, MMessageFactory,
 
 	private void initHandlers() {
 		handlers.put("ping", new PingHandler());
-		handlers.put("hello", new HelloHandler());
+		HelloHandler helloh = new HelloHandler();
+		handlers.put(HelloHandler.HELLO, helloh);
+		handlers.put(HelloHandler.HOLA, helloh);
 
 		WhoHasHandler whohashandler = new WhoHasHandler(binarysource, this);
 		whohashandler.addListener(new WhoHasListener() {
@@ -283,7 +285,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 				node = iterator.next();
 				NodeStatus nodestatus = getNodeStatus(node);
 
-				if (nodestatus.checkPing()) {
+				if (node.isConnected() && nodestatus.checkPing()) {
 					sendPing(node);
 				}
 				//
@@ -848,7 +850,8 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		if (nodes != null) {
 			List<WNode> ns = new LinkedList<WNode>(this.nodes);
 			for (WNode node : ns) {
-				if (node.isConnected()) {
+				if (node.isConnected()
+						&& getNodeStatus(node).getReceivedMessages() > 0) {
 					return true;
 				}
 			}
@@ -883,16 +886,16 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		public static final long MAX_PINGDELAY = 10000;
 		public static final long MIN_PINGDELAY = 200;
 
-		private long lastping;
+		private long lastping = System.currentTimeMillis();
 		private long currentpingdelay;
-		private long touch;
+		private long touch = System.currentTimeMillis();
 		private int warning;
 		private int receivedmessages;
 
 		public boolean checkPing() {
 			long maxpingdelay = getPingDelay();
 			if (System.currentTimeMillis() - lastping > maxpingdelay) {
-				log.info("should ping "
+				log.debug("should ping "
 						+ (System.currentTimeMillis() - lastping) + " > "
 						+ maxpingdelay);
 				lastping = System.currentTimeMillis();

@@ -27,7 +27,7 @@ public final class PassiveNode implements WNode {
 	private int outputbytecount;
 
 	private List<MMessage> outgoingmessages = new LinkedList<MMessage>();
-	private int receivedmessages;
+
 	private boolean closed;
 
 	public PassiveNode(MNodeID id2, MMessager source) {
@@ -118,12 +118,8 @@ public final class PassiveNode implements WNode {
 		source = null;
 	}
 
-	public int getReceivedMessages() {
-		return receivedmessages;
-	}
-
 	public boolean isConnected() {
-		return getReceivedMessages() > 0 && !isClosed() && getID() != null;
+		return !isClosed() && getID() != null;
 	}
 
 	public boolean isClosed() {
