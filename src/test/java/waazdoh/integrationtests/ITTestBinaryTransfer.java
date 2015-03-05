@@ -76,9 +76,12 @@ public final class ITTestBinaryTransfer extends WCTestCase {
 		Binary b1 = source1.newBinary("test", "bin");
 		assertNotNull(b1);
 		log.info("adding bytes");
+		byte bs[] = new byte[binarysize];
 		for (int i = 0; i < binarysize; i++) {
-			b1.add((byte) (i & 0xff));
+			bs[i] = (byte) (i & 0xff);
 		}
+		b1.add(bs);
+		
 		log.info("publishing " + b1);
 		b1.setReady();
 		b1.publish();
