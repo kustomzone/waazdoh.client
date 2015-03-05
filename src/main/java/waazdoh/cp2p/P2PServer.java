@@ -49,7 +49,7 @@ import waazdoh.util.MTimedFlag;
 
 public final class P2PServer implements MMessager, MMessageFactory,
 		MNodeConnection {
-	static final int MESSAGESENDLOOP_COUNT = 10;
+	static final int MESSAGESENDLOOP_COUNT = 1;
 	private static final int MAX_SENTCOUNT = 2;
 	private static final long REBOOT_DELAY = 120000;
 	//
@@ -165,20 +165,6 @@ public final class P2PServer implements MMessager, MMessageFactory,
 		handlers.put(name, h);
 	}
 
-	private void sleep(final long time) {
-		synchronized (this) {
-			long waittime = time;
-			try {
-				if (waittime < 10) {
-					waittime = 10;
-				}
-				this.wait(waittime);
-			} catch (InterruptedException e) {
-				log.error(e);
-			}
-		}
-	}
-
 	public void setDownloadEverything(boolean b) {
 		WhoHasHandler handler = (WhoHasHandler) handlers.get("whohas");
 		handler.downloadEveryThing(b);
@@ -194,7 +180,7 @@ public final class P2PServer implements MMessager, MMessageFactory,
 					if (dt > REBOOT_DELAY) {
 						reboot();
 					} else {
-						sleep(dt - REBOOT_DELAY);
+						waitNodes(dt - REBOOT_DELAY);
 					}
 				}
 				log.info("Reboot checker out");
@@ -310,34 +296,47 @@ public final class P2PServer implements MMessager, MMessageFactory,
 					}
 				}
 			}
-			List<WNode> ns = nodes;
-			if (ns != null) {
-				synchronized (ns) {
-					try {
-						checkDefaultNodes();
-						ns.wait(100 + (int) (Math.random() * 100 * nodes.size() * MESSAGESENDLOOP_COUNT));
-					} catch (InterruptedException e) {
-						log.error(e);
-					}
+
+			checkDefaultNodes();
+
+			int timeout = 100 + (int) (Math.random() * 100 * nodes.size() * MESSAGESENDLOOP_COUNT);
+			waitNodes(timeout);
+		}
+		log.info("server thread shutting down");
+	}
+
+	private void waitNodes(long timeout) {
+		List<WNode> ns = this.nodes;
+		if (ns != null) {
+			synchronized (ns) {
+				try {
+					ns.wait(timeout);
+				} catch (InterruptedException e) {
+					log.error(e);
 				}
 			}
 		}
-		log.info("server thread shutting down");
 	}
 
 	public NodeStatus getNodeStatus(WNode node) {
 		return nodestatuses.get(node);
 	}
 
-	private void checkDefaultNodes() throws InterruptedException {
-		if (nodes.isEmpty()) {
-			addDefaultNodes();
-			if (nodes.isEmpty()) {
-				int maxwaittime = 5000;
-				log.info("nodes size still zero. Waiting " + maxwaittime
-						+ "msec");
-				waitForConnection(maxwaittime);
+	private void checkDefaultNodes() {
+		try {
+			synchronized (nodes) {
+				if (nodes.isEmpty()) {
+					addDefaultNodes();
+					if (nodes.isEmpty()) {
+						int maxwaittime = 5000;
+						log.info("nodes size still zero. Waiting "
+								+ maxwaittime + "msec");
+						waitForConnection(maxwaittime);
+					}
+				}
 			}
+		} catch (InterruptedException ie) {
+			log.error(ie);
 		}
 	}
 
