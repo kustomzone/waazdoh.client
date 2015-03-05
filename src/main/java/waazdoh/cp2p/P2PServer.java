@@ -49,6 +49,7 @@ import waazdoh.util.MTimedFlag;
 
 public final class P2PServer implements MMessager, MMessageFactory,
 		MNodeConnection {
+	private static final int MINIMUM_TIMEOUT = 10;
 	static final int MESSAGESENDLOOP_COUNT = 1;
 	private static final int MAX_SENTCOUNT = 2;
 	private static final long REBOOT_DELAY = 120000;
@@ -306,6 +307,10 @@ public final class P2PServer implements MMessager, MMessageFactory,
 	}
 
 	private void waitNodes(long timeout) {
+		if (timeout < MINIMUM_TIMEOUT) {
+			timeout = MINIMUM_TIMEOUT;
+		}
+
 		List<WNode> ns = this.nodes;
 		if (ns != null) {
 			synchronized (ns) {
