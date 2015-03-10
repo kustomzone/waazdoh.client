@@ -208,7 +208,7 @@ public final class TCPNode implements WNode {
 
 		touch();
 
-		if (messages.size() > 0) {
+		if (!messages.isEmpty()) {
 			MMessage m = messages.get(0);
 			MNodeID nid = m.getLastHandler();
 			if (nid == null) {
@@ -270,8 +270,6 @@ public final class TCPNode implements WNode {
 	void channelRegistered(Channel c) {
 		log.info("channelRegistered " + c);
 		channel = c;
-
-		// sendMessage(this.source.getMessage(HelloHandler.HELLO));
 	}
 
 	void channelInactive(Channel ctx) {

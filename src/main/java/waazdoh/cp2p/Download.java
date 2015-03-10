@@ -268,8 +268,7 @@ public final class Download implements Runnable, MessageResponseListener,
 	private synchronized void removeMissingPart(int start, int length) {
 		log.debug("missingparts " + missingparts);
 
-		LinkedList<DownloadPart> nlist = new LinkedList<DownloadPart>(
-				missingparts);
+		List<DownloadPart> nlist = new LinkedList<DownloadPart>(missingparts);
 		for (int i = 0; i < missingparts.size(); i++) {
 			DownloadPart p = missingparts.get(i);
 			if (start <= p.start && start + length >= p.end) {
