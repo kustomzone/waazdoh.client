@@ -22,7 +22,7 @@ public final class PingHandler extends SimpleMessageHandler {
 	public MMessage handle(MMessage childb) {
 		final long st = System.currentTimeMillis();
 		//
-		MMessage response = getFactory().newResponseMessage(childb,
+		MMessage response = getMessenger().newResponseMessage(childb,
 				"pingresponse");
 		final long senttime = System.currentTimeMillis();
 		response.addResponseListener(new MessageResponseListener() {

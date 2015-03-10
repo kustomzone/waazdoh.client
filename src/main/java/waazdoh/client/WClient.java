@@ -60,10 +60,6 @@ public class WClient {
 		return service;
 	}
 
-	public String getMemoryUsageInfo() {
-		return source.getMemoryUsageInfo();
-	}
-
 	public String getInfoText() {
 		return source.getInfoText();
 	}

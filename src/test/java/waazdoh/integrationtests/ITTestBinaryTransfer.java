@@ -1,5 +1,6 @@
 package waazdoh.integrationtests;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.junit.Test;
@@ -67,11 +68,22 @@ public final class ITTestBinaryTransfer extends WCTestCase {
 	@Test
 	public void testTransfer(int binarysize, boolean bind1, boolean bind2)
 			throws SAXException, InterruptedException, IOException {
-		log.info("test transfer " + binarysize);
 		String username1 = "test1" + Math.random();
-		log.info("service1 with " + username1);
-		P2PBinarySource source1 = getServiceSource(username1, bind1);
+		String username2 = "test2" + Math.random();
+		log.info("test transfer " + binarysize + " user1 + " + username1
+				+ " user2 " + username2);
 
+		P2PBinarySource source1 = getServiceSource(username1, bind1);
+		P2PBinarySource source2 = getServiceSource(username2, bind2);
+
+		source2.waitUntilReady();
+
+		testTransfer(binarysize, source1, source2);
+
+	}
+
+	private void testTransfer(int binarysize, P2PBinarySource source1,
+			P2PBinarySource source2) throws FileNotFoundException, IOException {
 		log.info("creating binary");
 		Binary b1 = source1.newBinary("test", "bin");
 		assertNotNull(b1);
@@ -81,7 +93,7 @@ public final class ITTestBinaryTransfer extends WCTestCase {
 			bs[i] = (byte) (i & 0xff);
 		}
 		b1.add(bs);
-		
+
 		log.info("publishing " + b1);
 		b1.setReady();
 		b1.publish();
@@ -95,13 +107,6 @@ public final class ITTestBinaryTransfer extends WCTestCase {
 		assertEquals(b1hasht, b1reload.getHash());
 
 		// 2
-
-		log.info("getOrDownload source2");
-		String username2 = "test2" + Math.random();
-		log.info("service2 with " + username2);
-		P2PBinarySource source2 = getServiceSource(username2, bind2);
-		log.info("wait service2 " + source2);
-		source2.waitUntilReady();
 
 		Binary b2 = source2.getOrDownload(b1.getID());
 		assertNotNull(b2);
@@ -122,7 +127,6 @@ public final class ITTestBinaryTransfer extends WCTestCase {
 
 		source1.close();
 		source2.close();
-
 	}
 
 	private synchronized void doWait(int i) {

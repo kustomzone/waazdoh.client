@@ -24,21 +24,21 @@ import waazdoh.client.model.objects.Binary;
 import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MessageResponseListener;
-import waazdoh.cp2p.network.MNodeConnection;
-import waazdoh.cp2p.network.SourceListener;
+import waazdoh.cp2p.network.ServerListener;
+import waazdoh.cp2p.network.WMessenger;
 import waazdoh.cp2p.network.WNode;
 import waazdoh.util.MLogger;
 import waazdoh.util.MStringID;
 import waazdoh.util.MTimedFlag;
 
 public final class Download implements Runnable, MessageResponseListener,
-		SourceListener {
+		ServerListener {
 	private static final String MESSAGENAME_WHOHAS = "whohas";
 	private static final String MESSAGENAME_STREAM = "stream";
 	private static final int GIVEUP_TIMEOUT_MSEC = 1000 * 60 * 4;
-	private static final int PART_SIZE = 10000;
+	private static final int PART_SIZE = 100000;
 	private Binary bin;
-	private MNodeConnection source;
+	private WMessenger messenger;
 	private MLogger log;
 	private MTimedFlag flag;
 	private MTimedFlag giveupflag = new MTimedFlag(GIVEUP_TIMEOUT_MSEC);
@@ -52,12 +52,14 @@ public final class Download implements Runnable, MessageResponseListener,
 
 	private int countbytes;
 	private int overwritebytes;
+	private P2PServer server;
 
-	Download(Binary b, MNodeConnection source) {
+	public Download(Binary b, P2PServer server, WMessenger nmessenger) {
 		this.bin = b;
-		this.source = source;
+		this.messenger = nmessenger;
+		this.server = server;
 		//
-		source.addSourceListener(this);
+		server.addServerListener(this);
 		//
 		Thread t = new Thread(this, "Download");
 		t.start();
@@ -93,9 +95,9 @@ public final class Download implements Runnable, MessageResponseListener,
 	public void run() {
 		this.starttime = System.currentTimeMillis();
 		flag = new MTimedFlag(WaazdohInfo.DOWNLOAD_RESET_DELAY);
-		while (!isReady() && source.isRunning() && !giveupflag.isTriggered()) {
-			log.info("reset download ready:" + isReady() + " source.running:"
-					+ source.isRunning() + " giveupflag:" + giveupflag);
+		while (!isReady() && !messenger.isClosed() && !giveupflag.isTriggered()) {
+			log.info("reset download ready:" + isReady() + " giveupflag:"
+					+ giveupflag);
 			flag.reset();
 			resetSentStarts();
 			sendWhoHasMessage();
@@ -103,13 +105,13 @@ public final class Download implements Runnable, MessageResponseListener,
 			flag.waitTimer();
 		}
 		//
-		source.removeDownload(getID());
+		server.removeDownload(getID());
 		updateSpeedInfo();
 		log.info("Download DONE " + isReady() + " " + speedinfo + " source:"
-				+ source.isRunning() + " ready:" + isReady() + " giveup: "
+				+ server.isRunning() + " ready:" + isReady() + " giveup: "
 				+ giveupflag);
 		//
-		this.source.reportDownload(getID(), isReady());
+		this.server.reportDownload(getID(), isReady());
 	}
 
 	@Override
@@ -181,7 +183,7 @@ public final class Download implements Runnable, MessageResponseListener,
 			MMessage m = getWhoHasMessage();
 			log.info("broadcasting whohas " + m);
 			if (m != null) {
-				source.broadcastMessage(m, this);
+				messenger.broadcastMessage(m, this);
 			} else if (!isReady() && sentstarts.isEmpty()) {
 				bin.resetCRC();
 				log.info("resetCRC " + isReady());
@@ -194,7 +196,7 @@ public final class Download implements Runnable, MessageResponseListener,
 
 	public MMessage getWhoHasMessage() {
 		synchronized (sentstarts) {
-			MMessage m = source.getMessage(MESSAGENAME_WHOHAS);
+			MMessage m = messenger.getMessage(MESSAGENAME_WHOHAS);
 			m.addAttribute("streamid", "" + getID());
 			WData needed = m.add("needed");
 			if (addNeededPieces(needed) && !isReady()) {
@@ -232,10 +234,10 @@ public final class Download implements Runnable, MessageResponseListener,
 		}
 		//
 		String sthrough = b.getAttribute("through");
-		WNode lasthandlernode = source.getNode(b.getSentBy());
+		WNode lasthandlernode = server.getNode(b.getSentBy());
 		if (sthrough != null) {
 			MNodeID throughid = new MNodeID(sthrough);
-			sendWhoHasMessage(source.getNode(throughid));
+			sendWhoHasMessage(server.getNode(throughid));
 		} else if (lasthandlernode != null) {
 			sendWhoHasMessage(lasthandlernode);
 		} else {

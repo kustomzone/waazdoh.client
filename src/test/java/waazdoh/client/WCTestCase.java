@@ -13,6 +13,8 @@ import org.xml.sax.SAXException;
 import waazdoh.client.storage.local.FileBeanStorage;
 import waazdoh.cp2p.P2PBinarySource;
 import waazdoh.cp2p.P2PServer;
+import waazdoh.cp2p.P2PServerImpl;
+import waazdoh.cp2p.common.MHost;
 import waazdoh.testing.MockBeanStorage;
 import waazdoh.testing.ServiceMock;
 import waazdoh.testing.StaticTestPreferences;
@@ -91,21 +93,34 @@ public class WCTestCase extends TestCase {
 	}
 
 	protected P2PServer getServer() {
-		P2PServer s = new P2PServer(getPreferences("p2pservertests"), true,
-				null);
+		P2PServer s = new P2PServerImpl(getPreferences("p2pservertests"), true);
 		s.start();
+
 		servers.add(s);
 		log.info("returning " + s);
 		return s;
 	}
 
 	protected P2PServer getOtherServerNoBind() {
-		P2PServer s = new P2PServer(new StaticTestPreferences("otherserver",
-				"otherserver"), false, null);
-		s.start();
-		servers.add(s);
-		log.info("returning " + s);
-		return s;
+		P2PServer nobindserver = new P2PServerImpl(new StaticTestPreferences(
+				"otherserver", "otherserver"), false);
+
+		nobindserver.start();
+
+		addServerNodes(nobindserver);
+
+		servers.add(nobindserver);
+		log.info("returning " + nobindserver);
+		return nobindserver;
+	}
+
+	private void addServerNodes(P2PServer currentserver) {
+		for (P2PServer server : servers) {
+			if (server.getPort() != currentserver.getPort()) {
+				currentserver.addNode(new MHost("localhost"), server.getPort());
+			}
+
+		}
 	}
 
 	protected WClient getClient(final String username, final boolean bind)

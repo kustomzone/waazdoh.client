@@ -11,15 +11,15 @@
 package waazdoh.cp2p;
 
 import waazdoh.cp2p.messaging.MMessage;
-import waazdoh.cp2p.messaging.MMessageFactory;
 import waazdoh.cp2p.messaging.MMessageHandler;
+import waazdoh.cp2p.network.WMessenger;
 import waazdoh.util.MLogger;
 import waazdoh.util.MStringID;
 
 public final class StreamHandler implements MMessageHandler {
-	private MMessageFactory factory;
 	private P2PServer source;
 	private MLogger log = MLogger.getLogger(this);
+	private WMessenger messenger;
 
 	public StreamHandler(P2PServer server) {
 		this.source = server;
@@ -58,7 +58,7 @@ public final class StreamHandler implements MMessageHandler {
 	}
 
 	@Override
-	public void setFactory(MMessageFactory factory) {
-		this.factory = factory;
+	public void setMessenger(final WMessenger nmessenger) {
+		this.messenger = nmessenger;
 	}
 }

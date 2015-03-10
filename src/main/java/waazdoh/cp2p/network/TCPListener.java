@@ -40,7 +40,7 @@ public final class TCPListener {
 	private int port;
 	//
 	private MLogger log = MLogger.getLogger(this);
-	private MMessager messager;
+	private WMessenger messenger;
 	private ThreadGroup tg;
 
 	private ServerBootstrap bootstrap;
@@ -51,8 +51,8 @@ public final class TCPListener {
 
 	private MPreferences preferences;
 
-	public TCPListener(ThreadGroup tg, MMessager mMessager, MPreferences p) {
-		this.messager = mMessager;
+	public TCPListener(ThreadGroup tg, WMessenger mMessager, MPreferences p) {
+		this.messenger = mMessager;
 		this.tg = tg;
 		this.preferences = p;
 	}
@@ -82,7 +82,7 @@ public final class TCPListener {
 								pipe.addLast("server", new MServerHandler());
 								//
 								List<MMessage> mlist = new LinkedList<MMessage>();
-								mlist.add(messager.getMessage("hello"));
+								mlist.add(messenger.getMessage("hello"));
 								ch.writeAndFlush(mlist);
 							} else {
 								log.info("InitChannel on closed listener. Closing channel.");
@@ -106,12 +106,12 @@ public final class TCPListener {
 				log.error(e);
 			}
 
-			log.info("listening " + port + " messager:" + this.messager);
+			log.info("listening " + port + " messager:" + this.messenger);
 			//
-			MMessage b = this.messager.getMessage("newnode");
+			MMessage b = this.messenger.getMessage("newnode");
 			b.addAttribute("port", port);
 			//
-			this.messager.broadcastMessage(b);
+			this.messenger.broadcastMessage(b);
 		}
 	}
 
@@ -175,7 +175,7 @@ public final class TCPListener {
 				throws Exception {
 			log.info("messageReceived " + ms);
 			if (!closed) {
-				List<MMessage> response = messager.handle(ms);
+				List<MMessage> response = messenger.handle(ms);
 				if (response != null) {
 					log.debug("sending back response " + response);
 					ctx.writeAndFlush(response).addListener(

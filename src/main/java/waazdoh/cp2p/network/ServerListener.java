@@ -8,10 +8,10 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.cp2p.messaging;
+package waazdoh.cp2p.network;
 
+public interface ServerListener {
+	void nodeAdded(WNode n);
 
-public interface MMessageFactory {
-
-	MMessage newResponseMessage(MMessage childb, String string);
+	boolean isDone();
 }

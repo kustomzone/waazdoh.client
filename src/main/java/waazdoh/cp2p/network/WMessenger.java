@@ -10,36 +10,45 @@
  ******************************************************************************/
 package waazdoh.cp2p.network;
 
+import java.util.List;
 import java.util.Set;
 
-import waazdoh.cp2p.common.MHost;
 import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;
+import waazdoh.cp2p.messaging.MMessageHandler;
+import waazdoh.cp2p.messaging.MessageID;
 import waazdoh.cp2p.messaging.MessageResponseListener;
 import waazdoh.util.MStringID;
 
-public interface MNodeConnection {
+public interface WMessenger {
+	MNodeID getID();
 
-	void addSourceListener(SourceListener sourceListener);
-
-	boolean isRunning();
+	List<MMessage> handle(List<MMessage> ms);
 
 	MMessage getMessage(final String string);
+
+	MMessage newResponseMessage(MMessage childb, String string);
+
+	void addResponseListener(MessageID id,
+			MessageResponseListener responseListener);
+
+	void broadcastMessage(MMessage b);
 
 	void broadcastMessage(MMessage notification,
 			MessageResponseListener messageResponseListener);
 
-	WNode getNode(MNodeID throughtid);
-
-	WNode addNode(MHost mHost, int nport);
-
-	void broadcastMessage(MMessage childb,
+	void broadcastMessage(MMessage message,
 			MessageResponseListener messageResponseListener,
 			Set<MNodeID> exceptions);
 
-	MStringID getID();
+	String getInfoText();
 
-	void reportDownload(MStringID id, boolean ready);
+	void close();
 
-	void removeDownload(MStringID mid);
+	long getLastMessageReceived();
+
+	void addMessageHandler(String name, MMessageHandler h);
+
+	boolean isClosed();
+
 }

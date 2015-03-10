@@ -22,7 +22,7 @@ public final class PassiveNode implements WNode {
 	private MNodeID id;
 	//
 	private MLogger log = MLogger.getLogger(this);
-	private MMessager source;
+	private WMessenger source;
 
 	private int outputbytecount;
 
@@ -30,8 +30,9 @@ public final class PassiveNode implements WNode {
 
 	private boolean closed;
 
-	public PassiveNode(MNodeID id2, MMessager source) {
+	public PassiveNode(MNodeID id2, WMessenger source) {
 		this.id = id2;
+		log.info("PassiveNode with id " + id);
 		this.source = source;
 	}
 
@@ -72,7 +73,6 @@ public final class PassiveNode implements WNode {
 		}
 		//
 		source.addResponseListener(b.getID(), b.getResponseListener());
-		source.notifyNodes();
 	}
 
 	private boolean findMessage(MMessage b) {

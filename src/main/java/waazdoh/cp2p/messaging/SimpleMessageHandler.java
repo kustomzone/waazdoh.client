@@ -10,15 +10,18 @@
  ******************************************************************************/
 package waazdoh.cp2p.messaging;
 
+import waazdoh.cp2p.network.WMessenger;
 
 public abstract class SimpleMessageHandler implements MMessageHandler {
-	private MMessageFactory factory;
+	private WMessenger messenger;
 
-	public MMessageFactory getFactory() {
-		return factory;
+	public WMessenger getMessenger() {
+		return messenger;
 	}
 
-	public void setFactory(MMessageFactory factory) {
-		this.factory = factory;
+	@Override
+	public void setMessenger(WMessenger nmessenger) {
+		this.messenger = nmessenger;
 	}
+
 }

@@ -37,18 +37,6 @@ public final class TestPBinarySource implements BinarySource {
 	}
 
 	@Override
-	public String getMemoryUsageInfo() {
-		// TODO Auto-generated method stub
-		return "info";
-	}
-
-	@Override
-	public void setDownloadEverything(boolean b) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void setReportingService(ReportingService rservice) {
 		// TODO Auto-generated method stub
 

@@ -28,12 +28,13 @@ import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MessageResponseListener;
 import waazdoh.cp2p.messaging.SimpleMessageHandler;
-import waazdoh.cp2p.network.MNodeConnection;
 import waazdoh.cp2p.network.WNode;
 import waazdoh.util.MLogger;
 import waazdoh.util.MStringID;
 
 public final class WhoHasHandler extends SimpleMessageHandler {
+	public static final String MESSAGENAME = "whohas";
+
 	private int maxResponseWaitTime = WaazdohInfo.MAX_RESPONSE_WAIT_TIME;
 	//
 	private MLogger log = MLogger.getLogger(this);
@@ -41,17 +42,17 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 	 * 
 	 */
 	private final BinarySource source;
-	private final MNodeConnection nodeconnection;
 	//
 	private Map<ObjectID, MNodeID> whohas = new HashMap<ObjectID, MNodeID>();
 	private Map<MStringID, Integer> responsecount = new HashMap<MStringID, Integer>();
 	private List<WhoHasListener> listeners = new LinkedList<WhoHasListener>();
 
 	private boolean downloadeverything;
+	private P2PServer server;
 
-	public WhoHasHandler(BinarySource source, MNodeConnection nodeconnection) {
+	public WhoHasHandler(BinarySource source, P2PServer server) {
 		this.source = source;
-		this.nodeconnection = nodeconnection;
+		this.server = server;
 	}
 
 	@Override
@@ -59,7 +60,7 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 		final BinaryID streamid = new BinaryID(childb.getAttribute("streamid"));
 		if (source.get(streamid) != null) {
 			MMessage m;
-			m = getFactory().newResponseMessage(childb, "stream");
+			m = getMessenger().newResponseMessage(childb, "stream");
 			m.addIDAttribute("streamid", streamid);
 			//
 			WData needed = childb.get("needed");
@@ -140,11 +141,11 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 			if (knownwhohas == null) {
 				Set<MNodeID> exceptions = new HashSet<MNodeID>();
 				exceptions.add(childb.getSentBy());
-				nodeconnection.broadcastMessage(childb, responselistener,
+				getMessenger().broadcastMessage(childb, responselistener,
 						exceptions);
 			} else {
 				childb.addResponseListener(responselistener);
-				WNode knownnode = nodeconnection.getNode(knownwhohas);
+				WNode knownnode = server.getNode(knownwhohas);
 				knownnode.sendMessage(childb);
 			}
 			//

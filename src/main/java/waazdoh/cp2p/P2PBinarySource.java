@@ -21,9 +21,9 @@ import waazdoh.util.MLogger;
 import waazdoh.util.MPreferences;
 
 public final class P2PBinarySource implements BinarySource {
-	P2PServer server;
+	private P2PServer server;
 	//
-	MLogger log = MLogger.getLogger(this);
+	private MLogger log = MLogger.getLogger(this);
 	private MPreferences preferences;
 	final private FileBeanStorage beanstorage;
 	private LocalBinaryStorage storage;
@@ -31,17 +31,19 @@ public final class P2PBinarySource implements BinarySource {
 
 	public P2PBinarySource(MPreferences p, FileBeanStorage beanstorage,
 			boolean bind2) {
-		this.server = new P2PServer(p, bind2, this);
+		this.server = new P2PServerImpl(p, bind2);
+		server.setBinarySource(this);
+
 		this.beanstorage = beanstorage;
 		this.preferences = p;
 	}
 
-	@Override
-	public String getMemoryUsageInfo() {
-		String info = "";
-		info += "storage:[" + storage.getMemoryUsageInfo() + "]";
-		info += "server:[" + server.getMemoryUserInfo() + "]";
-		return info;
+	public P2PBinarySource(MPreferences np, FileBeanStorage nbeanstorage,
+			P2PServer nserver) {
+		this.beanstorage = nbeanstorage;
+		this.preferences = np;
+		this.server = nserver;
+		nserver.setBinarySource(this);
 	}
 
 	@Override
@@ -136,10 +138,6 @@ public final class P2PBinarySource implements BinarySource {
 		server.startClosing();
 	}
 
-	public void setDownloadEverything(boolean b) {
-		server.setDownloadEverything(b);
-	}
-
 	public void setReportingService(ReportingService reporting) {
 		server.setReportingService(reporting);
 	}
@@ -151,12 +149,8 @@ public final class P2PBinarySource implements BinarySource {
 
 	@Override
 	public void waitUntilReady() {
-		try {
-			server.waitForConnection(preferences.getInteger(
-					"waazdoh.maxtime.waituntilready", 120000));
-		} catch (InterruptedException e) {
-			log.error(e);
-		}
+		server.waitForConnection(preferences.getInteger(
+				"waazdoh.maxtime.waituntilready", 120000));
 	}
 
 	public MPreferences getPreferences() {

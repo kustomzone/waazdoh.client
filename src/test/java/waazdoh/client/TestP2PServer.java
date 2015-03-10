@@ -5,10 +5,11 @@ import org.xml.sax.SAXException;
 import waazdoh.client.model.BinaryID;
 import waazdoh.client.model.objects.Binary;
 import waazdoh.cp2p.P2PServer;
+import waazdoh.cp2p.P2PServerImpl;
 import waazdoh.cp2p.common.MHost;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.SimpleMessageHandler;
-import waazdoh.cp2p.network.SourceListener;
+import waazdoh.cp2p.network.ServerListener;
 import waazdoh.cp2p.network.WNode;
 import waazdoh.testing.ServiceMock;
 import waazdoh.testing.StaticTestPreferences;
@@ -72,7 +73,7 @@ public class TestP2PServer extends WCTestCase {
 		P2PServer s = getServer();
 		final MTimedFlag t = new MTimedFlag(10000);
 		final MTimedFlag doneflag = new MTimedFlag(10000);
-		s.addSourceListener(new SourceListener() {
+		s.addServerListener(new ServerListener() {
 
 			@Override
 			public void nodeAdded(WNode n) {
@@ -141,6 +142,9 @@ public class TestP2PServer extends WCTestCase {
 			assertTrue(servera.isConnected());
 			assertTrue(serverb.isConnected());
 
+			assertNotNull(servera.getID());
+			assertNotNull(serverb.getID());
+
 			assertNotNull(serverb.getNode(servera.getID()));
 			assertNotNull(servera.getNode(serverb.getID()));
 		} finally {
@@ -173,7 +177,7 @@ public class TestP2PServer extends WCTestCase {
 		log.info("getting servers done");
 		// final WNode n = serverb.addNode(new MHost("localhost"),
 		// servera.getPort());
-		log.info("waiting");
+		log.info("waiting connection");
 
 		new ConditionWaiter(new Condition() {
 
@@ -183,22 +187,28 @@ public class TestP2PServer extends WCTestCase {
 			}
 		}, getWaitTime());
 
-		assertNotNull(servera.isConnected());
-		assertNotNull(serverb.isConnected());
+		assertTrue(servera.isConnected());
+		assertTrue(serverb.isConnected());
+
+		log.info("servers connected");
 	}
 
 	public void testBroadcast() {
 		createTwoServers();
 
-		servera.addMessageHandler("test", new SimpleMessageHandler() {
+		servera.getMessenger().addMessageHandler("testmessage",
+				new SimpleMessageHandler() {
 
-			@Override
-			public MMessage handle(MMessage childb) {
-				setValue("testbroadcast", "" + childb);
-				return null;
-			}
-		});
-		serverb.broadcastMessage(serverb.getMessage("test"));
+					@Override
+					public MMessage handle(MMessage childb) {
+						setValue("testbroadcast", "" + childb);
+						return null;
+					}
+				});
+
+		log.info("Broadcasting " + serverb + " testmessage");
+		serverb.getMessenger().broadcastMessage(
+				serverb.getMessenger().getMessage("testmessage"));
 		//
 		waitForValue("testbroadcast", getWaitTime());
 		assertValue("testbroadcast");
@@ -212,31 +222,36 @@ public class TestP2PServer extends WCTestCase {
 		final Count c = new Count();
 		final int maxcount = 20;
 
-		servera.addMessageHandler("pingpong", new SimpleMessageHandler() {
+		servera.getMessenger().addMessageHandler("pingpong",
+				new SimpleMessageHandler() {
 
-			@Override
-			public MMessage handle(MMessage childb) {
-				if (c.count++ < maxcount) {
-					return servera.getMessage("pingpong");
-				} else {
-					return null;
-				}
-			}
-		});
+					@Override
+					public MMessage handle(MMessage childb) {
+						if (c.count++ < maxcount) {
+							return servera.getMessenger()
+									.getMessage("pingpong");
+						} else {
+							return null;
+						}
+					}
+				});
 
-		serverb.addMessageHandler("pingpong", new SimpleMessageHandler() {
+		serverb.getMessenger().addMessageHandler("pingpong",
+				new SimpleMessageHandler() {
 
-			@Override
-			public MMessage handle(MMessage childb) {
-				if (c.count++ < maxcount) {
-					return serverb.getMessage("pingpong");
-				} else {
-					return null;
-				}
-			}
-		});
+					@Override
+					public MMessage handle(MMessage childb) {
+						if (c.count++ < maxcount) {
+							return serverb.getMessenger()
+									.getMessage("pingpong");
+						} else {
+							return null;
+						}
+					}
+				});
 
-		servera.broadcastMessage(servera.getMessage("pingpong"));
+		servera.getMessenger().broadcastMessage(
+				servera.getMessenger().getMessage("pingpong"));
 
 		new ConditionWaiter(new Condition() {
 			public boolean test() {
@@ -270,8 +285,8 @@ public class TestP2PServer extends WCTestCase {
 	}
 
 	private P2PServer getOtherServer() {
-		P2PServer s = new P2PServer(new StaticTestPreferences("otherserver",
-				"otherserver"), true, null);
+		P2PServer s = new P2PServerImpl(new StaticTestPreferences(
+				"otherserver", "otherserver"), true);
 		s.start();
 		log.info("returning " + s);
 		return s;

@@ -112,6 +112,10 @@ public final class FileBeanStorage implements BeanStorage {
 			@Override
 			public Iterator<MStringID> iterator() {
 				return new Iterator<MStringID>() {
+					@Override
+					public void remove() {
+						throw new UnsupportedOperationException();
+					}
 
 					@Override
 					public boolean hasNext() {

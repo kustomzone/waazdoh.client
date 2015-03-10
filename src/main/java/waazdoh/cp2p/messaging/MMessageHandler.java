@@ -10,8 +10,11 @@
  ******************************************************************************/
 package waazdoh.cp2p.messaging;
 
+import waazdoh.cp2p.network.WMessenger;
+
+
 public interface MMessageHandler {
 	MMessage handle(MMessage childb);
 
-	void setFactory(MMessageFactory factory);
+	void setMessenger(WMessenger factory);
 }

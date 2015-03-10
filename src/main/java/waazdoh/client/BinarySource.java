@@ -31,10 +31,6 @@ public interface BinarySource {
 
 	String getInfoText();
 
-	String getMemoryUsageInfo();
-
-	void setDownloadEverything(boolean b);
-
 	void setReportingService(ReportingService rservice);
 
 	Binary newBinary(final String comment, String extension);

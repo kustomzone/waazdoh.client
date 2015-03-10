@@ -47,13 +47,13 @@ public final class TCPNode implements WNode {
 	private MNodeID id;
 	final private MStringID localid = new MStringID();
 
-	private MMessager source;
+	private WMessenger source;
 
 	private boolean isactive;
 
 	public final static NodeConnectionFactory connectionfactory = new NodeConnectionFactory();
 
-	public TCPNode(MHost host2, int port2, MMessager nsource) {
+	public TCPNode(MHost host2, int port2, WMessenger nsource) {
 		this.host = host2;
 		this.port = port2;
 		this.source = nsource;
@@ -81,7 +81,7 @@ public final class TCPNode implements WNode {
 			MessageResponseListener listener = m.getResponseListener();
 			this.source.addResponseListener(m.getID(), listener);
 		}
-		
+
 		channel.writeAndFlush(smessages).addListener(
 				ChannelFutureListener.CLOSE_ON_FAILURE); //
 		int bytecount = 0;
@@ -220,6 +220,7 @@ public final class TCPNode implements WNode {
 				close();
 			} else {
 				id = nid;
+				log.info("TCPNode got id " + id);
 				List<MMessage> response = this.source.handle(messages);
 				sendMessages(response);
 			}
