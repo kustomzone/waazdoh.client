@@ -141,4 +141,9 @@ public class WClient {
 			return null;
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "WClient[connected:" + isRunning() + "][bsource:" + source + "]";
+	}
 }

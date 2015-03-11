@@ -42,7 +42,7 @@ public final class StaticTestPreferences implements MPreferences {
 		MLogger.getLogger(this).info("Local path " + lpath);
 
 		// creating a random port
-		int port = 8000 + (int) (Math.random() * 10000);
+		int port = randomPort();
 		getPrefs().putInt(MPreferences.NETWORK_SERVER_PORT, port);
 		ports.add(port);
 

@@ -1,4 +1,4 @@
-package waazdoh.cp2p;
+package waazdoh.cp2p.network;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -8,14 +8,15 @@ import java.util.Map;
 import java.util.Set;
 
 import waazdoh.client.model.WData;
+import waazdoh.cp2p.HelloHandler;
+import waazdoh.cp2p.P2PServer;
+import waazdoh.cp2p.PingHandler;
 import waazdoh.cp2p.common.MHost;
 import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MMessageHandler;
 import waazdoh.cp2p.messaging.MessageID;
 import waazdoh.cp2p.messaging.MessageResponseListener;
-import waazdoh.cp2p.network.WMessenger;
-import waazdoh.cp2p.network.WNode;
 import waazdoh.util.MLogger;
 import waazdoh.util.MPreferences;
 import waazdoh.util.MStringID;

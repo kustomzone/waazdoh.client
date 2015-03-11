@@ -33,6 +33,7 @@ import waazdoh.cp2p.network.ServerListener;
 import waazdoh.cp2p.network.TCPListener;
 import waazdoh.cp2p.network.TCPNode;
 import waazdoh.cp2p.network.WMessenger;
+import waazdoh.cp2p.network.WMessengerImpl;
 import waazdoh.cp2p.network.WNode;
 import waazdoh.util.ConditionWaiter;
 import waazdoh.util.MLogger;
@@ -42,7 +43,7 @@ import waazdoh.util.MTimedFlag;
 
 public final class P2PServerImpl implements P2PServer {
 	private static final int MINIMUM_TIMEOUT = 10;
-	static final int MESSAGESENDLOOP_COUNT = 1;
+	static final int NODECHECKLOOP_COUNT = 3;
 	private static final long REBOOT_DELAY = 120000;
 	//
 	private MLogger log = MLogger.getLogger(this);
@@ -55,17 +56,20 @@ public final class P2PServerImpl implements P2PServer {
 	private MPreferences p;
 	private TCPListener tcplistener;
 
-	private ThreadGroup tg = new ThreadGroup("p2p");
+	private ThreadGroup nodechecktg;
 	private ReportingService reporting;
 	private BinarySource binarysource;
 
 	final private Map<WNode, NodeStatus> nodestatuses = new HashMap<WNode, NodeStatus>();
-	private WMessenger messenger;
+	final private WMessenger messenger;
 	private boolean dobind;
+	private Thread rebootchecker;
 
 	public P2PServerImpl(MPreferences p, boolean bind2) {
 		this.p = p;
 		this.dobind = bind2;
+		messenger = new WMessengerImpl(this, p);
+		nodechecktg = new ThreadGroup("p2p_" + messenger.getID());
 	}
 
 	private void reboot() {
@@ -80,21 +84,15 @@ public final class P2PServerImpl implements P2PServer {
 	}
 
 	private void startNetwork() {
-		if (messenger != null) {
-			messenger.close();
-		}
-
-		messenger = new WMessengerImpl(this, p);
-
 		addHandlers();
 
 		if (dobind) {
-			tcplistener = new TCPListener(tg, getMessenger(), p);
+			tcplistener = new TCPListener(nodechecktg, getMessenger(), p);
 			tcplistener.start();
 		}
 
 		runChecker();
-		startMessageSendLoops();
+		startNodeCheckLoops();
 	}
 
 	private void addHandlers() {
@@ -115,24 +113,31 @@ public final class P2PServerImpl implements P2PServer {
 				whohashandler);
 	}
 
-	private void runChecker() {
-		final Thread t = new Thread(tg, new Runnable() {
-			@Override
-			public void run() {
-				long lastmessagereceived = getMessenger()
-						.getLastMessageReceived();
-				while (isRunning()) {
-					long dt = System.currentTimeMillis() - lastmessagereceived;
-					if (dt > REBOOT_DELAY) {
-						reboot();
-					} else {
-						doWait(dt - REBOOT_DELAY);
+	private synchronized void runChecker() {
+		if (rebootchecker == null) {
+			rebootchecker = new Thread(nodechecktg, new Runnable() {
+				@Override
+				public void run() {
+					try {
+						long lastmessagereceived = getMessenger()
+								.getLastMessageReceived();
+						while (isRunning()) {
+							long dt = System.currentTimeMillis()
+									- lastmessagereceived;
+							if (dt > REBOOT_DELAY) {
+								reboot();
+							} else {
+								doWait(dt - REBOOT_DELAY);
+							}
+						}
+						log.info("Reboot checker out");
+					} finally {
+						rebootchecker = null;
 					}
 				}
-				log.info("Reboot checker out");
-			}
-		}, "P2PServer checker");
-		t.start();
+			}, "P2PServer checker");
+			rebootchecker.start();
+		}
 	}
 
 	@Override
@@ -204,21 +209,21 @@ public final class P2PServerImpl implements P2PServer {
 		}
 	}
 
-	void startMessageSendLoops() {
-		int loopcount = MESSAGESENDLOOP_COUNT;
+	void startNodeCheckLoops() {
+		int loopcount = NODECHECKLOOP_COUNT;
 		for (int i = 0; i < loopcount; i++) {
-			Thread t = new Thread(tg, new Runnable() {
+			Thread t = new Thread(nodechecktg, new Runnable() {
 				@Override
 				public void run() {
-					messageSendLoop();
+					messageNodeCheckLoop();
 				}
 			}, "MessageSendLooper");
 			t.start();
 		}
 	}
 
-	private synchronized void messageSendLoop() {
-		while (isRunning()) {
+	private synchronized void messageNodeCheckLoop() {
+		while (isRunning() && nodechecktg.activeCount() <= NODECHECKLOOP_COUNT) {
 			Iterable<WNode> nodes = getNodesIterator();
 			//
 			for (WNode node : nodes) {
@@ -245,10 +250,10 @@ public final class P2PServerImpl implements P2PServer {
 
 			checkDefaultNodes();
 
-			int timeout = 100 + (int) (Math.random() * 100 * this.nodes.size() * MESSAGESENDLOOP_COUNT);
+			int timeout = 100 + (int) (Math.random() * 100 * this.nodes.size() * NODECHECKLOOP_COUNT);
 			doWait(timeout);
 		}
-		log.info("server thread shutting down");
+		log.info("Node check loop out. ThreadGroup active:" + this.nodechecktg.activeCount());
 	}
 
 	private synchronized void removeNode(WNode node) {
@@ -375,10 +380,10 @@ public final class P2PServerImpl implements P2PServer {
 	}
 
 	public boolean isRunning() {
-		return !closed || nodes != null;
+		return !closed && nodes != null;
 	}
 
-	public void close() {
+	public synchronized void close() {
 		log.info("closing server");
 		startClosing();
 		//
@@ -465,7 +470,11 @@ public final class P2PServerImpl implements P2PServer {
 	}
 
 	public MNodeID getID() {
-		return getMessenger().getID();
+		if (getMessenger() != null) {
+			return getMessenger().getID();
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -551,6 +560,7 @@ public final class P2PServerImpl implements P2PServer {
 		return "P2PServer[" + getID() + " " + this.getInfoText() + "]";
 	}
 
+	@Override
 	public boolean isConnected() {
 		if (nodes != null) {
 			List<WNode> ns = new LinkedList<WNode>(this.nodes);

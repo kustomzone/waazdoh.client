@@ -82,14 +82,18 @@ public final class TCPNode implements WNode {
 			this.source.addResponseListener(m.getID(), listener);
 		}
 
-		channel.writeAndFlush(smessages).addListener(
-				ChannelFutureListener.CLOSE_ON_FAILURE); //
-		int bytecount = 0;
-		for (MMessage mMessage : smessages) {
-			bytecount += mMessage.getByteCount();
+		if (channel != null) {
+			channel.writeAndFlush(smessages).addListener(
+					ChannelFutureListener.CLOSE_ON_FAILURE); //
+			int bytecount = 0;
+			for (MMessage mMessage : smessages) {
+				bytecount += mMessage.getByteCount();
+			}
+			log.debug("messages written " + bytecount + " bytes");
+			return bytecount;
+		} else {
+			return 0;
 		}
-		log.debug("messages written " + bytecount + " bytes");
-		return bytecount;
 	}
 
 	@Override
@@ -143,7 +147,7 @@ public final class TCPNode implements WNode {
 
 	@Override
 	public List<MMessage> getOutgoingMessages() {
-		return null;
+		return new LinkedList<MMessage>();
 	}
 
 	@Override

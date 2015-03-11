@@ -37,6 +37,7 @@ public class WCTestCase extends TestCase {
 				+ this.getName() + " ********");
 		values.clear();
 		servers.clear();
+		StaticTestPreferences.clearPorts();
 	};
 
 	protected void tearDown() throws Exception {
