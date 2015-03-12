@@ -40,9 +40,11 @@ public final class URLCaller {
 	private Map<String, String> postdata;
 	private Map<String, String> requestproperties = new HashMap<String, String>();
 	private MLogger log;
+	private String sessionid;
 
-	public URLCaller(MURL url) {
+	public URLCaller(MURL url, String sessionid) {
 		this.url = url;
+		this.sessionid = sessionid;
 		this.log = MLogger.getLogger(this);
 		log.info("URLCaller with " + url);
 	}
@@ -64,7 +66,10 @@ public final class URLCaller {
 			CloseableHttpClient client = HttpClients.createDefault();
 
 			method.addHeader("waazdoh.version", WaazdohInfo.version);
-
+			if (sessionid != null) {
+				method.addHeader("Authentication-Token", sessionid);
+			}
+			
 			CloseableHttpResponse response = client.execute(method);
 			try {
 				HttpEntity e = response.getEntity();

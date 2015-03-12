@@ -42,8 +42,8 @@ public final class RestService implements WService {
 	private boolean loggedin;
 	private BeanStorage beanstorage;
 
-	public RestService(final String localurl,
-			final BeanStorage beanstorage) throws MalformedURLException {
+	public RestService(final String localurl, final BeanStorage beanstorage)
+			throws MalformedURLException {
 		this.url = new MURL(localurl);
 		this.beanstorage = beanstorage;
 	}
@@ -57,8 +57,7 @@ public final class RestService implements WService {
 	public WData requestAppLogin() {
 		String method = "requestapplogin";
 		//
-		WData response = getBean("users", method, false,
-				new LinkedList<String>());
+		WData response = getBean("users", method, new LinkedList<String>());
 		return response;
 	}
 
@@ -66,28 +65,28 @@ public final class RestService implements WService {
 	public WData acceptAppLogin(MStringID id) {
 		List<String> params = new LinkedList<String>();
 		params.add(id.toString());
-		return getBean("users", "acceptapp", true, params);
+		return getBean("users", "acceptapp", params);
 	}
 
 	@Override
 	public WData checkAppLogin(MStringID id) {
 		List<String> params = new LinkedList<String>();
 		params.add(id.toString());
-		return getBean("users", "checkapplogin", false, params);
+		return getBean("users", "checkapplogin", params);
 	}
 
 	@Override
 	public String readStorageArea(String string) {
 		List<String> params = new LinkedList<>();
 		params.add(string);
-		return getBean("storage", "read", true, params).getValue("data");
+		return getBean("storage", "read", params).getValue("data");
 	}
 
 	@Override
 	public Set<String> listStorageArea(String string) {
 		List<String> params = new LinkedList<>();
 		params.add(string);
-		WData b = getBean("storage", "list", true, params).get("items");
+		WData b = getBean("storage", "list", params).get("items");
 		Set<String> ret = new HashSet<>();
 		List<WData> cs = b.getChildren();
 		for (WData childbean : cs) {
@@ -126,8 +125,7 @@ public final class RestService implements WService {
 		if (session != null && session.length() > 0) {
 			sessionid = session;
 			List<String> params = new LinkedList<String>();
-			WResponse response = getResponses("users", "checksession", true,
-					params);
+			WResponse response = getResponses("users", "checksession", params);
 			log.info("checksession response " + response);
 			WData buid = response.find("userid");
 			if (response.isSuccess() && buid != null) {
@@ -165,7 +163,7 @@ public final class RestService implements WService {
 
 	private MURL getAnonymousURL(final String service, String string,
 			List<String> params) {
-		return getAuthURL(service, string, params, null);
+		return getURL(service, string, params);
 	}
 
 	@Override
@@ -174,8 +172,7 @@ public final class RestService implements WService {
 		params.add(sessionid.toString());
 		params.add(id.toString());
 		params.add("" + success);
-		WResponse response = getResponses("objects", "reportdownload", false,
-				params);
+		WResponse response = getResponses("objects", "reportdownload", params);
 		return response;
 	}
 
@@ -185,7 +182,7 @@ public final class RestService implements WService {
 		if (b == null) {
 			List<String> params = new LinkedList<String>();
 			params.add(userid.toString());
-			WResponse getresponse = getResponses("users", "get", true, params);
+			WResponse getresponse = getResponses("users", "get", params);
 			if (getresponse.isSuccess()) {
 				beanstorage.addBean(userid, getresponse.getBean());
 				WResponse resp = WResponse.getTrue();
@@ -216,7 +213,7 @@ public final class RestService implements WService {
 		} else {
 			List<String> params = new LinkedList<String>();
 			params.add(id.toString());
-			WData response = getBean("objects", "read", false, params);
+			WData response = getBean("objects", "read", params);
 			if (response.get("object") != null) {
 				beanstorage.addBean(id, response.get("object"));
 			}
@@ -243,22 +240,21 @@ public final class RestService implements WService {
 	}
 
 	private WResponse getResponses(final String service, String method,
-			boolean auth, List<String> params) {
-		String responseBody = callService(service, method, auth, params);
+			List<String> params) {
+		String responseBody = callService(service, method, params);
 		return parseResponse(responseBody);
 	}
 
 	private String callService(final String service, String method,
-			boolean auth, List<String> params) {
-		MURL murl = getURL(service, method, auth, params);
+			List<String> params) {
+		MURL murl = getURL(service, method, params);
 		//
-		URLCaller urlcaller = new URLCaller(murl);
+		URLCaller urlcaller = new URLCaller(murl, sessionid);
 		return urlcaller.getResponseBody();
 	}
 
-	private WData getBean(String service, String method, boolean auth,
-			List<String> params) {
-		String string = callService(service, method, auth, params);
+	private WData getBean(String service, String method, List<String> params) {
+		String string = callService(service, method, params);
 		try {
 			// TODO parsing twice because xml data is escaped in the original.
 			WData b = new WData(new XML(string));
@@ -283,8 +279,8 @@ public final class RestService implements WService {
 	}
 
 	public boolean isConnected() {
-		MURL murl = getURL("users", "test", false, new LinkedList<String>());
-		URLCaller urlcaller = new URLCaller(murl);
+		MURL murl = getURL("users", "test", new LinkedList<String>());
+		URLCaller urlcaller = new URLCaller(murl, null);
 		urlcaller.setTimeout(200);
 
 		String responseBody = urlcaller.getResponseBody();
@@ -302,26 +298,13 @@ public final class RestService implements WService {
 		List<String> params = new LinkedList<String>();
 		params.add(id.toString());
 		store(id, getBean(id));
-		return getResponses("objects", "publish", true, params).isSuccess();
+		return getResponses("objects", "publish", params).isSuccess();
 	}
 
-	private MURL getURL(final String service, String method, boolean doauth,
-			List<String> params) {
-		String auth = null;
-		if (doauth) {
-			auth = sessionid;
-		}
-		return getAuthURL(service, method, params, auth);
-	}
-
-	public MURL getAuthURL(final String service, String method,
-			List<String> params, String auth) {
+	public MURL getURL(final String service, String method, List<String> params) {
 		MURL murl = new MURL(url.toString());
 		murl.append("/" + service);
 		murl.append("/" + method);
-		if (auth != null) {
-			murl.append("/" + auth);
-		}
 		if (params != null) {
 			for (final String string : params) {
 				murl.append("/" + string);
@@ -337,15 +320,15 @@ public final class RestService implements WService {
 		params.add("" + index);
 		params.add("" + i);
 		//
-		return getResponses("objects", "search", false, params);
+		return getResponses("objects", "search", params);
 	}
 
 	private WResponse post(final String service, String method,
 			List<String> params, Map<String, String> data) {
 		String sbody = null;
 		try {
-			MURL mnurl = getURL(service, method, true, params);
-			URLCaller urlcaller = new URLCaller(mnurl);
+			MURL mnurl = getURL(service, method, params);
+			URLCaller urlcaller = new URLCaller(mnurl, sessionid);
 			urlcaller.setPostData(data);
 			log.info("posting " + data + " to " + mnurl);
 			String responseBody = urlcaller.getResponseBody();
