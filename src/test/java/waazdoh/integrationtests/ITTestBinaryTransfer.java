@@ -8,12 +8,12 @@ import org.xml.sax.SAXException;
 
 import waazdoh.client.WCTestCase;
 import waazdoh.client.model.objects.Binary;
+import waazdoh.common.WLogger;
 import waazdoh.cp2p.P2PBinarySource;
 import waazdoh.testing.StaticTestPreferences;
-import waazdoh.util.MLogger;
 
 public final class ITTestBinaryTransfer extends WCTestCase {
-	private MLogger log = MLogger.getLogger(this);
+	private WLogger log = WLogger.getLogger(this);
 
 	public void testTransfer10kAB() throws SAXException, InterruptedException,
 			IOException {

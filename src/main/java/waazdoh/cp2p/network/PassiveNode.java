@@ -13,15 +13,15 @@ package waazdoh.cp2p.network;
 import java.util.LinkedList;
 import java.util.List;
 
+import waazdoh.common.WLogger;
 import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;
-import waazdoh.util.MLogger;
 
 public final class PassiveNode implements WNode {
 	private static final int MAX_MESSAGES_COUNT = 20;
 	private MNodeID id;
 	//
-	private MLogger log = MLogger.getLogger(this);
+	private WLogger log = WLogger.getLogger(this);
 	private WMessenger source;
 
 	private int outputbytecount;

@@ -16,14 +16,14 @@ import waazdoh.client.model.BinaryID;
 import waazdoh.client.model.objects.Binary;
 import waazdoh.client.service.WService;
 import waazdoh.client.storage.local.LocalBinaryStorage;
-import waazdoh.util.MPreferences;
+import waazdoh.common.WPreferences;
 
 public final class TestPBinarySource implements BinarySource {
-	private MPreferences preferences;
+	private WPreferences preferences;
 	private LocalBinaryStorage storage;
 	private WService service;
 
-	public TestPBinarySource(MPreferences p) {
+	public TestPBinarySource(WPreferences p) {
 		this.preferences = p;
 	}
 

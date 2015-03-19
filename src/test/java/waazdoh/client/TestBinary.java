@@ -7,15 +7,15 @@ import org.xml.sax.SAXException;
 
 import waazdoh.client.model.objects.Binary;
 import waazdoh.client.model.objects.BinaryListener;
+import waazdoh.common.ConditionWaiter;
+import waazdoh.common.MCRC;
+import waazdoh.common.WLogger;
+import waazdoh.common.WPreferences;
 import waazdoh.cp2p.P2PBinarySource;
 import waazdoh.testing.StaticService;
-import waazdoh.util.ConditionWaiter;
-import waazdoh.util.MCRC;
-import waazdoh.util.MLogger;
-import waazdoh.util.MPreferences;
 
 public final class TestBinary extends WCTestCase {
-	private MLogger log = MLogger.getLogger(this);
+	private WLogger log = WLogger.getLogger(this);
 
 	public void testBinary() throws IOException {
 
@@ -158,12 +158,12 @@ public final class TestBinary extends WCTestCase {
 		b1.setReady();
 		b1.publish();
 		//
-		MPreferences p1 = c1.getPreferences();
+		WPreferences p1 = c1.getPreferences();
 
 		//
 		P2PBinarySource c2 = getServiceSource(getRandomUserName(), false);
-		c2.getPreferences().set(MPreferences.LOCAL_PATH,
-				p1.get(MPreferences.LOCAL_PATH, "FAIL"));
+		c2.getPreferences().set(WPreferences.LOCAL_PATH,
+				p1.get(WPreferences.LOCAL_PATH, "FAIL"));
 
 		Binary b2 = c2.getOrDownload(b1.getID());
 		assertNotNull(b2);

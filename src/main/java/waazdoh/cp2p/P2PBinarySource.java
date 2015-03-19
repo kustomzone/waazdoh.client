@@ -17,19 +17,19 @@ import waazdoh.client.model.objects.Binary;
 import waazdoh.client.service.WService;
 import waazdoh.client.storage.local.FileBeanStorage;
 import waazdoh.client.storage.local.LocalBinaryStorage;
-import waazdoh.util.MLogger;
-import waazdoh.util.MPreferences;
+import waazdoh.common.WLogger;
+import waazdoh.common.WPreferences;
 
 public final class P2PBinarySource implements BinarySource {
 	private P2PServer server;
 	//
-	private MLogger log = MLogger.getLogger(this);
-	private MPreferences preferences;
+	private WLogger log = WLogger.getLogger(this);
+	private WPreferences preferences;
 	final private FileBeanStorage beanstorage;
 	private LocalBinaryStorage storage;
 	private WService service;
 
-	public P2PBinarySource(MPreferences p, FileBeanStorage beanstorage,
+	public P2PBinarySource(WPreferences p, FileBeanStorage beanstorage,
 			boolean bind2) {
 		this.server = new P2PServerImpl(p, bind2);
 		server.setBinarySource(this);
@@ -38,7 +38,7 @@ public final class P2PBinarySource implements BinarySource {
 		this.preferences = p;
 	}
 
-	public P2PBinarySource(MPreferences np, FileBeanStorage nbeanstorage,
+	public P2PBinarySource(WPreferences np, FileBeanStorage nbeanstorage,
 			P2PServer nserver) {
 		this.beanstorage = nbeanstorage;
 		this.preferences = np;
@@ -153,7 +153,7 @@ public final class P2PBinarySource implements BinarySource {
 				"waazdoh.maxtime.waituntilready", 120000));
 	}
 
-	public MPreferences getPreferences() {
+	public WPreferences getPreferences() {
 		return preferences;
 	}
 }

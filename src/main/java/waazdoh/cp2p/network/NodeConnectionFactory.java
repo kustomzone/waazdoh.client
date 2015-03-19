@@ -30,18 +30,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import waazdoh.common.WLogger;
 import waazdoh.cp2p.common.MHost;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MessageDecoder;
 import waazdoh.cp2p.messaging.MessageEncoder;
-import waazdoh.util.MLogger;
 
 public final class NodeConnectionFactory {
 
 	private static Bootstrap _bootstrap;
 	private Map<Channel, TCPNode> nodes = new HashMap<Channel, TCPNode>();
 	private EventLoopGroup workerGroup = new OioEventLoopGroup();
-	private MLogger log = MLogger.getLogger(this);
+	private WLogger log = WLogger.getLogger(this);
 
 	public synchronized Bootstrap getBootstrap() {
 		if (NodeConnectionFactory._bootstrap == null) {

@@ -4,6 +4,12 @@ import org.xml.sax.SAXException;
 
 import waazdoh.client.model.BinaryID;
 import waazdoh.client.model.objects.Binary;
+import waazdoh.common.ConditionWaiter;
+import waazdoh.common.MStringID;
+import waazdoh.common.MTimedFlag;
+import waazdoh.common.WLogger;
+import waazdoh.common.WPreferences;
+import waazdoh.common.ConditionWaiter.Condition;
 import waazdoh.cp2p.P2PServer;
 import waazdoh.cp2p.P2PServerImpl;
 import waazdoh.cp2p.common.MHost;
@@ -14,12 +20,6 @@ import waazdoh.cp2p.network.WNode;
 import waazdoh.testing.ServiceMock;
 import waazdoh.testing.StaticTestPreferences;
 import waazdoh.testing.TestPBinarySource;
-import waazdoh.util.ConditionWaiter;
-import waazdoh.util.ConditionWaiter.Condition;
-import waazdoh.util.MLogger;
-import waazdoh.util.MPreferences;
-import waazdoh.util.MStringID;
-import waazdoh.util.MTimedFlag;
 
 public class TestP2PServer extends WCTestCase {
 
@@ -31,7 +31,7 @@ public class TestP2PServer extends WCTestCase {
 		super.setUp();
 		servera = null;
 		serverb = null;
-		MLogger.resetStartTime();
+		WLogger.resetStartTime();
 	}
 
 	public void testStartAndStop() {
@@ -100,7 +100,7 @@ public class TestP2PServer extends WCTestCase {
 				s.getPreferences()));
 
 		BinaryID downloadid = null;
-		for (int i = 0; i < MPreferences.NETWORK_MAX_DOWNLOADS_DEFAULT; i++) {
+		for (int i = 0; i < WPreferences.NETWORK_MAX_DOWNLOADS_DEFAULT; i++) {
 			assertTrue(s.canDownload());
 			BinaryID id = new BinaryID();
 			Binary b = new Binary(service, getTempPath(), "", "");

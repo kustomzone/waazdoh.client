@@ -17,7 +17,7 @@ import java.util.Set;
 import org.xml.sax.SAXException;
 
 import waazdoh.client.service.WService;
-import waazdoh.util.MLogger;
+import waazdoh.common.WLogger;
 
 public final class BookmarkGroup {
 	private WService service;
@@ -26,7 +26,7 @@ public final class BookmarkGroup {
 	private List<Bookmark> bookmarks = new LinkedList<Bookmark>();
 	private List<BookmarkGroupListener> listeners = new LinkedList<BookmarkGroupListener>();
 
-	private MLogger log = MLogger.getLogger(this);
+	private WLogger log = WLogger.getLogger(this);
 
 	public BookmarkGroup(final String name, WService service) {
 		this.service = service;
@@ -37,7 +37,7 @@ public final class BookmarkGroup {
 
 	private void update() {
 		Set<String> br = service.listStorageArea("/bookmarks/" + name);
-		MLogger.getLogger(this).info("BookmarkGroup " + br);
+		WLogger.getLogger(this).info("BookmarkGroup " + br);
 		//
 		if (br != null) {
 			for (String bookmarkname : br) {

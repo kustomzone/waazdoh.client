@@ -18,16 +18,16 @@ import java.util.Set;
 import org.xml.sax.SAXException;
 
 import waazdoh.client.BinarySource;
-import waazdoh.client.model.ObjectID;
-import waazdoh.client.model.UserID;
-import waazdoh.client.model.WData;
 import waazdoh.client.model.WResponse;
 import waazdoh.client.service.WService;
 import waazdoh.client.storage.BeanStorage;
-import waazdoh.util.MLogger;
-import waazdoh.util.MStringID;
-import waazdoh.util.MURL;
-import waazdoh.util.XML;
+import waazdoh.common.MStringID;
+import waazdoh.common.MURL;
+import waazdoh.common.ObjectID;
+import waazdoh.common.UserID;
+import waazdoh.common.WData;
+import waazdoh.common.WLogger;
+import waazdoh.common.XML;
 
 public final class ServiceMock implements WService {
 	final private String username;
@@ -38,7 +38,7 @@ public final class ServiceMock implements WService {
 	private static Map<String, WData> objects = new HashMap<String, WData>();
 	private static Map<String, String> storagearea = new HashMap<>();
 
-	private MLogger log = MLogger.getLogger(this);
+	private WLogger log = WLogger.getLogger(this);
 	private BeanStorage beanstorage;
 
 	public ServiceMock(String username, BinarySource nsource)
@@ -106,7 +106,7 @@ public final class ServiceMock implements WService {
 		try {
 			r.setBean(new WData(new XML(sxml)));
 		} catch (SAXException e) {
-			MLogger.getLogger(this).error(e);
+			WLogger.getLogger(this).error(e);
 		}
 		return r;
 	}

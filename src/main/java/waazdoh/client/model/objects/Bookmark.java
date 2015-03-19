@@ -12,9 +12,9 @@ package waazdoh.client.model.objects;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.client.model.WData;
 import waazdoh.client.service.WService;
-import waazdoh.util.XML;
+import waazdoh.common.WData;
+import waazdoh.common.XML;
 
 public final class Bookmark {
 	private String oid;

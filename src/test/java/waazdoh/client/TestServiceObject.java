@@ -4,9 +4,9 @@ import java.net.MalformedURLException;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.client.model.ObjectID;
-import waazdoh.client.model.WData;
-import waazdoh.client.model.WaazdohInfo;
+import waazdoh.common.ObjectID;
+import waazdoh.common.WData;
+import waazdoh.common.WaazdohInfo;
 
 public class TestServiceObject extends WCTestCase {
 

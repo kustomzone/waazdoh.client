@@ -19,10 +19,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import waazdoh.util.MLogger;
+import waazdoh.common.WLogger;
 
 public final class MessageEncoder extends MessageToByteEncoder<List<MMessage>> {
-	private MLogger log = MLogger.getLogger(this);
+	private WLogger log = WLogger.getLogger(this);
 
 	protected void encode(ChannelHandlerContext arg0, List<MMessage> list,
 			ByteBuf bb) throws Exception {

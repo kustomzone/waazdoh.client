@@ -8,10 +8,10 @@ import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import waazdoh.util.MLogger;
-import waazdoh.util.MPreferences;
+import waazdoh.common.WLogger;
+import waazdoh.common.WPreferences;
 
-public final class StaticTestPreferences implements MPreferences {
+public final class StaticTestPreferences implements WPreferences {
 	private String username;
 	private String prefix;
 	private static List<Integer> ports = new LinkedList<Integer>();
@@ -21,8 +21,8 @@ public final class StaticTestPreferences implements MPreferences {
 		this.prefix = prefix;
 		//
 		Preferences prefs = getPrefs();
-		if (prefs.get(MPreferences.SERVICE_URL, "").equals("")) {
-			prefs.put(MPreferences.SERVICE_URL,
+		if (prefs.get(WPreferences.SERVICE_URL, "").equals("")) {
+			prefs.put(WPreferences.SERVICE_URL,
 					"http://localhost:18099/waazdoh");
 		}
 
@@ -33,20 +33,20 @@ public final class StaticTestPreferences implements MPreferences {
 		deflocalpath = "" + "waazdohclienttest" + File.separator + username
 				+ File.separator;
 
-		String lpath = prefs.get(MPreferences.LOCAL_PATH, "");
+		String lpath = prefs.get(WPreferences.LOCAL_PATH, "");
 		if (lpath.equals("")) {
 			lpath = deflocalpath;
-			prefs.put(MPreferences.LOCAL_PATH, lpath);
+			prefs.put(WPreferences.LOCAL_PATH, lpath);
 		}
 
-		MLogger.getLogger(this).info("Local path " + lpath);
+		WLogger.getLogger(this).info("Local path " + lpath);
 
 		// creating a random port
 		int port = randomPort();
-		getPrefs().putInt(MPreferences.NETWORK_SERVER_PORT, port);
+		getPrefs().putInt(WPreferences.NETWORK_SERVER_PORT, port);
 		ports.add(port);
 
-		prefs.putInt(MPreferences.NETWORK_MAX_DOWNLOADS, 8);
+		prefs.putInt(WPreferences.NETWORK_MAX_DOWNLOADS, 8);
 	}
 
 	public static void clearPorts() {
@@ -65,7 +65,7 @@ public final class StaticTestPreferences implements MPreferences {
 
 			return ret;
 		} catch (BackingStoreException e) {
-			MLogger.getLogger(this).error(e);
+			WLogger.getLogger(this).error(e);
 			return new HashSet<String>();
 		}
 	}
@@ -114,7 +114,7 @@ public final class StaticTestPreferences implements MPreferences {
 				}
 			}
 
-			getPrefs().put(MPreferences.SERVERLIST, serverlist);
+			getPrefs().put(WPreferences.SERVERLIST, serverlist);
 		}
 		//
 		String get = get(name);

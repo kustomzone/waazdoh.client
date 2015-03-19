@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import waazdoh.client.model.WData;
+import waazdoh.common.MStringID;
+import waazdoh.common.WData;
+import waazdoh.common.WLogger;
+import waazdoh.common.WPreferences;
 import waazdoh.cp2p.HelloHandler;
 import waazdoh.cp2p.P2PServer;
 import waazdoh.cp2p.PingHandler;
@@ -17,9 +20,6 @@ import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MMessageHandler;
 import waazdoh.cp2p.messaging.MessageID;
 import waazdoh.cp2p.messaging.MessageResponseListener;
-import waazdoh.util.MLogger;
-import waazdoh.util.MPreferences;
-import waazdoh.util.MStringID;
 
 public class WMessengerImpl implements WMessenger {
 	private static final int MAX_SENTCOUNT = 2;
@@ -32,13 +32,13 @@ public class WMessengerImpl implements WMessenger {
 	private int inputbytecount;
 	private long outputbytecount;
 
-	private MPreferences preferences;
-	private MLogger log = MLogger.getLogger(this);
+	private WPreferences preferences;
+	private WLogger log = WLogger.getLogger(this);
 	private boolean closed;
 
 	private P2PServer server;
 
-	public WMessengerImpl(P2PServer server, MPreferences p) {
+	public WMessengerImpl(P2PServer server, WPreferences p) {
 		this.networkid = new MNodeID(new MStringID());
 		this.preferences = p;
 		this.server = server;

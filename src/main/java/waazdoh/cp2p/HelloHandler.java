@@ -1,15 +1,15 @@
 package waazdoh.cp2p;
 
+import waazdoh.common.WLogger;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MMessageHandler;
 import waazdoh.cp2p.network.WMessenger;
-import waazdoh.util.MLogger;
 
 public class HelloHandler implements MMessageHandler {
 	public static final String HELLO = "hello";
 	public static final String HOLA = "hola";
 
-	private MLogger log = MLogger.getLogger(this);
+	private WLogger log = WLogger.getLogger(this);
 	private WMessenger messenger;
 
 	@Override

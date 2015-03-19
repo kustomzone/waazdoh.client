@@ -12,12 +12,12 @@ package waazdoh.client.service;
 
 import java.util.Set;
 
-import waazdoh.client.model.ObjectID;
-import waazdoh.client.model.UserID;
-import waazdoh.client.model.WData;
 import waazdoh.client.model.WResponse;
-import waazdoh.util.MStringID;
-import waazdoh.util.MURL;
+import waazdoh.common.MStringID;
+import waazdoh.common.MURL;
+import waazdoh.common.ObjectID;
+import waazdoh.common.UserID;
+import waazdoh.common.WData;
 
 public interface WService {
 	boolean setSession(String session);

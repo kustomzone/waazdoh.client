@@ -18,18 +18,17 @@ import java.util.List;
 import java.util.Map;
 
 import waazdoh.client.model.BinaryID;
-import waazdoh.client.model.WData;
-import waazdoh.client.model.WaazdohInfo;
 import waazdoh.client.model.objects.Binary;
+import waazdoh.common.MStringID;
+import waazdoh.common.MTimedFlag;
+import waazdoh.common.WData;
+import waazdoh.common.WLogger;
 import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MessageResponseListener;
 import waazdoh.cp2p.network.ServerListener;
 import waazdoh.cp2p.network.WMessenger;
 import waazdoh.cp2p.network.WNode;
-import waazdoh.util.MLogger;
-import waazdoh.util.MStringID;
-import waazdoh.util.MTimedFlag;
 
 public final class Download implements Runnable, MessageResponseListener,
 		ServerListener {
@@ -39,7 +38,7 @@ public final class Download implements Runnable, MessageResponseListener,
 	private static final int PART_SIZE = 100000;
 	private Binary bin;
 	private WMessenger messenger;
-	private MLogger log;
+	private WLogger log;
 	private MTimedFlag flag;
 	private MTimedFlag giveupflag = new MTimedFlag(GIVEUP_TIMEOUT_MSEC);
 	private long endtime;
@@ -64,7 +63,7 @@ public final class Download implements Runnable, MessageResponseListener,
 		Thread t = new Thread(this, "Download");
 		t.start();
 
-		log = MLogger.getLogger(this);
+		log = WLogger.getLogger(this);
 		log.info("created");
 		//
 		initMissingParts();
@@ -94,7 +93,7 @@ public final class Download implements Runnable, MessageResponseListener,
 	@Override
 	public void run() {
 		this.starttime = System.currentTimeMillis();
-		flag = new MTimedFlag(WaazdohInfo.DOWNLOAD_RESET_DELAY);
+		flag = new MTimedFlag(P2PServer.DOWNLOAD_RESET_DELAY);
 		while (!isReady() && !messenger.isClosed() && !giveupflag.isTriggered()) {
 			log.info("reset download ready:" + isReady() + " giveupflag:"
 					+ giveupflag);

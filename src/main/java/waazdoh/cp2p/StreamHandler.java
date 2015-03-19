@@ -10,15 +10,15 @@
  ******************************************************************************/
 package waazdoh.cp2p;
 
+import waazdoh.common.MStringID;
+import waazdoh.common.WLogger;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MMessageHandler;
 import waazdoh.cp2p.network.WMessenger;
-import waazdoh.util.MLogger;
-import waazdoh.util.MStringID;
 
 public final class StreamHandler implements MMessageHandler {
 	private P2PServer source;
-	private MLogger log = MLogger.getLogger(this);
+	private WLogger log = WLogger.getLogger(this);
 	private WMessenger messenger;
 
 	public StreamHandler(P2PServer server) {

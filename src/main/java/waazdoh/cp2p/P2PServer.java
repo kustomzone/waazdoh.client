@@ -13,16 +13,24 @@ package waazdoh.cp2p;
 import waazdoh.client.BinarySource;
 import waazdoh.client.ReportingService;
 import waazdoh.client.model.objects.Binary;
+import waazdoh.common.MStringID;
+import waazdoh.common.WPreferences;
 import waazdoh.cp2p.common.MHost;
 import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.network.ServerListener;
 import waazdoh.cp2p.network.WMessenger;
 import waazdoh.cp2p.network.WNode;
-import waazdoh.util.MPreferences;
-import waazdoh.util.MStringID;
 
 public interface P2PServer {
 	String DOWNLOAD_EVERYTHING = "network.download.everything";
+	
+	// should be larger than WHOHAS_RESPONSE_MAX_PIECE_SIZE
+	public static final int DOWNLOADER_MAX_REQUESTED_PIECELENGTH = 200000;
+	
+	public static final int WHOHAS_RESPONSE_MAX_PIECE_SIZE = 100000;
+	public static final Integer RESPONSECOUNT_DOWNLOADTRIGGER = 20;
+	public static final int MAX_RESPONSE_WAIT_TIME = 40000;
+	public static final int DOWNLOAD_RESET_DELAY = 8000;
 
 	boolean isRunning();
 
@@ -40,7 +48,7 @@ public interface P2PServer {
 
 	boolean canDownload();
 
-	MPreferences getPreferences();
+	WPreferences getPreferences();
 
 	void addDownload(Binary b);
 

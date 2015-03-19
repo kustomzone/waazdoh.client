@@ -24,6 +24,11 @@ import waazdoh.client.BinarySource;
 import waazdoh.client.ReportingService;
 import waazdoh.client.model.BinaryID;
 import waazdoh.client.model.objects.Binary;
+import waazdoh.common.ConditionWaiter;
+import waazdoh.common.MStringID;
+import waazdoh.common.MTimedFlag;
+import waazdoh.common.WLogger;
+import waazdoh.common.WPreferences;
 import waazdoh.cp2p.common.MHost;
 import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;
@@ -35,25 +40,20 @@ import waazdoh.cp2p.network.TCPNode;
 import waazdoh.cp2p.network.WMessenger;
 import waazdoh.cp2p.network.WMessengerImpl;
 import waazdoh.cp2p.network.WNode;
-import waazdoh.util.ConditionWaiter;
-import waazdoh.util.MLogger;
-import waazdoh.util.MPreferences;
-import waazdoh.util.MStringID;
-import waazdoh.util.MTimedFlag;
 
 public final class P2PServerImpl implements P2PServer {
 	private static final int MINIMUM_TIMEOUT = 10;
 	static final int NODECHECKLOOP_COUNT = 3;
 	private static final long REBOOT_DELAY = 120000;
 	//
-	private MLogger log = MLogger.getLogger(this);
+	private WLogger log = WLogger.getLogger(this);
 	private final Map<MStringID, Download> downloads = new HashMap<MStringID, Download>();
 	//
 	private List<WNode> nodes = new LinkedList<WNode>();
 	private Set<ServerListener> listeners = new HashSet<ServerListener>();
 	//
 	private boolean closed = false;
-	private MPreferences p;
+	private WPreferences p;
 	private TCPListener tcplistener;
 
 	private ThreadGroup nodechecktg;
@@ -65,7 +65,7 @@ public final class P2PServerImpl implements P2PServer {
 	private boolean dobind;
 	private Thread rebootchecker;
 
-	public P2PServerImpl(MPreferences p, boolean bind2) {
+	public P2PServerImpl(WPreferences p, boolean bind2) {
 		this.p = p;
 		this.dobind = bind2;
 		messenger = new WMessengerImpl(this, p);
@@ -335,18 +335,18 @@ public final class P2PServerImpl implements P2PServer {
 		new ConditionWaiter(new ConditionWaiter.Condition() {
 			@Override
 			public boolean test() {
-				String slist = p.get(MPreferences.SERVERLIST, "");
+				String slist = p.get(WPreferences.SERVERLIST, "");
 				return slist != null && slist.length() > 0;
 			}
 		}, 2000);
 
-		String slist = p.get(MPreferences.SERVERLIST, "");
+		String slist = p.get(WPreferences.SERVERLIST, "");
 		log.info("got server list " + slist);
 
 		if (slist == null || slist.length() == 0) {
 			slist = "";
 			log.info("Serverlist empty. Adding service domain with default port");
-			String service = p.get(MPreferences.SERVICE_URL, "");
+			String service = p.get(WPreferences.SERVICE_URL, "");
 			URL u;
 			try {
 				u = new URL(service);
@@ -510,8 +510,8 @@ public final class P2PServerImpl implements P2PServer {
 
 	public boolean canDownload() {
 		return downloads.size() < p.getInteger(
-				MPreferences.NETWORK_MAX_DOWNLOADS,
-				MPreferences.NETWORK_MAX_DOWNLOADS_DEFAULT);
+				WPreferences.NETWORK_MAX_DOWNLOADS,
+				WPreferences.NETWORK_MAX_DOWNLOADS_DEFAULT);
 	}
 
 	public void clearMemory() {
@@ -600,7 +600,7 @@ public final class P2PServerImpl implements P2PServer {
 		}
 	}
 
-	public MPreferences getPreferences() {
+	public WPreferences getPreferences() {
 		return p;
 	}
 

@@ -19,20 +19,20 @@ import java.net.ConnectException;
 import java.util.LinkedList;
 import java.util.List;
 
-import waazdoh.client.model.WData;
+import waazdoh.common.MStringID;
+import waazdoh.common.MTimedFlag;
+import waazdoh.common.WData;
+import waazdoh.common.WLogger;
 import waazdoh.cp2p.common.MHost;
 import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MessageResponseListener;
-import waazdoh.util.MLogger;
-import waazdoh.util.MStringID;
-import waazdoh.util.MTimedFlag;
 
 public final class TCPNode implements WNode {
 	private static final long MAX_GIVEUP_TIME = 6000;
 
 	private Channel channel;
-	private MLogger log = MLogger.getLogger(this);
+	private WLogger log = WLogger.getLogger(this);
 	private long created = System.currentTimeMillis();
 
 	private MTimedFlag connectionwaiter;

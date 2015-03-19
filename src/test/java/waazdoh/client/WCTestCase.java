@@ -11,6 +11,11 @@ import junit.framework.TestCase;
 import org.xml.sax.SAXException;
 
 import waazdoh.client.storage.local.FileBeanStorage;
+import waazdoh.common.ConditionWaiter;
+import waazdoh.common.MStringID;
+import waazdoh.common.ThreadChecker;
+import waazdoh.common.WLogger;
+import waazdoh.common.WPreferences;
 import waazdoh.cp2p.P2PBinarySource;
 import waazdoh.cp2p.P2PServer;
 import waazdoh.cp2p.P2PServerImpl;
@@ -18,15 +23,10 @@ import waazdoh.cp2p.common.MHost;
 import waazdoh.testing.MockBeanStorage;
 import waazdoh.testing.ServiceMock;
 import waazdoh.testing.StaticTestPreferences;
-import waazdoh.util.ConditionWaiter;
-import waazdoh.util.MLogger;
-import waazdoh.util.MPreferences;
-import waazdoh.util.MStringID;
-import waazdoh.util.ThreadChecker;
 
 public class WCTestCase extends TestCase {
 	private static final String PREFERENCES_PREFIX = "wcclienttests";
-	protected MLogger log = MLogger.getLogger(this);
+	protected WLogger log = WLogger.getLogger(this);
 	private Map<String, String> values = new HashMap<String, String>();
 	private Set<P2PServer> servers = new HashSet<>();
 
@@ -68,7 +68,7 @@ public class WCTestCase extends TestCase {
 		}
 	};
 
-	MPreferences getPreferences(String username) {
+	WPreferences getPreferences(String username) {
 		return new StaticTestPreferences(PREFERENCES_PREFIX, username);
 	}
 
@@ -126,7 +126,7 @@ public class WCTestCase extends TestCase {
 
 	protected WClient getClient(final String username, final boolean bind)
 			throws MalformedURLException, SAXException {
-		MPreferences p = new StaticTestPreferences("waazdohclienttests",
+		WPreferences p = new StaticTestPreferences("waazdohclienttests",
 				username);
 		P2PBinarySource source = new P2PBinarySource(p, new FileBeanStorage(p),
 				bind);
@@ -142,7 +142,7 @@ public class WCTestCase extends TestCase {
 
 	protected P2PBinarySource getServiceSource(final String username1,
 			boolean bind) throws SAXException {
-		MPreferences p1 = new StaticTestPreferences("waazdohclienttests",
+		WPreferences p1 = new StaticTestPreferences("waazdohclienttests",
 				username1);
 		P2PBinarySource source1 = new P2PBinarySource(p1, new FileBeanStorage(
 				p1), bind);

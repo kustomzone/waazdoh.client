@@ -28,18 +28,18 @@ import io.netty.handler.codec.compression.JZlibEncoder;
 import java.util.LinkedList;
 import java.util.List;
 
+import waazdoh.common.WLogger;
+import waazdoh.common.WPreferences;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MessageDecoder;
 import waazdoh.cp2p.messaging.MessageEncoder;
-import waazdoh.util.MLogger;
-import waazdoh.util.MPreferences;
 
 public final class TCPListener {
 	public static final int DEFAULT_PORT = 7900;
 
 	private int port;
 	//
-	private MLogger log = MLogger.getLogger(this);
+	private WLogger log = WLogger.getLogger(this);
 	private WMessenger messenger;
 	private ThreadGroup tg;
 
@@ -49,9 +49,9 @@ public final class TCPListener {
 
 	private boolean closed;
 
-	private MPreferences preferences;
+	private WPreferences preferences;
 
-	public TCPListener(ThreadGroup tg, WMessenger mMessager, MPreferences p) {
+	public TCPListener(ThreadGroup tg, WMessenger mMessager, WPreferences p) {
 		this.messenger = mMessager;
 		this.tg = tg;
 		this.preferences = p;
@@ -92,7 +92,7 @@ public final class TCPListener {
 					}).option(ChannelOption.SO_BACKLOG, 128)
 					.childOption(ChannelOption.SO_KEEPALIVE, true);
 			//
-			port = preferences.getInteger(MPreferences.NETWORK_SERVER_PORT,
+			port = preferences.getInteger(WPreferences.NETWORK_SERVER_PORT,
 					DEFAULT_PORT);
 			//
 			try {

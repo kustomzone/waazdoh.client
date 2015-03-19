@@ -1,6 +1,6 @@
 package waazdoh.cp2p.messaging;
 
-import waazdoh.util.MStringID;
+import waazdoh.common.MStringID;
 
 public final class MessageID extends MStringID {
 

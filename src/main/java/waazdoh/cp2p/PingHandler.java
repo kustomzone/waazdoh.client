@@ -10,13 +10,13 @@
  ******************************************************************************/
 package waazdoh.cp2p;
 
+import waazdoh.common.WLogger;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MessageResponseListener;
 import waazdoh.cp2p.messaging.SimpleMessageHandler;
-import waazdoh.util.MLogger;
 
 public final class PingHandler extends SimpleMessageHandler {
-	private MLogger log = MLogger.getLogger(this);
+	private WLogger log = WLogger.getLogger(this);
 
 	@Override
 	public MMessage handle(MMessage childb) {

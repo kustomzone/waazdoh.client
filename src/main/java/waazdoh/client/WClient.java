@@ -5,18 +5,18 @@ import java.util.List;
 import java.util.Set;
 
 import waazdoh.client.model.User;
-import waazdoh.client.model.UserID;
-import waazdoh.client.model.WData;
 import waazdoh.client.model.WResponse;
 import waazdoh.client.model.objects.Bookmarks;
 import waazdoh.client.service.WService;
 import waazdoh.client.storage.BeanStorage;
-import waazdoh.util.MPreferences;
-import waazdoh.util.MStringID;
+import waazdoh.common.MStringID;
+import waazdoh.common.UserID;
+import waazdoh.common.WData;
+import waazdoh.common.WPreferences;
 
 public class WClient {
 	private WService service;
-	private MPreferences preferences;
+	private WPreferences preferences;
 	private boolean running = true;
 	//
 	private Set<WClientListener> listeners = new HashSet<WClientListener>();
@@ -24,7 +24,7 @@ public class WClient {
 	private final BeanStorage beanstorage;
 	private final BinarySource source;
 
-	public WClient(MPreferences p, BinarySource binarysource,
+	public WClient(WPreferences p, BinarySource binarysource,
 			BeanStorage beanstorage, WService nservice) {
 		this.preferences = p;
 		this.source = binarysource;
@@ -64,20 +64,20 @@ public class WClient {
 		return source.getInfoText();
 	}
 
-	public MPreferences getPreferences() {
+	public WPreferences getPreferences() {
 		return preferences;
 	}
 
 	public boolean trySavedSession() {
 		return setSession(getPreferences().get(
-				MPreferences.PREFERENCES_SESSION, ""));
+				WPreferences.PREFERENCES_SESSION, ""));
 	}
 
 	public boolean setSession(final String session) {
 		if (!service.isLoggedIn()) {
 			if (service.setSession(session)) {
 				source.setService(service);
-				getPreferences().set(MPreferences.PREFERENCES_SESSION, session);
+				getPreferences().set(WPreferences.PREFERENCES_SESSION, session);
 				loggedIn();
 				return true;
 			} else {

@@ -10,7 +10,8 @@
  ******************************************************************************/
 package waazdoh.client.model;
 
-import waazdoh.util.MLogger;
+import waazdoh.common.WData;
+import waazdoh.common.WLogger;
 
 public final class User {
 
@@ -27,7 +28,7 @@ public final class User {
 		 * </user> <success>true</success> </response>
 		 */
 		WData buser = bean.get("user");
-		MLogger.getLogger(this).info("user : " + buser);
+		WLogger.getLogger(this).info("user : " + buser);
 		name = buser.getValue("name");
 		WData profile = buser.get("profile");
 		if (profile != null) {

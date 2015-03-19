@@ -1,6 +1,6 @@
 package waazdoh.cp2p.common;
 
-import waazdoh.util.MStringID;
+import waazdoh.common.MStringID;
 
 public final class MNodeID extends MStringID {
 

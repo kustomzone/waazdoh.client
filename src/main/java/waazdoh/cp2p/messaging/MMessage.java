@@ -22,11 +22,11 @@ import java.util.Set;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.client.model.WData;
+import waazdoh.common.MStringID;
+import waazdoh.common.WData;
+import waazdoh.common.WLogger;
+import waazdoh.common.XML;
 import waazdoh.cp2p.common.MNodeID;
-import waazdoh.util.MLogger;
-import waazdoh.util.MStringID;
-import waazdoh.util.XML;
 
 public final class MMessage {
 	private WData bean;
@@ -208,7 +208,7 @@ public final class MMessage {
 			bytecount = byteArray.length;
 			return byteArray;
 		} catch (IOException e) {
-			MLogger.getLogger(this).error(e);
+			WLogger.getLogger(this).error(e);
 			return new byte[0];
 		}
 	}

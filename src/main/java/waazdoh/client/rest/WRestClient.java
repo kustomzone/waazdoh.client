@@ -6,14 +6,14 @@ import waazdoh.client.BinarySource;
 import waazdoh.client.WClient;
 import waazdoh.client.service.rest.RestService;
 import waazdoh.client.storage.BeanStorage;
-import waazdoh.util.MPreferences;
+import waazdoh.common.WPreferences;
 
 public class WRestClient extends WClient {
 
-	public WRestClient(MPreferences p, BinarySource binarysource,
+	public WRestClient(WPreferences p, BinarySource binarysource,
 			BeanStorage beanstorage) throws MalformedURLException {
 		super(p, binarysource, beanstorage, new RestService(p.get(
-				MPreferences.SERVICE_URL, "THIS_SHOULD_BE_SERVICE_URL"),
+				WPreferences.SERVICE_URL, "THIS_SHOULD_BE_SERVICE_URL"),
 				beanstorage));
 	}
 }

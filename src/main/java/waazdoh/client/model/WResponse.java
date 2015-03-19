@@ -15,9 +15,10 @@ import java.util.List;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.util.MLogger;
-import waazdoh.util.MStringID;
-import waazdoh.util.XML;
+import waazdoh.common.MStringID;
+import waazdoh.common.WData;
+import waazdoh.common.WLogger;
+import waazdoh.common.XML;
 
 public final class WResponse {
 	public static final String IDLIST_ITEM = "item";
@@ -25,7 +26,7 @@ public final class WResponse {
 
 	private static final String AUTHENTICATION_FAILED_MESSAGE = "auth failed";
 	private WData bean = new WData("response");
-	private MLogger log = MLogger.getLogger(this);
+	private WLogger log = WLogger.getLogger(this);
 
 	public WResponse(final String o) throws SAXException {
 		String string = (String) o;

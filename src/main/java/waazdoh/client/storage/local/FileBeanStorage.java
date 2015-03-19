@@ -23,20 +23,20 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.xml.sax.SAXException;
 
 import waazdoh.client.model.StringIDLocalPath;
-import waazdoh.client.model.WData;
 import waazdoh.client.storage.BeanStorage;
-import waazdoh.util.MLogger;
-import waazdoh.util.MPreferences;
-import waazdoh.util.MStringID;
-import waazdoh.util.XML;
+import waazdoh.common.MStringID;
+import waazdoh.common.WData;
+import waazdoh.common.WLogger;
+import waazdoh.common.WPreferences;
+import waazdoh.common.XML;
 
 public final class FileBeanStorage implements BeanStorage {
-	private MLogger log = MLogger.getLogger(this);
+	private WLogger log = WLogger.getLogger(this);
 	private String path;
 
-	public FileBeanStorage(MPreferences preferences) {
-		this.path = preferences.get(MPreferences.LOCAL_PATH,
-				MPreferences.LOCAL_PATH_DEFAULT) + File.separator + "beans";
+	public FileBeanStorage(WPreferences preferences) {
+		this.path = preferences.get(WPreferences.LOCAL_PATH,
+				WPreferences.LOCAL_PATH_DEFAULT) + File.separator + "beans";
 		File file = new File(path);
 		file.mkdirs();
 	}

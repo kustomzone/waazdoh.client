@@ -21,21 +21,21 @@ import java.util.StringTokenizer;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.client.model.ObjectID;
-import waazdoh.client.model.UserID;
-import waazdoh.client.model.WData;
 import waazdoh.client.model.WResponse;
 import waazdoh.client.service.WService;
 import waazdoh.client.storage.BeanStorage;
-import waazdoh.util.MLogger;
-import waazdoh.util.MStringID;
-import waazdoh.util.MURL;
-import waazdoh.util.URLCaller;
-import waazdoh.util.XML;
+import waazdoh.common.MStringID;
+import waazdoh.common.MURL;
+import waazdoh.common.ObjectID;
+import waazdoh.common.URLCaller;
+import waazdoh.common.UserID;
+import waazdoh.common.WData;
+import waazdoh.common.WLogger;
+import waazdoh.common.XML;
 
 public final class RestService implements WService {
 	private MURL url;
-	private MLogger log = MLogger.getLogger(this);
+	private WLogger log = WLogger.getLogger(this);
 	private String sessionid;
 	private UserID userid;
 	private String username;

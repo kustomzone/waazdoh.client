@@ -21,27 +21,27 @@ import waazdoh.client.model.BinaryID;
 import waazdoh.client.model.objects.Binary;
 import waazdoh.client.service.WService;
 import waazdoh.client.storage.BinaryStorage;
-import waazdoh.util.MCRC;
-import waazdoh.util.MLogger;
-import waazdoh.util.MPreferences;
-import waazdoh.util.MStringID;
+import waazdoh.common.MCRC;
+import waazdoh.common.MStringID;
+import waazdoh.common.WLogger;
+import waazdoh.common.WPreferences;
 
 public final class LocalBinaryStorage implements BinaryStorage {
 	private List<Binary> streams = new LinkedList<Binary>();
 	private Map<BinaryID, MCRC> crcs = new HashMap<BinaryID, MCRC>();
 	//
-	private MLogger log = MLogger.getLogger(this);
+	private WLogger log = WLogger.getLogger(this);
 	private boolean running = true;
 	private final WService service;
-	private MPreferences preferences;
+	private WPreferences preferences;
 
-	public LocalBinaryStorage(MPreferences p, WService service) {
+	public LocalBinaryStorage(WPreferences p, WService service) {
 		this.service = service;
 		this.preferences = p;
 	}
 
 	private String getLocalPath() {
-		return preferences.get(MPreferences.LOCAL_PATH, ".waazdoh");
+		return preferences.get(WPreferences.LOCAL_PATH, ".waazdoh");
 	}
 
 	public String getMemoryUsageInfo() {

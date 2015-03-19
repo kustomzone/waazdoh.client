@@ -20,24 +20,23 @@ import java.util.Set;
 
 import waazdoh.client.BinarySource;
 import waazdoh.client.model.BinaryID;
-import waazdoh.client.model.ObjectID;
-import waazdoh.client.model.WData;
-import waazdoh.client.model.WaazdohInfo;
 import waazdoh.client.model.objects.Binary;
+import waazdoh.common.MStringID;
+import waazdoh.common.ObjectID;
+import waazdoh.common.WData;
+import waazdoh.common.WLogger;
 import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MessageResponseListener;
 import waazdoh.cp2p.messaging.SimpleMessageHandler;
 import waazdoh.cp2p.network.WNode;
-import waazdoh.util.MLogger;
-import waazdoh.util.MStringID;
 
 public final class WhoHasHandler extends SimpleMessageHandler {
 	public static final String MESSAGENAME = "whohas";
 
-	private int maxResponseWaitTime = WaazdohInfo.MAX_RESPONSE_WAIT_TIME;
+	private int maxResponseWaitTime = P2PServer.MAX_RESPONSE_WAIT_TIME;
 	//
-	private MLogger log = MLogger.getLogger(this);
+	private WLogger log = WLogger.getLogger(this);
 	/**
 	 * 
 	 */
@@ -66,7 +65,7 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 			WData needed = childb.get("needed");
 			List<WData> neededpieces = needed.getChildren();
 			int bytes = 0;
-			while (bytes < WaazdohInfo.WHOHAS_RESPONSE_MAX_PIECE_SIZE
+			while (bytes < P2PServer.WHOHAS_RESPONSE_MAX_PIECE_SIZE
 					&& !neededpieces.isEmpty()) {
 				log.info("processing pieces wanted " + neededpieces);
 
@@ -79,12 +78,12 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 
 				int start = neededpiece.getIntValue("start");
 				int end = neededpiece.getIntValue("end");
-				if (end - start > WaazdohInfo.WHOHAS_RESPONSE_MAX_PIECE_SIZE) {
+				if (end - start > P2PServer.WHOHAS_RESPONSE_MAX_PIECE_SIZE) {
 					start += (int) ((end - start) * Math.random());
-					while (start + WaazdohInfo.WHOHAS_RESPONSE_MAX_PIECE_SIZE > end) {
+					while (start + P2PServer.WHOHAS_RESPONSE_MAX_PIECE_SIZE > end) {
 						start--;
 					}
-					end = start + WaazdohInfo.WHOHAS_RESPONSE_MAX_PIECE_SIZE;
+					end = start + P2PServer.WHOHAS_RESPONSE_MAX_PIECE_SIZE;
 				}
 				//
 				Binary bin = source.getOrDownload(streamid);
@@ -127,7 +126,7 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 					responsecount.put(streamid, count);
 
 					if (downloadeverything
-							|| count > WaazdohInfo.RESPONSECOUNT_DOWNLOADTRIGGER) {
+							|| count > P2PServer.RESPONSECOUNT_DOWNLOADTRIGGER) {
 						fireBinaryRequested(streamid, count);
 					}
 				}

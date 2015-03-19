@@ -6,10 +6,10 @@ import java.net.MalformedURLException;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.client.model.ObjectID;
-import waazdoh.client.model.WData;
-import waazdoh.client.model.WaazdohInfo;
-import waazdoh.util.XML;
+import waazdoh.common.ObjectID;
+import waazdoh.common.WData;
+import waazdoh.common.WaazdohInfo;
+import waazdoh.common.XML;
 
 public class TestHash extends WCTestCase {
 

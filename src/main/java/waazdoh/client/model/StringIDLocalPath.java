@@ -2,7 +2,7 @@ package waazdoh.client.model;
 
 import java.io.File;
 
-import waazdoh.util.MStringID;
+import waazdoh.common.MStringID;
 
 public class StringIDLocalPath {
 

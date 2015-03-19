@@ -1,6 +1,6 @@
 package waazdoh.client;
 
-import waazdoh.client.model.WData;
+import waazdoh.common.WData;
 
 public interface ServiceObjectData {
 

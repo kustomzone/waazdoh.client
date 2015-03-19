@@ -3,9 +3,9 @@ package waazdoh.testing;
 import java.util.HashMap;
 import java.util.Map;
 
-import waazdoh.client.model.WData;
 import waazdoh.client.storage.BeanStorage;
-import waazdoh.util.MStringID;
+import waazdoh.common.MStringID;
+import waazdoh.common.WData;
 
 public class MockBeanStorage implements BeanStorage {
 

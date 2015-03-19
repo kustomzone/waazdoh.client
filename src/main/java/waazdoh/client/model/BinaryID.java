@@ -1,6 +1,6 @@
 package waazdoh.client.model;
 
-import waazdoh.util.MStringID;
+import waazdoh.common.MStringID;
 
 public final class BinaryID extends MStringID {
 

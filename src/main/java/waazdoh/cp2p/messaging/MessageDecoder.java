@@ -23,10 +23,10 @@ import java.util.List;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.util.MLogger;
+import waazdoh.common.WLogger;
 
 public final class MessageDecoder extends ByteToMessageDecoder {
-	private MLogger log = MLogger.getLogger(this);
+	private WLogger log = WLogger.getLogger(this);
 	private ByteArrayOutputStream baos;
 
 	@Override
