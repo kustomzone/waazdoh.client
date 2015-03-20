@@ -253,7 +253,8 @@ public final class P2PServerImpl implements P2PServer {
 			int timeout = 100 + (int) (Math.random() * 100 * this.nodes.size() * NODECHECKLOOP_COUNT);
 			doWait(timeout);
 		}
-		log.info("Node check loop out. ThreadGroup active:" + this.nodechecktg.activeCount());
+		log.info("Node check loop out. ThreadGroup active:"
+				+ this.nodechecktg.activeCount());
 	}
 
 	private synchronized void removeNode(WNode node) {
@@ -565,7 +566,7 @@ public final class P2PServerImpl implements P2PServer {
 		if (nodes != null) {
 			List<WNode> ns = new LinkedList<WNode>(this.nodes);
 			for (WNode node : ns) {
-				if (node.isConnected()
+				if (node.isConnected() && getNodeStatus(node) != null
 						&& getNodeStatus(node).getReceivedMessages() > 0) {
 					log.info("node connected " + node);
 					return true;
