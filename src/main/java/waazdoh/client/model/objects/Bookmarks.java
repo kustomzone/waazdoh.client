@@ -14,23 +14,22 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import waazdoh.client.service.WService;
+import waazdoh.common.client.ServiceClient;
 
 public final class Bookmarks {
 	private List<BookmarksListener> listeners = new LinkedList<BookmarksListener>();
 	private Map<String, BookmarkGroup> groups = new HashMap<String, BookmarkGroup>();
 
-	private WService service;
+	private ServiceClient service;
 
-	public Bookmarks(WService service) {
+	public Bookmarks(ServiceClient service) {
 		this.service = service;
 		update();
 	}
 
 	private synchronized void update() {
-		Set<String> servicegroups = service.listStorageArea("bookmarks");
+		List<String> servicegroups = service.getStorageArea().list("bookmarks");
 		if (servicegroups != null) {
 			for (final String name : servicegroups) {
 				if (this.groups.get(name) == null) {

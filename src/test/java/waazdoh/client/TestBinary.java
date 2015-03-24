@@ -2,6 +2,7 @@ package waazdoh.client;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 
 import org.xml.sax.SAXException;
 
@@ -12,15 +13,14 @@ import waazdoh.common.MCRC;
 import waazdoh.common.WLogger;
 import waazdoh.common.WPreferences;
 import waazdoh.cp2p.P2PBinarySource;
-import waazdoh.testing.StaticService;
 
 public final class TestBinary extends WCTestCase {
 	private WLogger log = WLogger.getLogger(this);
 
-	public void testBinary() throws IOException {
+	public void testBinary() throws IOException, SAXException {
 
-		Binary binary = new Binary(new StaticService(), getTempPath(), "test",
-				"test");
+		Binary binary = new Binary(getClient(getRandomUserName(), false),
+				getTempPath(), "test", "test");
 		addData(binary);
 
 		MCRC fcrc = binary.getCRC();
@@ -38,7 +38,7 @@ public final class TestBinary extends WCTestCase {
 		assertNotNull(crc);
 		assertNotSame(fcrc, crc);
 		// second binary read with inputstream.
-		Binary binary2 = new Binary(new StaticService(), getTempPath(),
+		Binary binary2 = new Binary(getClient(getName(), false), getTempPath(),
 				"test2", "test");
 		binary2.importStream(binary.getInputStream());
 
@@ -146,13 +146,18 @@ public final class TestBinary extends WCTestCase {
 	}
 
 	private Binary getNewBinary() {
-		StaticService service = new StaticService();
-		return new Binary(service, getTempPath(), "test", "test");
+		try {
+			return new Binary(getClient(getRandomUserName(), false),
+					getTempPath(), "test", "test");
+		} catch (MalformedURLException | SAXException e) {
+			log.error(e);
+			return null;
+		}
 	}
 
 	public void testLoadSharedFile() throws SAXException, IOException {
-		P2PBinarySource c1 = getServiceSource(getRandomUserName(), false);
-		Binary b1 = c1.newBinary("test", "test");
+		WClient c1 = getClient(getRandomUserName(), false);
+		Binary b1 = c1.getBinarySource().newBinary("test", "test");
 		assertNotNull(b1);
 		addData(b1);
 		b1.setReady();
@@ -161,16 +166,16 @@ public final class TestBinary extends WCTestCase {
 		WPreferences p1 = c1.getPreferences();
 
 		//
-		P2PBinarySource c2 = getServiceSource(getRandomUserName(), false);
+		WClient c2 = getClient(getRandomUserName(), false);
 		c2.getPreferences().set(WPreferences.LOCAL_PATH,
 				p1.get(WPreferences.LOCAL_PATH, "FAIL"));
 
-		Binary b2 = c2.getOrDownload(b1.getID());
+		Binary b2 = c2.getBinarySource().getOrDownload(b1.getID());
 		assertNotNull(b2);
 		assertTrue(b2.checkCRC());
 		assertEquals(b1.getCRC(), b2.getCRC());
 		//
-		assertNotNull(c2.get(b1.getID()));
+		assertNotNull(c2.getBinarySource().get(b1.getID()));
 	}
 
 	public void testLoad() throws IOException {

@@ -13,7 +13,6 @@ package waazdoh.cp2p.network;
 import java.util.List;
 import java.util.Set;
 
-import waazdoh.common.MStringID;
 import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MMessageHandler;

@@ -10,30 +10,15 @@
  ******************************************************************************/
 package waazdoh.client.model;
 
-import waazdoh.common.WData;
-import waazdoh.common.WLogger;
+import waazdoh.common.vo.UserVO;
 
 public final class User {
 
 	private String name;
 	private String img;
 
-	public User(WData bean) {
-		/*
-		 * <response> <user> <uid>1b32558c-827d-4f4c-83bf-b9ea4a313db6</uid>
-		 * <profile>
-		 * <pictureURL>https://twimg0-a.akamaihd.net/profile_images/2297908262
-		 * /rhp37rm35mul5uf0zom6_reasonably_small.jpeg</pictureURL>
-		 * <name>Juuso</name> <info>me!!!</info> </profile> <name>jeukku</name>
-		 * </user> <success>true</success> </response>
-		 */
-		WData buser = bean.get("user");
-		WLogger.getLogger(this).info("user : " + buser);
-		name = buser.getValue("name");
-		WData profile = buser.get("profile");
-		if (profile != null) {
-			img = profile.getValue("pictureURL");
-		}
+	public User(UserVO r) {
+		this.name = r.getUsername();
 	}
 
 	public String getName() {

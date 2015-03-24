@@ -12,7 +12,6 @@ import org.xml.sax.SAXException;
 
 import waazdoh.client.storage.local.FileBeanStorage;
 import waazdoh.common.ConditionWaiter;
-import waazdoh.common.MStringID;
 import waazdoh.common.ThreadChecker;
 import waazdoh.common.WLogger;
 import waazdoh.common.WPreferences;
@@ -21,7 +20,7 @@ import waazdoh.cp2p.P2PServer;
 import waazdoh.cp2p.P2PServerImpl;
 import waazdoh.cp2p.common.MHost;
 import waazdoh.testing.MockBeanStorage;
-import waazdoh.testing.ServiceMock;
+import waazdoh.testing.StaticService;
 import waazdoh.testing.StaticTestPreferences;
 
 public class WCTestCase extends TestCase {
@@ -130,26 +129,16 @@ public class WCTestCase extends TestCase {
 				username);
 		P2PBinarySource source = new P2PBinarySource(p, new FileBeanStorage(p),
 				bind);
-		ServiceMock service = new ServiceMock(username, source);
-		service.createSession();
+		StaticService service = new StaticService(username);
+		String session = service.createSession();
 
 		MockBeanStorage bs = new MockBeanStorage();
 
 		WClient c = new WClient(p, source, bs, service);
-		c.setSession(service.getSessionID());
+		c.setSession(session);
+		assertNotNull(c.getUserID());
+
 		return c;
-	}
-
-	protected P2PBinarySource getServiceSource(final String username1,
-			boolean bind) throws SAXException {
-		WPreferences p1 = new StaticTestPreferences("waazdohclienttests",
-				username1);
-		P2PBinarySource source1 = new P2PBinarySource(p1, new FileBeanStorage(
-				p1), bind);
-		ServiceMock service1 = new ServiceMock(username1, source1);
-
-		service1.setSession("" + new MStringID());
-		return source1;
 	}
 
 	protected String getRandomUserName() {

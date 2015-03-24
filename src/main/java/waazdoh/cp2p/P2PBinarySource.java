@@ -12,9 +12,9 @@ package waazdoh.cp2p;
 
 import waazdoh.client.BinarySource;
 import waazdoh.client.ReportingService;
+import waazdoh.client.WClient;
 import waazdoh.client.model.BinaryID;
 import waazdoh.client.model.objects.Binary;
-import waazdoh.client.service.WService;
 import waazdoh.client.storage.local.FileBeanStorage;
 import waazdoh.client.storage.local.LocalBinaryStorage;
 import waazdoh.common.WLogger;
@@ -27,7 +27,7 @@ public final class P2PBinarySource implements BinarySource {
 	private WPreferences preferences;
 	final private FileBeanStorage beanstorage;
 	private LocalBinaryStorage storage;
-	private WService service;
+	private WClient client;
 
 	public P2PBinarySource(WPreferences p, FileBeanStorage beanstorage,
 			boolean bind2) {
@@ -64,14 +64,14 @@ public final class P2PBinarySource implements BinarySource {
 	}
 
 	@Override
-	public WService getService() {
-		return service;
+	public WClient getClient() {
+		return client;
 	}
 
 	@Override
-	public void setService(WService service) {
-		this.service = service;
-		storage = new LocalBinaryStorage(preferences, service);
+	public void setClient(WClient client) {
+		this.client = client;
+		storage = new LocalBinaryStorage(preferences, client);
 		server.start();
 	}
 
@@ -84,7 +84,7 @@ public final class P2PBinarySource implements BinarySource {
 	public void clearMemory(int suggestedmemorytreshold) {
 		if (storage != null)
 			storage.clearMemory(suggestedmemorytreshold);
-		if (service != null)
+		if (client != null)
 			server.clearMemory();
 	}
 
@@ -119,10 +119,6 @@ public final class P2PBinarySource implements BinarySource {
 	@Override
 	public Binary newBinary(final String string, String extension) {
 		return storage.newBinary(string, extension);
-	}
-
-	private synchronized void addBinary(Binary stream) {
-		storage.addNewBinary(stream);
 	}
 
 	@Override

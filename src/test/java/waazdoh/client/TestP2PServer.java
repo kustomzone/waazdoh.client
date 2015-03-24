@@ -1,15 +1,18 @@
 package waazdoh.client;
 
+import java.net.MalformedURLException;
+
 import org.xml.sax.SAXException;
 
 import waazdoh.client.model.BinaryID;
 import waazdoh.client.model.objects.Binary;
 import waazdoh.common.ConditionWaiter;
+import waazdoh.common.ConditionWaiter.Condition;
 import waazdoh.common.MStringID;
 import waazdoh.common.MTimedFlag;
 import waazdoh.common.WLogger;
 import waazdoh.common.WPreferences;
-import waazdoh.common.ConditionWaiter.Condition;
+import waazdoh.common.client.ServiceClient;
 import waazdoh.cp2p.P2PServer;
 import waazdoh.cp2p.P2PServerImpl;
 import waazdoh.cp2p.common.MHost;
@@ -17,9 +20,8 @@ import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.SimpleMessageHandler;
 import waazdoh.cp2p.network.ServerListener;
 import waazdoh.cp2p.network.WNode;
-import waazdoh.testing.ServiceMock;
+import waazdoh.testing.StaticService;
 import waazdoh.testing.StaticTestPreferences;
-import waazdoh.testing.TestPBinarySource;
 
 public class TestP2PServer extends WCTestCase {
 
@@ -93,17 +95,17 @@ public class TestP2PServer extends WCTestCase {
 		assertTrue(doneflag.isTriggered());
 	}
 
-	public void testCanDownload() throws SAXException {
+	public void testCanDownload() throws SAXException, MalformedURLException {
 		P2PServer s = getServer();
 		assertTrue(s.canDownload());
-		ServiceMock service = new ServiceMock("test", new TestPBinarySource(
-				s.getPreferences()));
+		ServiceClient service = new StaticService(getRandomUserName());
 
 		BinaryID downloadid = null;
 		for (int i = 0; i < WPreferences.NETWORK_MAX_DOWNLOADS_DEFAULT; i++) {
 			assertTrue(s.canDownload());
 			BinaryID id = new BinaryID();
-			Binary b = new Binary(service, getTempPath(), "", "");
+			Binary b = new Binary(getClient(getRandomUserName(), false),
+					getTempPath(), "", "");
 			b.load(id);
 			s.addDownload(b);
 			downloadid = id;

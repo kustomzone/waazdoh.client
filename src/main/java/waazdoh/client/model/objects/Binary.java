@@ -20,9 +20,9 @@ import java.io.RandomAccessFile;
 import java.util.LinkedList;
 import java.util.List;
 
+import waazdoh.client.WClient;
 import waazdoh.client.model.BinaryID;
 import waazdoh.client.model.StringIDLocalPath;
-import waazdoh.client.service.WService;
 import waazdoh.common.HashSource;
 import waazdoh.common.MCRC;
 import waazdoh.common.MStringID;
@@ -30,6 +30,7 @@ import waazdoh.common.UserID;
 import waazdoh.common.WData;
 import waazdoh.common.WLogger;
 import waazdoh.common.WaazdohInfo;
+import waazdoh.common.vo.ObjectVO;
 
 public final class Binary implements HashSource {
 	private static final String BEAN_TAG = "binary";
@@ -47,7 +48,7 @@ public final class Binary implements HashSource {
 	private String comment = "";
 	private long usedtime;
 	private boolean ready;
-	private WService service;
+	private WClient client;
 	private String extension;
 	private BinaryID id;
 
@@ -56,9 +57,9 @@ public final class Binary implements HashSource {
 
 	private static int binarycount = 0;
 
-	public Binary(WService service, String storagepath, String comment,
+	public Binary(WClient service, String storagepath, String comment,
 			String extension) {
-		this.service = service;
+		this.client = service;
 		this.storage = storagepath;
 
 		this.id = new BinaryID();
@@ -220,8 +221,9 @@ public final class Binary implements HashSource {
 	}
 
 	private synchronized boolean loadFromService(MStringID pid) {
-		WData b = service.read(pid);
-		if (b != null && (b.get("data") != null || b.get("binary") != null)) {
+		ObjectVO o = client.getObjects().read(pid.toString());
+		if (o != null) {
+			WData b = o.getWData();
 			log.info("loading Binary " + b);
 			load(b.find(BEAN_TAG));
 			used();
@@ -234,16 +236,18 @@ public final class Binary implements HashSource {
 
 	public void publish() {
 		save();
-		service.publish(getID());
+		client.getObjects().publish(getID().toString());
 	}
 
 	public void save() {
-		creatorid = service.getUserID();
+		creatorid = client.getUserID();
 
 		WData bean = getBean();
 		bean.setAttribute("id", getID().toString());
+
+		client.getObjects().write(getID().toString(), bean.toXML().toString());
 		//
-		service.addBean(getID(), bean);
+		client.getBeanStorage().addBean(getID(), bean);
 	}
 
 	@Override
@@ -440,8 +444,8 @@ public final class Binary implements HashSource {
 		setReady();
 	}
 
-	public WService getService() {
-		return service;
+	public WClient getService() {
+		return client;
 	}
 
 	public synchronized boolean checkCRC() {

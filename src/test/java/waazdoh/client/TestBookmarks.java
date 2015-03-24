@@ -7,7 +7,7 @@ import waazdoh.testing.StaticService;
 
 public class TestBookmarks extends WCTestCase {
 	public void testListener() {
-		StaticService service = new StaticService();
+		StaticService service = new StaticService(getRandomUserName());
 		Bookmarks ms = new Bookmarks(service);
 
 		final StringBuilder st = new StringBuilder();

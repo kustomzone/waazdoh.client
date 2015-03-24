@@ -39,6 +39,7 @@ public class TestServiceObject extends WCTestCase {
 		WClient c1 = getClient(getRandomUserName(), false);
 		o = new ServiceObject("test", c1, data1, WaazdohInfo.version,
 				"WAAZDOHTEST");
+		
 		o.save();
 		o.publish();
 

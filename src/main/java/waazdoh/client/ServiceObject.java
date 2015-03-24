@@ -19,6 +19,7 @@ import waazdoh.common.ObjectID;
 import waazdoh.common.UserID;
 import waazdoh.common.WData;
 import waazdoh.common.WLogger;
+import waazdoh.common.vo.ObjectVO;
 
 public final class ServiceObject implements HashSource {
 	private UserID creatorid;
@@ -59,11 +60,11 @@ public final class ServiceObject implements HashSource {
 	public boolean load(MStringID oid) {
 		log.info("loading " + oid);
 		if (oid != null) {
-			WData response = env.getService().read(oid);
-			if (response != null && response.getBooleanValue("success")
-					&& response.get("data").get(tagname) != null) {
+			ObjectVO response = env.getService().getObjects()
+					.read(oid.toString());
+			if (response != null && response.isSuccess()) {
 				id = new ObjectID(oid, this);
-				return parseBean(response.get("data").get(tagname));
+				return parseBean(response.getWData());
 			} else {
 				log.info("loading " + tagname + " bean failed " + oid);
 				return false;
@@ -111,7 +112,7 @@ public final class ServiceObject implements HashSource {
 	public boolean publish() {
 		log.info("publishing " + id);
 		save();
-		return env.getService().publish(id);
+		return env.getService().getObjects().publish(id.toString());
 	}
 
 	@Override
@@ -145,7 +146,10 @@ public final class ServiceObject implements HashSource {
 			storedbean = storing;
 			log.info("adding bean" + id);
 
-			env.getService().addBean(id.getStringID(), storing);
+			env.getService()
+					.getObjects()
+					.write(id.getStringID().toString(),
+							storing.toXML().toString());
 		}
 	}
 

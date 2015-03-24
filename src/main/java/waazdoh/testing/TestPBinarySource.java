@@ -12,16 +12,16 @@ package waazdoh.testing;
 
 import waazdoh.client.BinarySource;
 import waazdoh.client.ReportingService;
+import waazdoh.client.WClient;
 import waazdoh.client.model.BinaryID;
 import waazdoh.client.model.objects.Binary;
-import waazdoh.client.service.WService;
 import waazdoh.client.storage.local.LocalBinaryStorage;
 import waazdoh.common.WPreferences;
 
 public final class TestPBinarySource implements BinarySource {
 	private WPreferences preferences;
 	private LocalBinaryStorage storage;
-	private WService service;
+	private WClient service;
 
 	public TestPBinarySource(WPreferences p) {
 		this.preferences = p;
@@ -79,13 +79,13 @@ public final class TestPBinarySource implements BinarySource {
 	}
 
 	@Override
-	public WService getService() {
+	public WClient getClient() {
 		return service;
 	}
 
 	@Override
-	public void setService(WService service) {
-		this.service = service;
+	public void setClient(WClient nclient) {
+		this.service = nclient;
 		this.storage = new LocalBinaryStorage(preferences, service);
 	}
 

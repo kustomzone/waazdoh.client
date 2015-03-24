@@ -6,10 +6,11 @@ import java.io.IOException;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
+import waazdoh.client.BinarySource;
 import waazdoh.client.WCTestCase;
+import waazdoh.client.WClient;
 import waazdoh.client.model.objects.Binary;
 import waazdoh.common.WLogger;
-import waazdoh.cp2p.P2PBinarySource;
 import waazdoh.testing.StaticTestPreferences;
 
 public final class ITTestBinaryTransfer extends WCTestCase {
@@ -73,17 +74,18 @@ public final class ITTestBinaryTransfer extends WCTestCase {
 		log.info("test transfer " + binarysize + " user1 + " + username1
 				+ " user2 " + username2);
 
-		P2PBinarySource source1 = getServiceSource(username1, bind1);
-		P2PBinarySource source2 = getServiceSource(username2, bind2);
+		WClient c1 = getClient(username1, bind1);
+		WClient c2 = getClient(username2, bind2);
 
-		source2.waitUntilReady();
+		c2.getBinarySource().waitUntilReady();
 
-		testTransfer(binarysize, source1, source2);
+		testTransfer(binarysize, c1.getBinarySource(),
+				c2.getBinarySource());
 
 	}
 
-	private void testTransfer(int binarysize, P2PBinarySource source1,
-			P2PBinarySource source2) throws FileNotFoundException, IOException {
+	private void testTransfer(int binarysize, BinarySource source1,
+			BinarySource source2) throws FileNotFoundException, IOException {
 		log.info("creating binary");
 		Binary b1 = source1.newBinary("test", "bin");
 		assertNotNull(b1);

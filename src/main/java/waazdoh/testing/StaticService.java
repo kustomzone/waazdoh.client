@@ -11,142 +11,227 @@
 package waazdoh.testing;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.UUID;
 
-import waazdoh.client.model.WResponse;
-import waazdoh.client.service.WService;
+import org.xml.sax.SAXException;
+
 import waazdoh.common.MStringID;
-import waazdoh.common.MURL;
-import waazdoh.common.ObjectID;
 import waazdoh.common.UserID;
 import waazdoh.common.WData;
+import waazdoh.common.WLogger;
+import waazdoh.common.XML;
+import waazdoh.common.client.ServiceClient;
+import waazdoh.common.service.ObjectsService;
+import waazdoh.common.service.StorageAreaService;
+import waazdoh.common.service.UsersService;
+import waazdoh.common.vo.AppLoginVO;
+import waazdoh.common.vo.LoginVO;
+import waazdoh.common.vo.ObjectVO;
+import waazdoh.common.vo.ProvileVO;
+import waazdoh.common.vo.ReturnVO;
+import waazdoh.common.vo.UserVO;
 
-public final class StaticService implements WService {
+public final class StaticService implements ServiceClient {
 	private UserID userid;
-	private static Map<MStringID, WData> data = new HashMap<MStringID, WData>();
+	private StorageAreaService storagearea;
+	private UsersService users;
+	private ObjectsService objects;
+	private String session;
+	private String username;
+
+	private static Map<String, ObjectVO> data = new HashMap<String, ObjectVO>();
 	private static Map<String, String> storage = new HashMap<>();
+	private static Map<String, UserVO> userlist = new HashMap<>();
 
-	@Override
-	public boolean setSession(String session) {
-		return true;
+	private WLogger logger = WLogger.getLogger(this);
+
+	public StaticService(String username1) {
+		this.username = username1;
 	}
 
 	@Override
-	public String getInfoText() {
-		return "staticservice:" + data;
+	public void setAuthenticationToken(String session) {
+		this.session = session;
+		this.userid = new UserID(new MStringID().toString());
+
+		UserVO uservo = new UserVO();
+		uservo.setUsername(username);
+		uservo.setUserid(userid.toString());
+		userlist.put(userid.toString(), uservo);
 	}
 
 	@Override
-	public String readStorageArea(String string) {
-		return storage.get(string);
-	}
+	public ObjectsService getObjects() {
+		if (objects == null) {
+			objects = new ObjectsService() {
 
-	@Override
-	public Set<String> listStorageArea(String string) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+				@Override
+				public boolean write(String objectid, String testdata) {
+					try {
+						new WData(new XML(testdata));
+						data.put(objectid, new ObjectVO(testdata));
+						return true;
+					} catch (SAXException e) {
+						logger.error(e);
+						return false;
+					}
+				}
 
-	@Override
-	public void writeStorageArea(String string, String data) {
-		// TODO Auto-generated method stub	
-	}
-	
-	@Override
-	public boolean isConnected() {
-		return true;
-	}
+				@Override
+				public List<String> search(String search, int i, int j) {
+					// TODO Auto-generated method stub
+					return null;
+				}
 
-	@Override
-	public WResponse reportDownload(MStringID id, boolean success) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+				@Override
+				public ObjectVO read(String string) {
+					return data.get(string);
+				}
 
-	public WResponse getUser(UserID userid) {
-		return null;
-	};
+				@Override
+				public boolean publish(String objectid) {
+					// TODO Auto-generated method stub
+					return false;
+				}
 
-	@Override
-	public String getSessionID() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public WData requestAppLogin() {
-		return null;
-	}
-
-	public StaticService() {
-		// TODO Auto-generated constructor stub
-	}
-
-	@Override
-	public boolean publish(ObjectID id) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean publish(MStringID id) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public WData read(MStringID id) {
-		WData bean = data.get(id);
-		return bean;
-	}
-
-	@Override
-	public String getUsername() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public MURL getURL(final String service, String method, ObjectID id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean isLoggedIn() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void addBean(MStringID id, WData b) {
-		data.put(id, b);
-	}
-
-	@Override
-	public UserID getUserID() {
-		if (userid == null) {
-			userid = new UserID((new MStringID()).toString());
+				@Override
+				public boolean delete(String objectid) {
+					// TODO Auto-generated method stub
+					return false;
+				}
+			};
 		}
-		return userid;
+
+		return objects;
 	}
 
 	@Override
-	public WResponse search(final String filter, int index, int i) {
-		// TODO Auto-generated method stub
-		return null;
+	public UsersService getUsers() {
+		if (users == null) {
+			users = new UsersService() {
+
+				@Override
+				public List<UserVO> search(String string, int i) {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
+				public boolean saveProfile(ProvileVO profile) {
+					// TODO Auto-generated method stub
+					return false;
+				}
+
+				@Override
+				public AppLoginVO requestAppLogin() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
+				public void registerOAuthService(String string, String string2) {
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public UserVO register(String email, String username,
+						String sinv, String oauthuseridentifier,
+						String oauthaccesstoken, String string,
+						String oauthservice) {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
+				public UserVO getWithName(String username) {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
+				public UserVO getUser(String userid) {
+					return userlist.get(userid);
+				}
+
+				@Override
+				public ProvileVO getProfile() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
+				public ReturnVO denyApplication(String appid) {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
+				public UserVO checkSession() {
+					return userlist.get(userid.toString());
+				}
+
+				@Override
+				public boolean checkInvitatation(String string) {
+					// TODO Auto-generated method stub
+					return false;
+				}
+
+				@Override
+				public AppLoginVO checkAppLogin(String id) {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
+				public LoginVO authenticateOAuth(String service,
+						String useridentifier, String accesstoken,
+						String oauthsecret) {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
+				public ReturnVO acceptApplication(String appid) {
+					// TODO Auto-generated method stub
+					return null;
+				}
+			};
+		}
+		return users;
 	}
 
 	@Override
-	public WData acceptAppLogin(MStringID id) {
-		// TODO Auto-generated method stub
-		return null;
+	public StorageAreaService getStorageArea() {
+		if (storagearea == null) {
+			storagearea = new StorageAreaService() {
+
+				@Override
+				public boolean write(String path, String name) {
+					// TODO Auto-generated method stub
+					return false;
+				}
+
+				@Override
+				public String read(String path) {
+					return storage.get(path);
+				}
+
+				@Override
+				public List<String> list(String path) {
+					// TODO Auto-generated method stub
+					return null;
+				}
+			};
+		}
+		return storagearea;
 	}
 
-	@Override
-	public WData checkAppLogin(MStringID id) {
-		// TODO Auto-generated method stub
-		return null;
+	public String createSession() {
+		session = UUID.randomUUID().toString();
+		return session;
 	}
+
 }

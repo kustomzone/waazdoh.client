@@ -12,21 +12,21 @@ package waazdoh.client.model.objects;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.client.service.WService;
 import waazdoh.common.WData;
 import waazdoh.common.XML;
+import waazdoh.common.client.ServiceClient;
 
 public final class Bookmark {
 	private String oid;
 	private String created;
 	private String name;
 
-	public Bookmark(String group, String bookmarkname, WService service)
+	public Bookmark(String group, String bookmarkname, ServiceClient service)
 			throws SAXException {
 		this.name = bookmarkname;
 
-		String r = service.readStorageArea("/bookmarks/" + group + "/"
-				+ bookmarkname);
+		String r = service.getStorageArea().read(
+				"/bookmarks/" + group + "/" + bookmarkname);
 		WData bbookmark = new WData(new XML(r));
 
 		oid = bbookmark.getValue("objectid");

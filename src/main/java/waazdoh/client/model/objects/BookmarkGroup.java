@@ -12,15 +12,14 @@ package waazdoh.client.model.objects;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.xml.sax.SAXException;
 
-import waazdoh.client.service.WService;
 import waazdoh.common.WLogger;
+import waazdoh.common.client.ServiceClient;
 
 public final class BookmarkGroup {
-	private WService service;
+	private ServiceClient service;
 	private String name;
 
 	private List<Bookmark> bookmarks = new LinkedList<Bookmark>();
@@ -28,7 +27,7 @@ public final class BookmarkGroup {
 
 	private WLogger log = WLogger.getLogger(this);
 
-	public BookmarkGroup(final String name, WService service) {
+	public BookmarkGroup(final String name, ServiceClient service) {
 		this.service = service;
 		this.name = name;
 		//
@@ -36,7 +35,7 @@ public final class BookmarkGroup {
 	}
 
 	private void update() {
-		Set<String> br = service.listStorageArea("/bookmarks/" + name);
+		List<String> br = service.getStorageArea().list("/bookmarks/" + name);
 		WLogger.getLogger(this).info("BookmarkGroup " + br);
 		//
 		if (br != null) {

@@ -5,17 +5,17 @@ import java.util.List;
 import java.util.Set;
 
 import waazdoh.client.model.User;
-import waazdoh.client.model.WResponse;
 import waazdoh.client.model.objects.Bookmarks;
-import waazdoh.client.service.WService;
 import waazdoh.client.storage.BeanStorage;
-import waazdoh.common.MStringID;
 import waazdoh.common.UserID;
-import waazdoh.common.WData;
 import waazdoh.common.WPreferences;
+import waazdoh.common.client.ServiceClient;
+import waazdoh.common.service.ObjectsService;
+import waazdoh.common.vo.AppLoginVO;
+import waazdoh.common.vo.UserVO;
 
 public class WClient {
-	private WService service;
+	private ServiceClient service;
 	private WPreferences preferences;
 	private boolean running = true;
 	//
@@ -23,9 +23,10 @@ public class WClient {
 	private Bookmarks bookmarks;
 	private final BeanStorage beanstorage;
 	private final BinarySource source;
+	private UserID userid;
 
 	public WClient(WPreferences p, BinarySource binarysource,
-			BeanStorage beanstorage, WService nservice) {
+			BeanStorage beanstorage, ServiceClient nservice) {
 		this.preferences = p;
 		this.source = binarysource;
 		this.beanstorage = beanstorage;
@@ -37,11 +38,15 @@ public class WClient {
 			return false;
 		}
 
-		if (service == null || !service.isLoggedIn()) {
+		if (service == null || !isLoggedIn()) {
 			return false;
 		}
 
 		return running;
+	}
+
+	private boolean isLoggedIn() {
+		return this.userid != null;
 	}
 
 	public Bookmarks getBookmarks() {
@@ -49,14 +54,14 @@ public class WClient {
 	}
 
 	public UserID getUserID() {
-		return service.getUserID();
+		return this.userid;
 	}
 
 	public BinarySource getBinarySource() {
 		return source;
 	}
 
-	public WService getService() {
+	public ServiceClient getService() {
 		return service;
 	}
 
@@ -74,9 +79,12 @@ public class WClient {
 	}
 
 	public boolean setSession(final String session) {
-		if (!service.isLoggedIn()) {
-			if (service.setSession(session)) {
-				source.setService(service);
+		if (userid == null) {
+			service.setAuthenticationToken(session);
+			UserVO user = service.getUsers().checkSession();
+			if (user != null && user.isSuccess()) {
+				this.userid = new UserID(user.getUserid());
+				source.setClient(this);
 				getPreferences().set(WPreferences.PREFERENCES_SESSION, session);
 				loggedIn();
 				return true;
@@ -105,28 +113,25 @@ public class WClient {
 		}
 	}
 
-	public WClientAppLogin requestAppLogin() {
-		WData b = getService().requestAppLogin();
-		return new WClientAppLogin(b);
+	public AppLoginVO requestAppLogin() {
+		AppLoginVO b = getService().getUsers().requestAppLogin();
+		return b;
 	}
 
-	public WClientAppLogin checkAppLogin(MStringID id) {
-		WData b = getService().checkAppLogin(id);
-		WClientAppLogin applogin = new WClientAppLogin(b);
-		if (applogin.getSessionId() != null) {
-			setSession(applogin.getSessionId());
+	public AppLoginVO checkAppLogin(String id) {
+		AppLoginVO b = getService().getUsers().checkAppLogin(id);
+		if (b.getSessionid() != null) {
+			setSession(b.getSessionid());
 		}
-		return applogin;
+		return b;
 	}
 
 	public String readStorageArea(String string) {
-		return getService().readStorageArea(string);
+		return getService().getStorageArea().read(string);
 	}
 
-	public List<MStringID> search(String searchitem, int index, int count) {
-		WResponse bresult = getService().search(searchitem, index, count);
-		List<MStringID> idlist = bresult.getIDList();
-		return idlist;
+	public List<String> search(String searchitem, int index, int count) {
+		return getService().getObjects().search(searchitem, index, count);
 	}
 
 	public BeanStorage getBeanStorage() {
@@ -134,9 +139,9 @@ public class WClient {
 	}
 
 	public User getUser(UserID userID) {
-		WResponse r = getService().getUser(userID);
-		if (r != null && r.getBean() != null && r.isSuccess()) {
-			return new User(r.getBean());
+		UserVO r = getService().getUsers().getUser(userID.toString());
+		if (r != null && r.isSuccess()) {
+			return new User(r);
 		} else {
 			return null;
 		}
@@ -145,5 +150,9 @@ public class WClient {
 	@Override
 	public String toString() {
 		return "WClient[connected:" + isRunning() + "][bsource:" + source + "]";
+	}
+
+	public ObjectsService getObjects() {
+		return getService().getObjects();
 	}
 }

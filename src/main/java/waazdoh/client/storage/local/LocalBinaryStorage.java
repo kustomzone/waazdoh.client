@@ -17,9 +17,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import waazdoh.client.WClient;
 import waazdoh.client.model.BinaryID;
 import waazdoh.client.model.objects.Binary;
-import waazdoh.client.service.WService;
 import waazdoh.client.storage.BinaryStorage;
 import waazdoh.common.MCRC;
 import waazdoh.common.MStringID;
@@ -32,11 +32,11 @@ public final class LocalBinaryStorage implements BinaryStorage {
 	//
 	private WLogger log = WLogger.getLogger(this);
 	private boolean running = true;
-	private final WService service;
+	private final WClient client;
 	private WPreferences preferences;
 
-	public LocalBinaryStorage(WPreferences p, WService service) {
-		this.service = service;
+	public LocalBinaryStorage(WPreferences p, WClient client) {
+		this.client = client;
 		this.preferences = p;
 	}
 
@@ -110,7 +110,7 @@ public final class LocalBinaryStorage implements BinaryStorage {
 			throws IOException {
 		synchronized (streams) {
 			Binary bin;
-			bin = new Binary(service, getLocalPath(), "default", "default");
+			bin = new Binary(client, getLocalPath(), "default", "default");
 			bin.load(streamid);
 
 			if (bin.isOK() && bin.checkCRC()) {
@@ -171,7 +171,7 @@ public final class LocalBinaryStorage implements BinaryStorage {
 		synchronized (streams) {
 			log.info("Adding a new binary. memory usage:"
 					+ getMemoryUsageInfo());
-			Binary b = new Binary(service, getLocalPath(), comment, extension);
+			Binary b = new Binary(client, getLocalPath(), comment, extension);
 			addNewBinary(b);
 			return b;
 		}

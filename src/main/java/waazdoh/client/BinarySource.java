@@ -12,16 +12,15 @@ package waazdoh.client;
 
 import waazdoh.client.model.BinaryID;
 import waazdoh.client.model.objects.Binary;
-import waazdoh.client.service.WService;
 
 public interface BinarySource {
 	void close();
 
 	boolean isRunning();
 
-	void setService(WService service);
+	void setClient(WClient client);
 
-	WService getService();
+	WClient getClient();
 
 	Binary get(BinaryID streamid);
 
