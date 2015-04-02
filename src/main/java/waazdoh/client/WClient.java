@@ -8,6 +8,7 @@ import waazdoh.client.model.User;
 import waazdoh.client.model.objects.Bookmarks;
 import waazdoh.client.storage.BeanStorage;
 import waazdoh.common.UserID;
+import waazdoh.common.WLogger;
 import waazdoh.common.WPreferences;
 import waazdoh.common.client.ServiceClient;
 import waazdoh.common.service.ObjectsService;
@@ -24,6 +25,8 @@ public class WClient {
 	private final BeanStorage beanstorage;
 	private final BinarySource source;
 	private UserID userid;
+
+	private WLogger logger = WLogger.getLogger(this);
 
 	public WClient(WPreferences p, BinarySource binarysource,
 			BeanStorage beanstorage, ServiceClient nservice) {
@@ -81,14 +84,20 @@ public class WClient {
 	public boolean setSession(final String session) {
 		if (userid == null) {
 			service.setAuthenticationToken(session);
-			UserVO user = service.getUsers().checkSession();
-			if (user != null && user.isSuccess()) {
-				this.userid = new UserID(user.getUserid());
-				source.setClient(this);
-				getPreferences().set(WPreferences.PREFERENCES_SESSION, session);
-				loggedIn();
-				return true;
-			} else {
+			try {
+				UserVO user = service.getUsers().checkSession();
+				if (user != null && user.isSuccess()) {
+					this.userid = new UserID(user.getUserid());
+					source.setClient(this);
+					getPreferences().set(WPreferences.PREFERENCES_SESSION,
+							session);
+					loggedIn();
+					return true;
+				} else {
+					return false;
+				}
+			} catch (Exception e) {
+				logger.error(e);
 				return false;
 			}
 		} else {

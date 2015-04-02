@@ -137,15 +137,6 @@ public final class StaticService implements ServiceClient {
 				}
 
 				@Override
-				public UserVO register(String email, String username,
-						String sinv, String oauthuseridentifier,
-						String oauthaccesstoken, String string,
-						String oauthservice) {
-					// TODO Auto-generated method stub
-					return null;
-				}
-
-				@Override
 				public UserVO getWithName(String username) {
 					// TODO Auto-generated method stub
 					return null;
@@ -186,9 +177,7 @@ public final class StaticService implements ServiceClient {
 				}
 
 				@Override
-				public LoginVO authenticateOAuth(String service,
-						String useridentifier, String accesstoken,
-						String oauthsecret) {
+				public LoginVO authenticateOAuth(LoginVO vo) {
 					// TODO Auto-generated method stub
 					return null;
 				}
