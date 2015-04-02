@@ -48,8 +48,9 @@ public class WClient {
 		return running;
 	}
 
-	private boolean isLoggedIn() {
-		return this.userid != null;
+	public boolean isLoggedIn() {
+		return this.userid != null
+				&& getService().getUsers().checkSession().isSuccess();
 	}
 
 	public Bookmarks getBookmarks() {
