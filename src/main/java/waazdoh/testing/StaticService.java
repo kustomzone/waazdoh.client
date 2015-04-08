@@ -63,6 +63,11 @@ public final class StaticService implements ServiceClient {
 	}
 
 	@Override
+	public String getAuthenticationToken() {
+		return session;
+	}
+
+	@Override
 	public ObjectsService getObjects() {
 		if (objects == null) {
 			objects = new ObjectsService() {

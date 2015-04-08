@@ -28,8 +28,8 @@ public class WClient {
 
 	private WLogger logger = WLogger.getLogger(this);
 
-	public WClient(WPreferences p, BinarySource binarysource,
-			BeanStorage beanstorage, ServiceClient nservice) {
+	public WClient(WPreferences p, BinarySource binarysource, BeanStorage beanstorage,
+			ServiceClient nservice) {
 		this.preferences = p;
 		this.source = binarysource;
 		this.beanstorage = beanstorage;
@@ -49,8 +49,7 @@ public class WClient {
 	}
 
 	public boolean isLoggedIn() {
-		return this.userid != null
-				&& getService().getUsers().checkSession().isSuccess();
+		return this.userid != null && getService().getAuthenticationToken() != null;
 	}
 
 	public Bookmarks getBookmarks() {
@@ -78,8 +77,7 @@ public class WClient {
 	}
 
 	public boolean trySavedSession() {
-		return setSession(getPreferences().get(
-				WPreferences.PREFERENCES_SESSION, ""));
+		return setSession(getPreferences().get(WPreferences.PREFERENCES_SESSION, ""));
 	}
 
 	public boolean setSession(final String session) {
@@ -90,8 +88,7 @@ public class WClient {
 				if (user != null && user.isSuccess()) {
 					this.userid = new UserID(user.getUserid());
 					source.setClient(this);
-					getPreferences().set(WPreferences.PREFERENCES_SESSION,
-							session);
+					getPreferences().set(WPreferences.PREFERENCES_SESSION, session);
 					loggedIn();
 					return true;
 				} else {
