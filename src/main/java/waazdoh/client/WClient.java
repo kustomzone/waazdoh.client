@@ -82,8 +82,8 @@ public class WClient {
 
 	public boolean setSession(final String session) {
 		if (userid == null) {
-			service.setAuthenticationToken(session);
 			try {
+				service.setAuthenticationToken(session);
 				UserVO user = service.getUsers().checkSession();
 				if (user != null && user.isSuccess()) {
 					this.userid = new UserID(user.getUserid());
