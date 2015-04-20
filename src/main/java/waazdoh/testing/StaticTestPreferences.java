@@ -21,7 +21,7 @@ public final class StaticTestPreferences implements WPreferences {
 		this.prefix = prefix;
 		//
 		Preferences prefs = getPrefs();
-		if (prefs.get(WPreferences.SERVICE_URL, "").equals("")) {
+		if ("".equals(prefs.get(WPreferences.SERVICE_URL, ""))) {
 			prefs.put(WPreferences.SERVICE_URL,
 					"http://localhost:18099/waazdoh");
 		}
@@ -34,7 +34,7 @@ public final class StaticTestPreferences implements WPreferences {
 				+ File.separator;
 
 		String lpath = prefs.get(WPreferences.LOCAL_PATH, "");
-		if (lpath.equals("")) {
+		if ("".equals(lpath)) {
 			lpath = deflocalpath;
 			prefs.put(WPreferences.LOCAL_PATH, lpath);
 		}
@@ -118,7 +118,7 @@ public final class StaticTestPreferences implements WPreferences {
 		}
 		//
 		String get = get(name);
-		if (get == null || get.equals("")) {
+		if (get == null || "".equals(get)) {
 			getPrefs().put(name, defaultvalue);
 			return defaultvalue;
 		} else {

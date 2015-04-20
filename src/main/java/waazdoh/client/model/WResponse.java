@@ -31,7 +31,7 @@ public final class WResponse {
 	public WResponse(final String o) throws SAXException {
 		String string = (String) o;
 		WData nbean = new WData(new XML(string));
-		if (nbean.getName().equals("response")) {
+		if ("response".equals(nbean.getName())) {
 			this.bean = nbean;
 		} else {
 			this.bean.add(nbean);

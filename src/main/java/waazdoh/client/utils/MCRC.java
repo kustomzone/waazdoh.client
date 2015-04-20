@@ -14,8 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.CRC32;
 
-import waazdoh.common.WLogger;
-
 public final class MCRC {
 	private static final int ERROR_VALUE = -1;
 	private long value;
@@ -33,26 +31,6 @@ public final class MCRC {
 
 	public MCRC(long attributeLong) {
 		this.value = attributeLong;
-	}
-
-	public MCRC(Byte[] bytes, int bytesindex) {
-		crc32 = new CRC32();
-		for (int i = 0; i < bytesindex; i++) {
-			Byte b = bytes[i];
-			if (b != null) {
-				update(b);
-			} else {
-				WLogger.getLogger(this).info(
-						"" + this + " CRC failed at " + i + " lastbyte:"
-								+ bytesindex);
-				crc32 = null;
-				value = ERROR_VALUE;
-				break;
-			}
-		}
-		if (crc32 != null) {
-			value = crc32.getValue();
-		}
 	}
 
 	public MCRC(InputStream inputStream) throws IOException {
