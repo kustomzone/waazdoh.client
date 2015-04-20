@@ -21,7 +21,7 @@ import waazdoh.client.WClient;
 import waazdoh.client.model.BinaryID;
 import waazdoh.client.model.objects.Binary;
 import waazdoh.client.storage.BinaryStorage;
-import waazdoh.common.MCRC;
+import waazdoh.client.utils.MCRC;
 import waazdoh.common.MStringID;
 import waazdoh.common.WLogger;
 import waazdoh.common.WPreferences;
@@ -44,19 +44,6 @@ public final class LocalBinaryStorage implements BinaryStorage {
 		return preferences.get(WPreferences.LOCAL_PATH, ".waazdoh");
 	}
 
-	public String getMemoryUsageInfo() {
-		synchronized (streams) {
-			String info = "streams:" + streams.size();
-
-			int memcount = 0;
-			for (Binary b : streams) {
-				memcount += b.getMemoryUsage();
-			}
-			info += " usage:" + memcount;
-			return info;
-		}
-	}
-
 	public boolean isRunning() {
 		return running;
 	}
@@ -67,7 +54,6 @@ public final class LocalBinaryStorage implements BinaryStorage {
 				throw new RuntimeException("Binary " + fs + " already added");
 			} else {
 				log.info("adding binary " + fs);
-				log.info("current memory usage " + getMemoryUsageInfo());
 				streams.add(fs);
 				streams.notifyAll();
 			}
@@ -106,8 +92,7 @@ public final class LocalBinaryStorage implements BinaryStorage {
 		}
 	}
 
-	public synchronized Binary loadPersistentStream(BinaryID streamid)
-			throws IOException {
+	public synchronized Binary loadPersistentStream(BinaryID streamid) throws IOException {
 		synchronized (streams) {
 			Binary bin;
 			bin = new Binary(client, getLocalPath(), "default", "default");
@@ -169,8 +154,6 @@ public final class LocalBinaryStorage implements BinaryStorage {
 
 	public Binary newBinary(final String comment, String extension) {
 		synchronized (streams) {
-			log.info("Adding a new binary. memory usage:"
-					+ getMemoryUsageInfo());
 			Binary b = new Binary(client, getLocalPath(), comment, extension);
 			addNewBinary(b);
 			return b;

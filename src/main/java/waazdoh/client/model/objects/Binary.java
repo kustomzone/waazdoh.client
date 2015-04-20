@@ -23,8 +23,8 @@ import java.util.List;
 import waazdoh.client.WClient;
 import waazdoh.client.model.BinaryID;
 import waazdoh.client.model.StringIDLocalPath;
+import waazdoh.client.utils.MCRC;
 import waazdoh.common.HashSource;
-import waazdoh.common.MCRC;
 import waazdoh.common.MStringID;
 import waazdoh.common.UserID;
 import waazdoh.common.WData;
@@ -85,10 +85,6 @@ public final class Binary implements HashSource {
 	@Override
 	public String getHash() {
 		return getBean().getContentHash();
-	}
-
-	public int getMemoryUsage() {
-		return 0;
 	}
 
 	private void init() {

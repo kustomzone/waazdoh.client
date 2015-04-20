@@ -11,8 +11,8 @@ import junit.framework.TestCase;
 import org.xml.sax.SAXException;
 
 import waazdoh.client.storage.local.FileBeanStorage;
-import waazdoh.common.ConditionWaiter;
-import waazdoh.common.ThreadChecker;
+import waazdoh.client.utils.ConditionWaiter;
+import waazdoh.client.utils.ThreadChecker;
 import waazdoh.common.WLogger;
 import waazdoh.common.WPreferences;
 import waazdoh.cp2p.P2PBinarySource;

@@ -8,8 +8,8 @@ import org.xml.sax.SAXException;
 
 import waazdoh.client.model.objects.Binary;
 import waazdoh.client.model.objects.BinaryListener;
-import waazdoh.common.ConditionWaiter;
-import waazdoh.common.MCRC;
+import waazdoh.client.utils.ConditionWaiter;
+import waazdoh.client.utils.MCRC;
 import waazdoh.common.WLogger;
 import waazdoh.common.WPreferences;
 import waazdoh.cp2p.P2PBinarySource;

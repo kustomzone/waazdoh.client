@@ -6,8 +6,8 @@ import org.xml.sax.SAXException;
 
 import waazdoh.client.model.BinaryID;
 import waazdoh.client.model.objects.Binary;
-import waazdoh.common.ConditionWaiter;
-import waazdoh.common.ConditionWaiter.Condition;
+import waazdoh.client.utils.ConditionWaiter;
+import waazdoh.client.utils.ConditionWaiter.Condition;
 import waazdoh.common.MStringID;
 import waazdoh.common.MTimedFlag;
 import waazdoh.common.WLogger;

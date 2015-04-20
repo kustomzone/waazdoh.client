@@ -36,10 +36,6 @@ public final class PassiveNode implements WNode {
 		this.source = source;
 	}
 
-	public String getMemoryUsageInfo() {
-		return " messages[" + outgoingmessages.size() + "]";
-	}
-
 	@Override
 	public String toString() {
 		return "Node[" + getID() + "][" + outputbytecount + "B]";
