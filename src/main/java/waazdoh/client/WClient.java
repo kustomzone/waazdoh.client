@@ -141,6 +141,10 @@ public class WClient {
 		return getService().getObjects().search(searchitem, index, count);
 	}
 
+	public List<UserVO> searchUsers(String searchitem, int index) {
+		return getService().getUsers().search(searchitem, index);
+	}
+	
 	public BeanStorage getBeanStorage() {
 		return this.beanstorage;
 	}
@@ -162,4 +166,5 @@ public class WClient {
 	public ObjectsService getObjects() {
 		return getService().getObjects();
 	}
+	
 }
