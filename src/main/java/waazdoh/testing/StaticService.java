@@ -124,6 +124,18 @@ public final class StaticService implements ServiceClient {
 				}
 
 				@Override
+				public void follow(String userid) {
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public List<String> getFollowing() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
 				public boolean saveProfile(ProvileVO profile) {
 					// TODO Auto-generated method stub
 					return false;
@@ -215,6 +227,12 @@ public final class StaticService implements ServiceClient {
 
 				@Override
 				public List<String> list(String path) {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
+				public List<String> listNewItems(String userid, int start, int count) {
 					// TODO Auto-generated method stub
 					return null;
 				}
