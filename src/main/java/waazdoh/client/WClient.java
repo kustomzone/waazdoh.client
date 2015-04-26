@@ -134,7 +134,7 @@ public class WClient {
 	}
 
 	public String readStorageArea(String string) {
-		return getService().getStorageArea().read(string);
+		return getService().getStorageArea().read(getService().getUser().getUsername(), string);
 	}
 
 	public List<String> search(String searchitem, int index, int count) {
@@ -144,7 +144,7 @@ public class WClient {
 	public List<UserVO> searchUsers(String searchitem, int index) {
 		return getService().getUsers().search(searchitem, index);
 	}
-	
+
 	public BeanStorage getBeanStorage() {
 		return this.beanstorage;
 	}
@@ -166,5 +166,5 @@ public class WClient {
 	public ObjectsService getObjects() {
 		return getService().getObjects();
 	}
-	
+
 }

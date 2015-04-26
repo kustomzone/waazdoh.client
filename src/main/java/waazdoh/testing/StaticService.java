@@ -68,6 +68,21 @@ public final class StaticService implements ServiceClient {
 	}
 
 	@Override
+	public UserVO getUser(String username) {
+		UserVO vo = new UserVO();
+		vo.setUsername(username);
+		return vo;
+	}
+
+	@Override
+	public UserVO getUser() {
+		UserVO vo = new UserVO();
+		vo.setUserid(this.userid.toString());
+		vo.setUsername(this.username);
+		return vo;
+	}
+
+	@Override
 	public ObjectsService getObjects() {
 		if (objects == null) {
 			objects = new ObjectsService() {
@@ -221,7 +236,7 @@ public final class StaticService implements ServiceClient {
 				}
 
 				@Override
-				public String read(String path) {
+				public String read(String username, String path) {
 					return storage.get(path);
 				}
 
