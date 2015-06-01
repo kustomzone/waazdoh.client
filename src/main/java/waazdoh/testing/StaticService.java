@@ -11,8 +11,10 @@
 package waazdoh.testing;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.xml.sax.SAXException;
@@ -44,6 +46,7 @@ public final class StaticService implements ServiceClient {
 	private static Map<String, ObjectVO> data = new HashMap<String, ObjectVO>();
 	private static Map<String, String> storage = new HashMap<>();
 	private static Map<String, UserVO> userlist = new HashMap<>();
+	private static Map<String, AppLoginVO> applogins = new HashMap<>();
 
 	private WLogger logger = WLogger.getLogger(this);
 
@@ -158,8 +161,13 @@ public final class StaticService implements ServiceClient {
 
 				@Override
 				public AppLoginVO requestAppLogin() {
-					// TODO Auto-generated method stub
-					return null;
+					AppLoginVO login = new AppLoginVO();
+					String id = new MStringID().toString();
+					login.setSessionid(id);
+					login.setId(id);
+					login.setUrl("not a real url");
+					applogins.put(id, login);
+					return login;
 				}
 
 				@Override
@@ -204,8 +212,7 @@ public final class StaticService implements ServiceClient {
 
 				@Override
 				public AppLoginVO checkAppLogin(String id) {
-					// TODO Auto-generated method stub
-					return null;
+					return applogins.get(id);
 				}
 
 				@Override
@@ -231,8 +238,8 @@ public final class StaticService implements ServiceClient {
 
 				@Override
 				public boolean write(String path, String name) {
-					// TODO Auto-generated method stub
-					return false;
+					storage.put(path, name);
+					return true;
 				}
 
 				@Override
@@ -242,14 +249,26 @@ public final class StaticService implements ServiceClient {
 
 				@Override
 				public List<String> list(String path) {
-					// TODO Auto-generated method stub
-					return null;
+					if (path.lastIndexOf('/') != path.length() - 1) {
+						path = path + "/";
+					}
+
+					List<String> list = new LinkedList<String>();
+
+					Set<String> ks = storage.keySet();
+					for (String string : ks) {
+						if (string.startsWith(path)) {
+							String subpath = string.substring(path.length());
+							list.add(subpath);
+						}
+					}
+					return list;
 				}
 
 				@Override
-				public List<String> listNewItems(String userid, int start, int count) {
-					// TODO Auto-generated method stub
-					return null;
+				public List<String> listNewItems(String path, int start,
+						int count) {
+					return list(path);
 				}
 			};
 		}
