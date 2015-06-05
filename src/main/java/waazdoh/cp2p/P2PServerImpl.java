@@ -74,7 +74,8 @@ public final class P2PServerImpl implements P2PServer {
 
 	private void reboot() {
 		try {
-			log.info("rebooting server " + (REBOOT_DELAY - System.currentTimeMillis()));
+			log.info("rebooting server "
+					+ (REBOOT_DELAY - System.currentTimeMillis()));
 			shutdown();
 			startNetwork();
 		} catch (Exception e) {
@@ -82,7 +83,7 @@ public final class P2PServerImpl implements P2PServer {
 		}
 	}
 
-	private void startNetwork() {
+	private synchronized void startNetwork() {
 		addHandlers();
 
 		if (dobind) {
@@ -108,7 +109,8 @@ public final class P2PServerImpl implements P2PServer {
 			}
 		});
 
-		getMessenger().addMessageHandler(WhoHasHandler.MESSAGENAME, whohashandler);
+		getMessenger().addMessageHandler(WhoHasHandler.MESSAGENAME,
+				whohashandler);
 	}
 
 	private synchronized void runChecker() {
@@ -117,9 +119,11 @@ public final class P2PServerImpl implements P2PServer {
 				@Override
 				public void run() {
 					try {
-						long lastmessagereceived = getMessenger().getLastMessageReceived();
+						long lastmessagereceived = getMessenger()
+								.getLastMessageReceived();
 						while (isRunning()) {
-							long dt = System.currentTimeMillis() - lastmessagereceived;
+							long dt = System.currentTimeMillis()
+									- lastmessagereceived;
 							if (dt > REBOOT_DELAY) {
 								reboot();
 							} else {
@@ -156,7 +160,8 @@ public final class P2PServerImpl implements P2PServer {
 		List<WNode> ns = nodes;
 		if (ns != null) {
 			String s = "nodes:" + ns.size() + " downloads:" + downloads.size();
-			s += " " + tcplistener + " messenger:" + getMessenger().getInfoText();
+			s += " " + tcplistener + " messenger:"
+					+ getMessenger().getInfoText();
 			return s;
 		} else {
 			return "closed";
@@ -215,7 +220,8 @@ public final class P2PServerImpl implements P2PServer {
 					sendPing(node);
 				}
 				//
-				if (node.getID() != null && node.getID().equals(getMessenger().getID())) {
+				if (node.getID() != null
+						&& node.getID().equals(getMessenger().getID())) {
 					log.info("Having myself as remote node. Removing.");
 					node.close();
 					removeNode(node);
@@ -234,7 +240,8 @@ public final class P2PServerImpl implements P2PServer {
 			int timeout = 100 + (int) (Math.random() * 100 * this.nodes.size() * NODECHECKLOOP_COUNT);
 			doWait(timeout);
 		}
-		log.info("Node check loop out. ThreadGroup active:" + this.nodechecktg.activeCount());
+		log.info("Node check loop out. ThreadGroup active:"
+				+ this.nodechecktg.activeCount());
 	}
 
 	private synchronized void removeNode(WNode node) {
@@ -264,7 +271,8 @@ public final class P2PServerImpl implements P2PServer {
 			addDefaultNodes();
 			if (nodes.isEmpty()) {
 				int maxwaittime = 5000;
-				log.info("nodes size still zero. Waiting " + maxwaittime + "msec");
+				log.info("nodes size still zero. Waiting " + maxwaittime
+						+ "msec");
 				waitForConnection(maxwaittime);
 			}
 		}
@@ -272,26 +280,28 @@ public final class P2PServerImpl implements P2PServer {
 
 	private void sendPing(WNode node) {
 		MMessage message = getMessenger().getMessage("ping");
-		getMessenger().addResponseListener(message.getID(), new MessageResponseListener() {
-			private long sent = System.currentTimeMillis();
-			private boolean done = false;
+		getMessenger().addResponseListener(message.getID(),
+				new MessageResponseListener() {
+					private long sent = System.currentTimeMillis();
+					private boolean done = false;
 
-			@Override
-			public void messageReceived(MMessage message) {
-				log.info("PING response in " + (System.currentTimeMillis() - sent) + " ms");
-				done = true;
-			}
+					@Override
+					public void messageReceived(MMessage message) {
+						log.info("PING response in "
+								+ (System.currentTimeMillis() - sent) + " ms");
+						done = true;
+					}
 
-			@Override
-			public boolean isDone() {
-				if ((System.currentTimeMillis() - sent) > 10000) {
-					log.info("PING giving up");
-					return true;
-				} else {
-					return done;
-				}
-			}
-		});
+					@Override
+					public boolean isDone() {
+						if ((System.currentTimeMillis() - sent) > 10000) {
+							log.info("PING giving up");
+							return true;
+						} else {
+							return done;
+						}
+					}
+				});
 
 		node.sendMessage(message);
 		getNodeStatus(node).pingSent();
@@ -345,7 +355,12 @@ public final class P2PServerImpl implements P2PServer {
 			if (indexOf > 0) {
 				String host = server.substring(0, indexOf);
 				int port = Integer.parseInt(server.substring(indexOf + 1));
-				addNode(new MHost(host), port);
+				if ("localhost".equals(host) && tcplistener != null
+						&& tcplistener.getPort() == port) {
+					log.info("Not adding node @ " + server);
+				} else {
+					addNode(new MHost(host), port);
+				}
 			} else {
 				log.info("invalid value " + server);
 			}
@@ -475,7 +490,8 @@ public final class P2PServerImpl implements P2PServer {
 		synchronized (downloads) {
 			if (downloads.get(bs.getID()) == null) {
 				log.info("adding download " + bs);
-				downloads.put(bs.getID(), new Download(bs, this, getMessenger()));
+				downloads.put(bs.getID(),
+						new Download(bs, this, getMessenger()));
 			}
 		}
 	}
@@ -485,13 +501,15 @@ public final class P2PServerImpl implements P2PServer {
 	}
 
 	public boolean canDownload() {
-		return downloads.size() < p.getInteger(WPreferences.NETWORK_MAX_DOWNLOADS,
+		return downloads.size() < p.getInteger(
+				WPreferences.NETWORK_MAX_DOWNLOADS,
 				WPreferences.NETWORK_MAX_DOWNLOADS_DEFAULT);
 	}
 
 	public void clearMemory() {
 		synchronized (listeners) {
-			List<ServerListener> nsourcelisteners = new LinkedList<ServerListener>(listeners);
+			List<ServerListener> nsourcelisteners = new LinkedList<ServerListener>(
+					listeners);
 			for (ServerListener l : nsourcelisteners) {
 				if (l.isDone()) {
 					listeners.remove(l);
@@ -500,7 +518,8 @@ public final class P2PServerImpl implements P2PServer {
 		}
 
 		synchronized (downloads) {
-			Map<MStringID, Download> ndownloads = new HashMap<MStringID, Download>(downloads);
+			Map<MStringID, Download> ndownloads = new HashMap<MStringID, Download>(
+					downloads);
 			for (MStringID did : ndownloads.keySet()) {
 				Download d = getDownload(did);
 				if (d.isDone()) {
