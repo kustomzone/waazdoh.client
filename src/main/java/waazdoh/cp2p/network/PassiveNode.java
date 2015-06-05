@@ -15,6 +15,7 @@ import java.util.List;
 
 import waazdoh.common.WLogger;
 import waazdoh.cp2p.common.MNodeID;
+import waazdoh.cp2p.common.WMessenger;
 import waazdoh.cp2p.messaging.MMessage;
 
 public final class PassiveNode implements WNode {

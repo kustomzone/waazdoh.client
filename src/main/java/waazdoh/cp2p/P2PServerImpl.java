@@ -31,13 +31,13 @@ import waazdoh.common.WLogger;
 import waazdoh.common.WPreferences;
 import waazdoh.cp2p.common.MHost;
 import waazdoh.cp2p.common.MNodeID;
+import waazdoh.cp2p.common.WMessenger;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MessageResponseListener;
 import waazdoh.cp2p.network.PassiveNode;
 import waazdoh.cp2p.network.ServerListener;
 import waazdoh.cp2p.network.TCPListener;
 import waazdoh.cp2p.network.TCPNode;
-import waazdoh.cp2p.network.WMessenger;
 import waazdoh.cp2p.network.WMessengerImpl;
 import waazdoh.cp2p.network.WNode;
 

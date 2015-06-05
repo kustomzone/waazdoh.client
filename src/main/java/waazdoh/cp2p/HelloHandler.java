@@ -1,9 +1,9 @@
 package waazdoh.cp2p;
 
 import waazdoh.common.WLogger;
+import waazdoh.cp2p.common.WMessenger;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MMessageHandler;
-import waazdoh.cp2p.network.WMessenger;
 
 public class HelloHandler implements MMessageHandler {
 	public static final String HELLO = "hello";

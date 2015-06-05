@@ -8,12 +8,11 @@
  * Contributors:
  *     Juuso Vilmunen - initial API and implementation
  ******************************************************************************/
-package waazdoh.cp2p.network;
+package waazdoh.cp2p.common;
 
 import java.util.List;
 import java.util.Set;
 
-import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MMessageHandler;
 import waazdoh.cp2p.messaging.MessageID;

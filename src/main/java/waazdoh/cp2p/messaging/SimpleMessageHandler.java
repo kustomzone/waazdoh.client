@@ -10,7 +10,7 @@
  ******************************************************************************/
 package waazdoh.cp2p.messaging;
 
-import waazdoh.cp2p.network.WMessenger;
+import waazdoh.cp2p.common.WMessenger;
 
 public abstract class SimpleMessageHandler implements MMessageHandler {
 	private WMessenger messenger;

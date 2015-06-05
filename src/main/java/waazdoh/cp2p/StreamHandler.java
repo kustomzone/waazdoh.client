@@ -12,9 +12,9 @@ package waazdoh.cp2p;
 
 import waazdoh.common.MStringID;
 import waazdoh.common.WLogger;
+import waazdoh.cp2p.common.WMessenger;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MMessageHandler;
-import waazdoh.cp2p.network.WMessenger;
 
 public final class StreamHandler implements MMessageHandler {
 	private P2PServer source;

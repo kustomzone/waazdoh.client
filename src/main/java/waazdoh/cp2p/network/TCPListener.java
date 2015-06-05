@@ -30,6 +30,7 @@ import java.util.List;
 
 import waazdoh.common.WLogger;
 import waazdoh.common.WPreferences;
+import waazdoh.cp2p.common.WMessenger;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MessageDecoder;
 import waazdoh.cp2p.messaging.MessageEncoder;

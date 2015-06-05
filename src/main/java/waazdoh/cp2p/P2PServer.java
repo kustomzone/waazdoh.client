@@ -17,8 +17,8 @@ import waazdoh.common.MStringID;
 import waazdoh.common.WPreferences;
 import waazdoh.cp2p.common.MHost;
 import waazdoh.cp2p.common.MNodeID;
+import waazdoh.cp2p.common.WMessenger;
 import waazdoh.cp2p.network.ServerListener;
-import waazdoh.cp2p.network.WMessenger;
 import waazdoh.cp2p.network.WNode;
 
 public interface P2PServer {

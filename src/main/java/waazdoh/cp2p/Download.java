@@ -24,10 +24,10 @@ import waazdoh.common.MTimedFlag;
 import waazdoh.common.WData;
 import waazdoh.common.WLogger;
 import waazdoh.cp2p.common.MNodeID;
+import waazdoh.cp2p.common.WMessenger;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MessageResponseListener;
 import waazdoh.cp2p.network.ServerListener;
-import waazdoh.cp2p.network.WMessenger;
 import waazdoh.cp2p.network.WNode;
 
 public final class Download implements Runnable, MessageResponseListener, ServerListener {

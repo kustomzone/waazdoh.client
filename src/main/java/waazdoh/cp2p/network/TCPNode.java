@@ -25,6 +25,7 @@ import waazdoh.common.WData;
 import waazdoh.common.WLogger;
 import waazdoh.cp2p.common.MHost;
 import waazdoh.cp2p.common.MNodeID;
+import waazdoh.cp2p.common.WMessenger;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MessageResponseListener;
 
