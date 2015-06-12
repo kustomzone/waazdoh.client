@@ -10,7 +10,7 @@ public class TestFileBeanStorage extends TestCase {
 
 	public void testIterator() {
 		FileBeanStorage s = new FileBeanStorage(new StaticTestPreferences(
-				"test" + getClass(), "test" + System.currentTimeMillis()));
+				"test2015" + getClass(), "test" + System.currentTimeMillis()));
 		MStringID madeupid = new MStringID("" + System.currentTimeMillis());
 
 		assertNull(s.getBean(madeupid));

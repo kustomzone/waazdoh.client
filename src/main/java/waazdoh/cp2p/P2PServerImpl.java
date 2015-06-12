@@ -126,6 +126,8 @@ public final class P2PServerImpl implements P2PServer {
 									- lastmessagereceived;
 							if (dt > REBOOT_DELAY) {
 								reboot();
+								lastmessagereceived = System
+										.currentTimeMillis();
 							} else {
 								doWait(dt - REBOOT_DELAY);
 							}
