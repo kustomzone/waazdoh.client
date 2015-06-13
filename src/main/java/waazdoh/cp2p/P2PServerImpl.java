@@ -192,8 +192,10 @@ public final class P2PServerImpl implements P2PServer {
 			NodeStatus status = new NodeStatus();
 			nodestatuses.put(n, status);
 			//
-			for (ServerListener sourceListener : listeners) {
-				sourceListener.nodeAdded(n);
+			synchronized (listeners) {
+				for (ServerListener sourceListener : listeners) {
+					sourceListener.nodeAdded(n);
+				}
 			}
 		}
 	}
@@ -264,7 +266,7 @@ public final class P2PServerImpl implements P2PServer {
 		}
 	}
 
-	public NodeStatus getNodeStatus(WNode node) {
+	public synchronized NodeStatus getNodeStatus(WNode node) {
 		return nodestatuses.get(node);
 	}
 
@@ -371,7 +373,9 @@ public final class P2PServerImpl implements P2PServer {
 
 	@Override
 	public void addServerListener(ServerListener nodeListener) {
-		listeners.add(nodeListener);
+		synchronized (listeners) {
+			listeners.add(nodeListener);
+		}
 	}
 
 	public boolean isRunning() {
@@ -447,7 +451,7 @@ public final class P2PServerImpl implements P2PServer {
 	}
 
 	public WNode getNode(MNodeID nid) {
-		if (nid != null) {
+		if (nid != null && nodes != null) {
 			for (WNode node : nodes) {
 				if (nid.equals(node.getID())) {
 					return node;

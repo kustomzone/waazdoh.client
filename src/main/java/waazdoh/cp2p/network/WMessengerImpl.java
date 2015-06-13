@@ -12,6 +12,7 @@ import waazdoh.common.WData;
 import waazdoh.common.WLogger;
 import waazdoh.common.WPreferences;
 import waazdoh.cp2p.HelloHandler;
+import waazdoh.cp2p.NodeStatus;
 import waazdoh.cp2p.P2PServer;
 import waazdoh.cp2p.PingHandler;
 import waazdoh.cp2p.common.MHost;
@@ -141,15 +142,19 @@ public class WMessengerImpl implements WMessenger {
 						sentbynode = this.server.addNode(sentby);
 					}
 
-					server.getNodeStatus(sentbynode).messageReceived(
-							message.getName());
-					//
-					log.info("handling message: " + message + " from "
-							+ sentbynode);
-					message.setLastHandler(networkid);
-					//
-					handle(message, lasthandler != null ? lasthandler
-							: sentbynode);
+					NodeStatus nodeStatus = server.getNodeStatus(sentbynode);
+					if (nodeStatus != null) {
+						nodeStatus.messageReceived(message.getName());
+						//
+						log.info("handling message: " + message + " from "
+								+ sentbynode);
+						message.setLastHandler(networkid);
+						//
+						handle(message, lasthandler != null ? lasthandler
+								: sentbynode);
+					} else {
+						log.info("node sentbynode " + sentbynode + " not found");
+					}
 				} else {
 					log.debug("not handling message because networkid is equal with sentby "
 							+ message.getSentBy());
