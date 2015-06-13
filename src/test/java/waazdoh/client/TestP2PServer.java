@@ -159,7 +159,7 @@ public class TestP2PServer extends WCTestCase {
 		if (System.getProperty("extended.debug") != null) {
 			return 360000;
 		} else {
-			return 20000;
+			return 60000;
 		}
 	}
 

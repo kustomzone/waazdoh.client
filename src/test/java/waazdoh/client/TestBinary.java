@@ -12,7 +12,6 @@ import waazdoh.client.utils.ConditionWaiter;
 import waazdoh.client.utils.MCRC;
 import waazdoh.common.WLogger;
 import waazdoh.common.WPreferences;
-import waazdoh.cp2p.P2PBinarySource;
 
 public final class TestBinary extends WCTestCase {
 	private WLogger log = WLogger.getLogger(this);
