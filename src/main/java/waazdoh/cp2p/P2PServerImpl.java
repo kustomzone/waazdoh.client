@@ -446,10 +446,6 @@ public final class P2PServerImpl implements P2PServer {
 		}
 	}
 
-	private boolean isClosed() {
-		return closed;
-	}
-
 	public WNode getNode(MNodeID nid) {
 		if (nid != null && nodes != null) {
 			for (WNode node : nodes) {
@@ -458,6 +454,9 @@ public final class P2PServerImpl implements P2PServer {
 				}
 			}
 		}
+
+		log.info("node not found (" + nid + ")  in nodes " + nodes);
+		
 		return null;
 	}
 
