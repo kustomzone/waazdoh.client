@@ -65,6 +65,30 @@ public class WCTestCase extends TestCase {
 		for (P2PServer p2pServer : ss) {
 			p2pServer.close();
 		}
+
+		boolean nettyfound;
+		do {
+			nettyfound = false;
+			Map<Thread, StackTraceElement[]> sts = Thread.getAllStackTraces();
+			for (Thread t : sts.keySet()) {
+				StackTraceElement[] st = sts.get(t);
+				for (StackTraceElement stackTraceElement : st) {
+					if (("" + st).indexOf("netty") > 0) {
+						nettyfound = true;
+						log.info("Thread " + t + " ST:" + stackTraceElement);
+						break;
+					}
+				}
+			}
+
+			if (nettyfound) {
+				synchronized (this) {
+					this.wait(1000);
+				}
+			}
+		} while (nettyfound);
+
+		log.info("************************* TEARDOWN DONE *****");
 	};
 
 	WPreferences getPreferences(String username) {
