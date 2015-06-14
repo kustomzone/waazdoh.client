@@ -73,15 +73,17 @@ public class WCTestCase extends TestCase {
 			for (Thread t : sts.keySet()) {
 				StackTraceElement[] st = sts.get(t);
 				for (StackTraceElement stackTraceElement : st) {
+					log.info("Thread " + t + " ST:" + stackTraceElement);
+
 					if (("" + st).indexOf("netty") > 0) {
 						nettyfound = true;
-						log.info("Thread " + t + " ST:" + stackTraceElement);
 						break;
 					}
 				}
 			}
 
 			if (nettyfound) {
+				log.info("Netty found. Waiting");
 				synchronized (this) {
 					this.wait(1000);
 				}

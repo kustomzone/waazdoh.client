@@ -6,7 +6,7 @@ import org.xml.sax.SAXException;
 
 import waazdoh.client.model.WResponse;
 
-public class TestBeanResponse extends TestCase {
+public class TestBeanResponse extends WCTestCase {
 	public void testIDList() throws SAXException {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<response><" + WResponse.IDLIST + ">");

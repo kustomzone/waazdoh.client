@@ -79,8 +79,7 @@ public final class ITTestBinaryTransfer extends WCTestCase {
 
 		c2.getBinarySource().waitUntilReady();
 
-		testTransfer(binarysize, c1.getBinarySource(),
-				c2.getBinarySource());
+		testTransfer(binarysize, c1.getBinarySource(), c2.getBinarySource());
 
 	}
 

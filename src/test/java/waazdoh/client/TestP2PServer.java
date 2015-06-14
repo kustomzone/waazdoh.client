@@ -256,6 +256,7 @@ public class TestP2PServer extends WCTestCase {
 
 		new ConditionWaiter(new Condition() {
 			public boolean test() {
+				log.info("broadcasting pingpong");
 				servera.getMessenger().broadcastMessage(
 						servera.getMessenger().getMessage("pingpong"));
 

@@ -1,12 +1,11 @@
 package waazdoh.client;
 
-import junit.framework.TestCase;
 import waazdoh.client.storage.local.FileBeanStorage;
 import waazdoh.common.MStringID;
 import waazdoh.common.WData;
 import waazdoh.testing.StaticTestPreferences;
 
-public class TestFileBeanStorage extends TestCase {
+public class TestFileBeanStorage extends WCTestCase {
 
 	public void testIterator() {
 		FileBeanStorage s = new FileBeanStorage(new StaticTestPreferences(
