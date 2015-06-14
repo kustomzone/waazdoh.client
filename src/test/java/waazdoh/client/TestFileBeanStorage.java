@@ -9,7 +9,7 @@ public class TestFileBeanStorage extends WCTestCase {
 
 	public void testIterator() {
 		FileBeanStorage s = new FileBeanStorage(new StaticTestPreferences(
-				"test2015" + getClass(), "test" + System.currentTimeMillis()));
+				"2015test" + getClass(), "2015test" + System.currentTimeMillis()));
 		MStringID madeupid = new MStringID("" + System.currentTimeMillis());
 
 		assertNull(s.getBean(madeupid));
