@@ -252,11 +252,13 @@ public class TestP2PServer extends WCTestCase {
 					}
 				});
 
-		servera.getMessenger().broadcastMessage(
-				servera.getMessenger().getMessage("pingpong"));
+		log.info("Sending pingpong");
 
 		new ConditionWaiter(new Condition() {
 			public boolean test() {
+				servera.getMessenger().broadcastMessage(
+						servera.getMessenger().getMessage("pingpong"));
+
 				return c.count >= maxcount;
 			}
 		}, getWaitTime());
