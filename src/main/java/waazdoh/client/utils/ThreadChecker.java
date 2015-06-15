@@ -14,12 +14,20 @@ public class ThreadChecker {
 
 	public ThreadChecker(final IChecker checker) {
 		this.checker = checker;
+		start(checker, 20000);
+	}
+	
+	public ThreadChecker(final IChecker checker, long timeout) {
+		this.checker = checker;
+		start(checker, timeout);
+	}
 
+	private void start(final IChecker checker, final long timeout) {
 		new Thread(new Runnable() {
 			public void run() {
 				synchronized (this) {
 					try {
-						this.wait(20000);
+						this.wait(timeout);
 					} catch (Exception e1) {
 						log.error(e1);
 					}
@@ -62,7 +70,6 @@ public class ThreadChecker {
 				}
 			}
 		}).start();
-
 	}
 
 	public interface IChecker {

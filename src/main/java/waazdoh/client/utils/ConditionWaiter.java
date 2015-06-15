@@ -3,6 +3,8 @@ package waazdoh.client.utils;
 import waazdoh.common.WLogger;
 
 public class ConditionWaiter {
+	private boolean done;
+
 	public ConditionWaiter(Condition c, int maxtime) {
 		long st = System.currentTimeMillis();
 		if (maxtime <= 0) {
@@ -12,6 +14,12 @@ public class ConditionWaiter {
 		while ((System.currentTimeMillis() - st) < maxtime && !c.test()) {
 			doWait();
 		}
+
+		done = true;
+	}
+
+	public boolean isDone() {
+		return done;
 	}
 
 	private void doWait() {
