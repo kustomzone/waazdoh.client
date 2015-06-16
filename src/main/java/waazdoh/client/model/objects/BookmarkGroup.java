@@ -49,8 +49,22 @@ public final class BookmarkGroup {
 		}
 	}
 
+	public void add(String name, String value) {
+		service.getStorageArea().write("/bookmarks/" + name, value);
+		update();
+	}
+
 	public String getName() {
 		return name;
+	}
+
+	public Bookmark get(String name) {
+		for (Bookmark bookmark : bookmarks) {
+			if (bookmark.getName().equals(name)) {
+				return bookmark;
+			}
+		}
+		return null;
 	}
 
 	public List<Bookmark> getBookmarks() {

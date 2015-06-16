@@ -21,10 +21,12 @@ public final class Bookmark {
 	private String created;
 	private String name;
 
-	public Bookmark(String group, String bookmarkname, ServiceClient service) throws SAXException {
+	public Bookmark(String group, String bookmarkname, ServiceClient service)
+			throws SAXException {
 		this.name = bookmarkname;
 
-		String r = service.getStorageArea().read(service.getUser().getUsername(),
+		String r = service.getStorageArea().read(
+				service.getUser().getUsername(),
 				"/bookmarks/" + group + "/" + bookmarkname);
 		WData bbookmark = new WData(new XML(r));
 
@@ -34,5 +36,9 @@ public final class Bookmark {
 
 	public String getObjectID() {
 		return oid;
+	}
+
+	public String getName() {
+		return name;
 	}
 }

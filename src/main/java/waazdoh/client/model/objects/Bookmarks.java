@@ -40,7 +40,7 @@ public final class Bookmarks {
 		}
 	}
 
-	private BookmarkGroup get(final String mid) {
+	public BookmarkGroup get(final String mid) {
 		return groups.get(mid);
 	}
 
@@ -58,10 +58,11 @@ public final class Bookmarks {
 		return new LinkedList<BookmarkGroup>(groups.values());
 	}
 
-	public synchronized void addGroup(String string) {
+	public synchronized BookmarkGroup addGroup(String string) {
 		BookmarkGroup g = new BookmarkGroup(string, service);
 		this.groups.put(string, g);
 		fireGroupAdded(g);
+		return g;
 	}
 
 }

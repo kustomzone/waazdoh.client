@@ -1,5 +1,9 @@
 package waazdoh.client;
 
+import java.net.MalformedURLException;
+
+import org.xml.sax.SAXException;
+
 import waazdoh.client.model.objects.BookmarkGroup;
 import waazdoh.client.model.objects.Bookmarks;
 import waazdoh.client.model.objects.BookmarksListener;
@@ -21,7 +25,16 @@ public class TestBookmarks extends WCTestCase {
 		});
 
 		ms.addGroup("testgroup");
-		
+
 		assertEquals(string, st.toString());
+	}
+
+	public void testRead() throws MalformedURLException, SAXException {
+		WClient c = getClient(getRandomUserName(), false);
+		BookmarkGroup bg = c.getBookmarks().addGroup("testbookmark");
+		bg.add("testvalue", "value");
+		assertNotNull(bg);
+		BookmarkGroup bgb = c.getBookmarks().get("testbookmark");
+		assertEquals(bg.get("testvalue"), bgb.get("testvalue"));
 	}
 }
