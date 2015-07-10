@@ -1,7 +1,5 @@
 package waazdoh.client;
 
-import junit.framework.TestCase;
-
 import org.xml.sax.SAXException;
 
 import waazdoh.client.model.WResponse;
