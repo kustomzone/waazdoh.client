@@ -23,7 +23,7 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.xml.sax.SAXException;
 
 import waazdoh.client.model.StringIDLocalPath;
-import waazdoh.client.storage.BeanStorage;
+import waazdoh.common.BeanStorage;
 import waazdoh.common.MStringID;
 import waazdoh.common.WData;
 import waazdoh.common.WLogger;

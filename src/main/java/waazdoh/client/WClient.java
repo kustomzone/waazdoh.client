@@ -6,7 +6,7 @@ import java.util.Set;
 
 import waazdoh.client.model.User;
 import waazdoh.client.model.objects.Bookmarks;
-import waazdoh.client.storage.BeanStorage;
+import waazdoh.common.BeanStorage;
 import waazdoh.common.UserID;
 import waazdoh.common.WLogger;
 import waazdoh.common.WPreferences;

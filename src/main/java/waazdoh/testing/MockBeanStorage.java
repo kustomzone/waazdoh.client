@@ -3,7 +3,7 @@ package waazdoh.testing;
 import java.util.HashMap;
 import java.util.Map;
 
-import waazdoh.client.storage.BeanStorage;
+import waazdoh.common.BeanStorage;
 import waazdoh.common.MStringID;
 import waazdoh.common.WData;
 
