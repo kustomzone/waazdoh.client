@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 
 import waazdoh.client.model.User;
-import waazdoh.client.model.objects.Bookmarks;
 import waazdoh.common.BeanStorage;
 import waazdoh.common.UserID;
 import waazdoh.common.WLogger;
@@ -21,15 +20,14 @@ public class WClient {
 	private boolean running = true;
 	//
 	private Set<WClientListener> listeners = new HashSet<WClientListener>();
-	private Bookmarks bookmarks;
 	private final BeanStorage beanstorage;
 	private final BinarySource source;
 	private UserID userid;
 
 	private WLogger logger = WLogger.getLogger(this);
 
-	public WClient(WPreferences p, BinarySource binarysource, BeanStorage beanstorage,
-			ServiceClient nservice) {
+	public WClient(WPreferences p, BinarySource binarysource,
+			BeanStorage beanstorage, ServiceClient nservice) {
 		this.preferences = p;
 		this.source = binarysource;
 		this.beanstorage = beanstorage;
@@ -49,11 +47,8 @@ public class WClient {
 	}
 
 	public boolean isLoggedIn() {
-		return this.userid != null && getService().getAuthenticationToken() != null;
-	}
-
-	public Bookmarks getBookmarks() {
-		return bookmarks;
+		return this.userid != null
+				&& getService().getAuthenticationToken() != null;
 	}
 
 	public UserID getUserID() {
@@ -77,7 +72,8 @@ public class WClient {
 	}
 
 	public boolean trySavedSession() {
-		return setSession(getPreferences().get(WPreferences.PREFERENCES_SESSION, ""));
+		return setSession(getPreferences().get(
+				WPreferences.PREFERENCES_SESSION, ""));
 	}
 
 	public boolean setSession(final String session) {
@@ -88,7 +84,8 @@ public class WClient {
 				if (user != null && user.isSuccess()) {
 					this.userid = new UserID(user.getUserid());
 					source.setClient(this);
-					getPreferences().set(WPreferences.PREFERENCES_SESSION, session);
+					getPreferences().set(WPreferences.PREFERENCES_SESSION,
+							session);
 					loggedIn();
 					return true;
 				} else {
@@ -113,8 +110,6 @@ public class WClient {
 	}
 
 	private void loggedIn() {
-		bookmarks = new Bookmarks(service);
-
 		for (WClientListener clientListener : listeners) {
 			clientListener.loggedIn();
 		}
@@ -134,7 +129,8 @@ public class WClient {
 	}
 
 	public String readStorageArea(String string) {
-		return getService().getStorageArea().read(getService().getUser().getUsername(), string);
+		return getService().getStorageArea().read(
+				getService().getUser().getUsername(), string);
 	}
 
 	public List<String> search(String searchitem, int index, int count) {
