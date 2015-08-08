@@ -107,8 +107,6 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 			if (downloadeverything) {
 				source.getOrDownload(streamid);
 			}
-			//
-			final List<WhoHasListener> listeners = this.listeners;
 
 			MNodeID knownwhohas = whohas.get(streamid);
 			MessageResponseListener responselistener = new MessageResponseListener() {

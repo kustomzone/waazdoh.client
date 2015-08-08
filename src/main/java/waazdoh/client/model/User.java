@@ -15,7 +15,6 @@ import waazdoh.common.vo.UserVO;
 public final class User {
 
 	private String name;
-	private String img;
 
 	public User(UserVO r) {
 		this.name = r.getUsername();

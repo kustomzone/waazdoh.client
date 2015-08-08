@@ -98,7 +98,6 @@ public class TestP2PServer extends WCTestCase {
 	public void testCanDownload() throws SAXException, MalformedURLException {
 		P2PServer s = getServer();
 		assertTrue(s.canDownload());
-		ServiceClient service = new StaticService(getRandomUserName());
 
 		BinaryID downloadid = null;
 		for (int i = 0; i < WPreferences.NETWORK_MAX_DOWNLOADS_DEFAULT; i++) {

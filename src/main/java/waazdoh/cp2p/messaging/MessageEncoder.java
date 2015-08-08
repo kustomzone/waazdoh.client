@@ -33,7 +33,9 @@ public final class MessageEncoder extends MessageToByteEncoder<List<MMessage>> {
 			//
 			dos.writeInt(list.size());
 			for (MMessage bean : list) {
-				int bytes = writeMessage(dos, bean);
+				if (writeMessage(dos, bean) < 0) {
+					break;
+				}
 			}
 			//
 			byte[] dosbb = baos.toByteArray();

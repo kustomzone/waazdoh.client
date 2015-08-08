@@ -30,7 +30,8 @@ import waazdoh.cp2p.messaging.MessageResponseListener;
 import waazdoh.cp2p.network.ServerListener;
 import waazdoh.cp2p.network.WNode;
 
-public final class Download implements Runnable, MessageResponseListener, ServerListener {
+public final class Download implements Runnable, MessageResponseListener,
+		ServerListener {
 	private static final String MESSAGENAME_WHOHAS = "whohas";
 	private static final String MESSAGENAME_STREAM = "stream";
 	private static final int GIVEUP_TIMEOUT_MSEC = 1000 * 60 * 4;
@@ -49,7 +50,6 @@ public final class Download implements Runnable, MessageResponseListener, Server
 	private String speedinfo;
 
 	private int countbytes;
-	private int overwritebytes;
 	private P2PServer server;
 
 	public Download(Binary b, P2PServer server, WMessenger nmessenger) {
@@ -88,7 +88,8 @@ public final class Download implements Runnable, MessageResponseListener, Server
 		this.starttime = System.currentTimeMillis();
 		flag = new MTimedFlag(P2PServer.DOWNLOAD_RESET_DELAY);
 		while (!isReady() && !messenger.isClosed() && !giveupflag.isTriggered()) {
-			log.info("reset download ready:" + isReady() + " giveupflag:" + giveupflag);
+			log.info("reset download ready:" + isReady() + " giveupflag:"
+					+ giveupflag);
 			flag.reset();
 			resetSentStarts();
 			sendWhoHasMessage();
@@ -98,8 +99,9 @@ public final class Download implements Runnable, MessageResponseListener, Server
 		//
 		server.removeDownload(getID());
 		updateSpeedInfo();
-		log.info("Download DONE " + isReady() + " " + speedinfo + " source:" + server.isRunning()
-				+ " ready:" + isReady() + " giveup: " + giveupflag);
+		log.info("Download DONE " + isReady() + " " + speedinfo + " source:"
+				+ server.isRunning() + " ready:" + isReady() + " giveup: "
+				+ giveupflag);
 		//
 		this.server.reportDownload(getID(), isReady());
 	}
@@ -116,15 +118,17 @@ public final class Download implements Runnable, MessageResponseListener, Server
 
 	public void updateSpeedInfo() {
 		this.endtime = System.currentTimeMillis();
-		this.speedinfo = "Has downloaded " + countbytes + " bytes in " + (endtime - starttime)
-				+ " msecs" + "(" + (1000.0f * bin.length() / (endtime - starttime)) + " B/s)";
+		this.speedinfo = "Has downloaded " + countbytes + " bytes in "
+				+ (endtime - starttime) + " msecs" + "("
+				+ (1000.0f * bin.length() / (endtime - starttime)) + " B/s)";
 	}
 
 	public synchronized boolean isReady() {
 		if (!sentstarts.isEmpty()) {
 			return false;
 		} else if (this.countbytes < bin.length()) {
-			log.info("isready length fail " + countbytes + " binary.length " + bin.length());
+			log.info("isready length fail " + countbytes + " binary.length "
+					+ bin.length());
 			return false;
 		} else {
 			log.info("isready length ok " + countbytes + " " + bin.length());
@@ -150,8 +154,8 @@ public final class Download implements Runnable, MessageResponseListener, Server
 					whoHasMessage.addResponseListener(this);
 					n.sendMessage(whoHasMessage);
 				} else {
-					log.info("Got null WhoHasMessage. is ready?(" + isReady() + ") isDone?("
-							+ isDone() + ")");
+					log.info("Got null WhoHasMessage. is ready?(" + isReady()
+							+ ") isDone?(" + isDone() + ")");
 				}
 			} else {
 				sendWhoHasMessage();
@@ -294,7 +298,8 @@ public final class Download implements Runnable, MessageResponseListener, Server
 			int randompart = (int) (Math.random() * missingparts.size());
 			DownloadPart missingpart = missingparts.get(randompart);
 
-			DownloadPart s = new DownloadPart(missingpart.start, missingpart.end);
+			DownloadPart s = new DownloadPart(missingpart.start,
+					missingpart.end);
 			sentstarts.put(missingpart.start, s);
 			//
 			WData p = needed.add("piece");
@@ -305,10 +310,6 @@ public final class Download implements Runnable, MessageResponseListener, Server
 		} else {
 			return false;
 		}
-	}
-
-	private DownloadPart getStartNeedSent(int start) {
-		return sentstarts.get(start);
 	}
 
 	@Override
