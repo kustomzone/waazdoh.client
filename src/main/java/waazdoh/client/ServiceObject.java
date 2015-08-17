@@ -44,8 +44,9 @@ public final class ServiceObject implements HashSource {
 
 	private String prefix;
 
-	public ServiceObject(final String tagname, final WClient env, final ServiceObjectData data,
-			final String version, final String nprefix) {
+	public ServiceObject(final String tagname, final WClient env,
+			final ServiceObjectData data, final String version,
+			final String nprefix) {
 		this.tagname = tagname;
 		this.creatorid = env.getUserID();
 		this.data = data;
@@ -59,7 +60,8 @@ public final class ServiceObject implements HashSource {
 	public boolean load(MStringID oid) {
 		log.info("loading " + oid);
 		if (oid != null) {
-			ObjectVO response = env.getService().getObjects().read(oid.toString());
+			ObjectVO response = env.getService().getObjects()
+					.read(oid.toString());
 			if (response != null && response.isSuccess()) {
 				id = new ObjectID(oid, this);
 				return parseBean(response.getWData());
@@ -79,6 +81,7 @@ public final class ServiceObject implements HashSource {
 		creationtime = bean.getLongValue("creationtime");
 		modifytime = bean.getLongValue("modified");
 		version = bean.getValue("version");
+		copyof = bean.getIDValue("copyof");
 		//
 		return data.parseBean(bean);
 	}
@@ -97,8 +100,12 @@ public final class ServiceObject implements HashSource {
 		bt.addValue("modified", modifytime);
 		bt.addValue("creator", creatorid.toString());
 		bt.addValue("version", version);
-		bt.addValue("license", "GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html");
-
+		bt.addValue("license",
+				"GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html");
+		if (copyof != null) {
+			bt.addValue("copyof", copyof.toString());
+		}
+		
 		return bt;
 	}
 
@@ -147,8 +154,10 @@ public final class ServiceObject implements HashSource {
 			storedbean = storing;
 			log.info("adding bean" + id);
 
-			env.getService().getObjects()
-					.write(id.getStringID().toString(), storing.toXML().toString());
+			env.getService()
+					.getObjects()
+					.write(id.getStringID().toString(),
+							storing.toXML().toString());
 		}
 	}
 
@@ -156,7 +165,8 @@ public final class ServiceObject implements HashSource {
 		modifytime = System.currentTimeMillis();
 		log.info("modified " + id);
 		//
-		List<ServiceObjectListener> ls = new LinkedList<ServiceObjectListener>(listeners);
+		List<ServiceObjectListener> ls = new LinkedList<ServiceObjectListener>(
+				listeners);
 		for (ServiceObjectListener trackListener : ls) {
 			trackListener.modified();
 		}

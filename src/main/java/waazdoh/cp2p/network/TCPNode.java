@@ -30,11 +30,8 @@ import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MessageResponseListener;
 
 public final class TCPNode implements WNode {
-	private static final long MAX_GIVEUP_TIME = 6000;
-
 	private Channel channel;
 	private WLogger log = WLogger.getLogger(this);
-	private long created = System.currentTimeMillis();
 
 	private MTimedFlag connectionwaiter;
 	private boolean offline;

@@ -28,7 +28,6 @@ import waazdoh.common.WPreferences;
 
 public final class LocalBinaryStorage implements BinaryStorage {
 	private List<Binary> streams = new LinkedList<Binary>();
-	private Map<BinaryID, MCRC> crcs = new HashMap<BinaryID, MCRC>();
 	//
 	private WLogger log = WLogger.getLogger(this);
 	private boolean running = true;

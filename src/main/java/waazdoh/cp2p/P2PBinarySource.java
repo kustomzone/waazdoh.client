@@ -82,10 +82,13 @@ public final class P2PBinarySource implements BinarySource {
 
 	@Override
 	public void clearMemory(int suggestedmemorytreshold) {
-		if (storage != null)
+		if (storage != null) {
 			storage.clearMemory(suggestedmemorytreshold);
-		if (client != null)
+		}
+
+		if (client != null) {
 			server.clearMemory();
+		}
 	}
 
 	@Override
