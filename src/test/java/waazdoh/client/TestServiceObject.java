@@ -1,6 +1,8 @@
 package waazdoh.client;
 
 import java.net.MalformedURLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.xml.sax.SAXException;
 
@@ -33,13 +35,37 @@ public class TestServiceObject extends WCTestCase {
 
 	ServiceObject o;
 
+	public void testModifiedListener() throws MalformedURLException,
+			SAXException {
+		ServiceObjectData data1 = new ServiceObjectDataImplementation();
+
+		WClient c1 = getClient(getRandomUserName(), false);
+		o = new ServiceObject("test", c1, data1, WaazdohInfo.version,
+				"WAAZDOHTEST");
+
+		final Map<String, String> map = new HashMap<String, String>();
+
+		o.addListener(new ServiceObjectListener() {
+
+			@Override
+			public void modified() {
+				map.put("done", "true");
+			}
+		});
+
+		o.save();
+		o.publish();
+
+		assertEquals(map.get("done"), "true");
+	}
+
 	public void testServiceObject() throws SAXException, MalformedURLException {
 		ServiceObjectData data1 = new ServiceObjectDataImplementation();
 
 		WClient c1 = getClient(getRandomUserName(), false);
 		o = new ServiceObject("test", c1, data1, WaazdohInfo.version,
 				"WAAZDOHTEST");
-		
+
 		o.save();
 		o.publish();
 

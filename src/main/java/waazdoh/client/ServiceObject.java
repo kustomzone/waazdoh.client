@@ -96,8 +96,8 @@ public final class ServiceObject implements HashSource {
 
 	public WData getBean() {
 		WData bt = new WData(tagname);
-		bt.addValue("creationtime", creationtime);
-		bt.addValue("modified", modifytime);
+		bt.addValue("creationtime", getCreationtime());
+		bt.addValue("modified", getModifytime());
 		bt.addValue("creator", creatorid.toString());
 		bt.addValue("version", version);
 		bt.addValue("license",
@@ -105,7 +105,7 @@ public final class ServiceObject implements HashSource {
 		if (copyof != null) {
 			bt.addValue("copyof", copyof.toString());
 		}
-		
+
 		return bt;
 	}
 
