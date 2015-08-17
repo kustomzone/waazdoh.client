@@ -248,6 +248,20 @@ public final class StaticService implements ServiceClient {
 				}
 
 				@Override
+				public List<String> searchValue(String value) {
+					List<String> list = new LinkedList<String>();
+
+					Set<String> ks = storage.keySet();
+					for (String string : ks) {
+						String listvalue = storage.get(string);
+						if (listvalue.equals(value)) {
+							list.add(value);
+						}
+					}
+					return list;
+				}
+
+				@Override
 				public List<String> list(String path) {
 					if (path.lastIndexOf('/') != path.length() - 1) {
 						path = path + "/";
