@@ -58,14 +58,16 @@ public final class Download implements Runnable, MessageResponseListener,
 		this.server = server;
 		//
 		server.addServerListener(this);
+
+		log = WLogger.getLogger(this);
+		log.info("New Download starting " + b);
 		//
+		initMissingParts();
+
 		Thread t = new Thread(this, "Download");
 		t.start();
 
-		log = WLogger.getLogger(this);
 		log.info("created");
-		//
-		initMissingParts();
 	}
 
 	private void initMissingParts() {
@@ -85,6 +87,8 @@ public final class Download implements Runnable, MessageResponseListener,
 
 	@Override
 	public void run() {
+		log.info("Starting download");
+
 		this.starttime = System.currentTimeMillis();
 		flag = new MTimedFlag(P2PServer.DOWNLOAD_RESET_DELAY);
 		while (!isReady() && !messenger.isClosed() && !giveupflag.isTriggered()) {
