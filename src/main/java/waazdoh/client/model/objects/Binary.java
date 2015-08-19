@@ -75,6 +75,8 @@ public final class Binary implements HashSource {
 		binarycount++;
 
 		used();
+		
+		log.info("new binary " + getBinaryPath());
 	}
 
 	public boolean load(BinaryID streamid) {

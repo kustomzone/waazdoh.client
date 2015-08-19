@@ -12,7 +12,6 @@ import waazdoh.common.MStringID;
 import waazdoh.common.MTimedFlag;
 import waazdoh.common.WLogger;
 import waazdoh.common.WPreferences;
-import waazdoh.common.client.ServiceClient;
 import waazdoh.cp2p.P2PServer;
 import waazdoh.cp2p.P2PServerImpl;
 import waazdoh.cp2p.common.MHost;
@@ -20,7 +19,6 @@ import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.SimpleMessageHandler;
 import waazdoh.cp2p.network.ServerListener;
 import waazdoh.cp2p.network.WNode;
-import waazdoh.testing.StaticService;
 import waazdoh.testing.StaticTestPreferences;
 
 public class TestP2PServer extends WCTestCase {
@@ -41,6 +39,17 @@ public class TestP2PServer extends WCTestCase {
 		assertTrue(s.isRunning());
 		s.close();
 		assertFalse(s.isRunning());
+	}
+
+	public void testWaitForNode() {
+		final P2PServer s = getServer();
+		new ConditionWaiter(new Condition() {
+			@Override
+			public boolean test() {
+				return s.getNodesIterator().iterator().next() != null;
+			}
+		}, getWaitTime());
+		assertNotNull(s.getNodesIterator().iterator().next());
 	}
 
 	public void testAddSelfAsNode() {
@@ -116,11 +125,6 @@ public class TestP2PServer extends WCTestCase {
 		assertTrue(s.canDownload());
 	}
 
-	private String getTempPath() {
-		String tempDir = System.getProperty("java.io.tmpdir");
-		return tempDir;
-	}
-
 	public void testTwoNodes() {
 		log.info("time servera " + System.currentTimeMillis());
 		final P2PServer servera = getServer();
@@ -151,14 +155,6 @@ public class TestP2PServer extends WCTestCase {
 		} finally {
 			log.info("time closing " + System.currentTimeMillis());
 			log.info("time closing");
-		}
-	}
-
-	private int getWaitTime() {
-		if (System.getProperty("extended.debug") != null) {
-			return 360000;
-		} else {
-			return 60000;
 		}
 	}
 

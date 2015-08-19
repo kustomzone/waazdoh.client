@@ -31,6 +31,8 @@ public class StringIDLocalPath {
 		}
 
 		spath += File.separatorChar;
+		spath = spath.replace("" + File.separatorChar + File.separatorChar, ""
+				+ File.separatorChar);
 		return spath;
 	}
 }

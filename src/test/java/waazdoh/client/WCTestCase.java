@@ -171,4 +171,18 @@ public class WCTestCase extends TestCase {
 		return "username" + (usernamecounter++) + "_"
 				+ System.currentTimeMillis();
 	}
+
+	protected int getWaitTime() {
+		if (System.getProperty("extended.debug") != null) {
+			return 360000;
+		} else {
+			return 60000;
+		}
+	}
+
+	protected String getTempPath() {
+		String tempDir = System.getProperty("java.io.tmpdir");
+		return tempDir;
+	}
+
 }

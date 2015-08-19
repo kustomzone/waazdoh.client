@@ -108,11 +108,6 @@ public final class TestBinary extends WCTestCase {
 		assertEquals(a.getCRC(), b.getCRC());
 	}
 
-	private String getTempPath() {
-		String tempDir = System.getProperty("java.io.tmpdir");
-		return tempDir;
-	}
-
 	public void testBinaryBean() throws IOException {
 		Binary a = getNewBinary();
 		byte[] bs = new byte[1000];

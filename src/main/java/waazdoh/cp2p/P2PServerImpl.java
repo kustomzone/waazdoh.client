@@ -239,8 +239,6 @@ public final class P2PServerImpl implements P2PServer {
 				}
 			}
 
-			checkDefaultNodes();
-
 			int timeout = 100 + (int) (Math.random() * 100 * this.nodes.size() * NODECHECKLOOP_COUNT);
 			doWait(timeout);
 		}
@@ -268,18 +266,6 @@ public final class P2PServerImpl implements P2PServer {
 
 	public synchronized NodeStatus getNodeStatus(WNode node) {
 		return nodestatuses.get(node);
-	}
-
-	private synchronized void checkDefaultNodes() {
-		if (nodes.isEmpty()) {
-			addDefaultNodes();
-			if (nodes.isEmpty()) {
-				int maxwaittime = 5000;
-				log.info("nodes size still zero. Waiting " + maxwaittime
-						+ "msec");
-				waitForConnection(maxwaittime);
-			}
-		}
 	}
 
 	private void sendPing(WNode node) {
