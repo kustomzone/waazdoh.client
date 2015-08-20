@@ -89,7 +89,7 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 				Binary bin = source.getOrDownload(streamid);
 				byte bs[] = new byte[end - start + 1];
 				bytes += bs.length;
-				int index = 0;
+
 				log.info("preparing piece " + start + " -> " + end + " bin:"
 						+ bin + " bs:" + bs.length);
 				try {

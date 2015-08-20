@@ -11,17 +11,14 @@
 package waazdoh.client.storage.local;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import waazdoh.client.WClient;
 import waazdoh.client.model.BinaryID;
 import waazdoh.client.model.objects.Binary;
 import waazdoh.client.storage.BinaryStorage;
-import waazdoh.client.utils.MCRC;
 import waazdoh.common.MStringID;
 import waazdoh.common.WLogger;
 import waazdoh.common.WPreferences;
@@ -91,7 +88,8 @@ public final class LocalBinaryStorage implements BinaryStorage {
 		}
 	}
 
-	public synchronized Binary loadPersistentStream(BinaryID streamid) throws IOException {
+	public synchronized Binary loadPersistentStream(BinaryID streamid)
+			throws IOException {
 		synchronized (streams) {
 			Binary bin;
 			bin = new Binary(client, getLocalPath(), "default", "default");

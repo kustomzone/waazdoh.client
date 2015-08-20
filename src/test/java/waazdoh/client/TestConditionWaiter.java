@@ -1,7 +1,7 @@
 package waazdoh.client;
 
-import waazdoh.client.utils.ConditionWaiter;
 import junit.framework.TestCase;
+import waazdoh.client.utils.ConditionWaiter;
 
 public class TestConditionWaiter extends TestCase {
 
