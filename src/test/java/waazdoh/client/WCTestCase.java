@@ -15,11 +15,11 @@ import waazdoh.client.utils.ConditionWaiter;
 import waazdoh.client.utils.ThreadChecker;
 import waazdoh.common.WLogger;
 import waazdoh.common.WPreferences;
+import waazdoh.common.client.MemoryBeanStorage;
 import waazdoh.cp2p.P2PBinarySource;
 import waazdoh.cp2p.P2PServer;
 import waazdoh.cp2p.P2PServerImpl;
 import waazdoh.cp2p.common.MHost;
-import waazdoh.testing.MockBeanStorage;
 import waazdoh.testing.StaticService;
 import waazdoh.testing.StaticTestPreferences;
 
@@ -158,7 +158,7 @@ public class WCTestCase extends TestCase {
 		StaticService service = new StaticService(username);
 		String session = service.createSession();
 
-		MockBeanStorage bs = new MockBeanStorage();
+		MemoryBeanStorage bs = new MemoryBeanStorage();
 
 		WClient c = new WClient(p, source, bs, service);
 		c.setSession(session);

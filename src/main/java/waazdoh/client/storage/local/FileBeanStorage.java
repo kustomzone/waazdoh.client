@@ -86,6 +86,14 @@ public final class FileBeanStorage implements BeanStorage {
 		return filepath + id + ".xml";
 	}
 
+	@Override
+	public void remove(MStringID id) {
+		File f = getFile(id);
+		if (f.exists()) {
+			f.delete();
+		}
+	}
+
 	public void addBean(final MStringID id, WData response) {
 		try {
 			File f = getFile(id);
