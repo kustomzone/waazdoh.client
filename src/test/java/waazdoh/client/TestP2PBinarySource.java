@@ -38,19 +38,22 @@ public class TestP2PBinarySource extends WCTestCase {
 	}
 
 	private BinarySource getSource() throws MalformedURLException, SAXException {
-		WClient c = getClient(getRandomUserName(), servera == null);
+		return getSource(servera == null);
+	}
+
+	private BinarySource getSource(boolean bind) throws MalformedURLException,
+			SAXException {
+		WClient c = getClient(getRandomUserName(), bind);
 		return c.getBinarySource();
 	}
 
 	public void testGetOrDownload() throws SAXException, FileNotFoundException,
 			IOException {
 		servera = getSource();
+		getSource(true);
 
-		
 		Binary binarya = servera.newBinary("comment", "bin");
-		binarya.add(new byte[1000]);
-		binarya.setReady();
-		binarya.publish();
+		addBinaryData(binarya);
 
 		serverb = getSource();
 		final Binary binaryb = serverb.getOrDownload(binarya.getID());
@@ -69,5 +72,11 @@ public class TestP2PBinarySource extends WCTestCase {
 
 		assertTrue(binaryb.isReady());
 		assertEquals(1000, binaryb.length());
+	}
+
+	private void addBinaryData(Binary binarya) throws IOException {
+		binarya.add(new byte[1000]);
+		binarya.setReady();
+		binarya.publish();
 	}
 }

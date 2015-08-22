@@ -34,7 +34,6 @@ import waazdoh.cp2p.network.WNode;
 public final class WhoHasHandler extends SimpleMessageHandler {
 	public static final String MESSAGENAME = "whohas";
 
-	private int maxResponseWaitTime = P2PServer.MAX_RESPONSE_WAIT_TIME;
 	//
 	private WLogger log = WLogger.getLogger(this);
 	/**
@@ -93,7 +92,7 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 
 			@Override
 			public boolean isDone() {
-				return System.currentTimeMillis() - st > maxResponseWaitTime;
+				return System.currentTimeMillis() - st > P2PServer.MAX_RESPONSE_WAIT_TIME;
 			}
 		};
 		//
@@ -145,8 +144,8 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 			byte bs[] = new byte[end - start + 1];
 			bytes += bs.length;
 
-			log.info("preparing piece " + start + " -> " + end + " bin:"
-					+ bin + " bs:" + bs.length);
+			log.info("preparing piece " + start + " -> " + end + " bin:" + bin
+					+ " bs:" + bs.length);
 			try {
 				bin.read(start, bs);
 				m.addAttachment("bytes", bs);
