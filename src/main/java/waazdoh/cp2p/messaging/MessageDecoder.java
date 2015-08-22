@@ -15,7 +15,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -28,7 +27,6 @@ import waazdoh.common.WLogger;
 public final class MessageDecoder extends ByteToMessageDecoder {
 	private static final int MINIMUM_BYTECOUNT = 8;
 	private WLogger log = WLogger.getLogger(this);
-	private ByteArrayOutputStream baos;
 
 	@Override
 	protected void decode(ChannelHandlerContext arg0, ByteBuf cb,

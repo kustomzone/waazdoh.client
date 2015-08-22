@@ -215,9 +215,9 @@ public final class P2PServerImpl implements P2PServer {
 
 	private synchronized void messageNodeCheckLoop() {
 		while (isRunning() && nodechecktg.activeCount() <= NODECHECKLOOP_COUNT) {
-			Iterable<WNode> nodes = getNodesIterator();
+			Iterable<WNode> nodeiterator = getNodesIterator();
 			//
-			for (WNode node : nodes) {
+			for (WNode node : nodeiterator) {
 				NodeStatus nodestatus = getNodeStatus(node);
 
 				if (node.isConnected() && nodestatus.checkPing()) {
@@ -230,8 +230,8 @@ public final class P2PServerImpl implements P2PServer {
 					node.close();
 					removeNode(node);
 				} else if (getNodeStatus(node).shouldDie() || node.isClosed()) {
-					log.info("Removing node " + node + " nodes:" + nodes);
-					if (nodes != null) {
+					log.info("Removing node " + node + " nodes:" + nodeiterator);
+					if (nodeiterator != null) {
 						node.close();
 						removeNode(node);
 						nodestatuses.remove(node);
@@ -271,27 +271,7 @@ public final class P2PServerImpl implements P2PServer {
 	private void sendPing(WNode node) {
 		MMessage message = getMessenger().getMessage("ping");
 		getMessenger().addResponseListener(message.getID(),
-				new MessageResponseListener() {
-					private long sent = System.currentTimeMillis();
-					private boolean done = false;
-
-					@Override
-					public void messageReceived(MMessage message) {
-						log.info("PING response in "
-								+ (System.currentTimeMillis() - sent) + " ms");
-						done = true;
-					}
-
-					@Override
-					public boolean isDone() {
-						if ((System.currentTimeMillis() - sent) > 10000) {
-							log.info("PING giving up");
-							return true;
-						} else {
-							return done;
-						}
-					}
-				});
+				new MessageResponseListenerImplementation());
 
 		node.sendMessage(message);
 		getNodeStatus(node).pingSent();
@@ -318,26 +298,17 @@ public final class P2PServerImpl implements P2PServer {
 			}
 		}, 2000);
 
+		addNodesInServerLists();
+	}
+
+	private void addNodesInServerLists() {
 		String slist = p.get(WPreferences.SERVERLIST, "");
 		log.info("got server list " + slist);
 
 		if (slist == null || slist.length() == 0) {
-			slist = "";
-			log.info("Serverlist empty. Adding service domain with default port");
-			String service = p.get(WPreferences.SERVICE_URL, "");
-			URL u;
-			try {
-				u = new URL(service);
-				String host = u.getHost();
-				log.info("host " + host);
-				slist = host + ":" + TCPListener.DEFAULT_PORT;
-				log.info("new list " + slist);
-			} catch (MalformedURLException e) {
-				log.error(e);
-			}
+			slist = createServerList();
 		}
 
-		//
 		StringTokenizer st = new StringTokenizer(slist, ",");
 		while (st.hasMoreTokens()) {
 			String server = st.nextToken();
@@ -355,6 +326,24 @@ public final class P2PServerImpl implements P2PServer {
 				log.info("invalid value " + server);
 			}
 		}
+	}
+
+	private String createServerList() {
+		String slist;
+		slist = "";
+		log.info("Serverlist empty. Adding service domain with default port");
+		String service = p.get(WPreferences.SERVICE_URL, "");
+		URL u;
+		try {
+			u = new URL(service);
+			String host = u.getHost();
+			log.info("host " + host);
+			slist = host + ":" + TCPListener.DEFAULT_PORT;
+			log.info("new list " + slist);
+		} catch (MalformedURLException e) {
+			log.error(e);
+		}
+		return slist;
 	}
 
 	@Override
@@ -442,7 +431,7 @@ public final class P2PServerImpl implements P2PServer {
 		}
 
 		log.info("node not found (" + nid + ")  in nodes " + nodes);
-		
+
 		return null;
 	}
 
@@ -591,4 +580,28 @@ public final class P2PServerImpl implements P2PServer {
 	public WMessenger getMessenger() {
 		return this.messenger;
 	}
+
+	private final class MessageResponseListenerImplementation implements
+			MessageResponseListener {
+		private long sent = System.currentTimeMillis();
+		private boolean done = false;
+
+		@Override
+		public void messageReceived(MMessage message) {
+			log.info("PING response in " + (System.currentTimeMillis() - sent)
+					+ " ms");
+			done = true;
+		}
+
+		@Override
+		public boolean isDone() {
+			if ((System.currentTimeMillis() - sent) > 10000) {
+				log.info("PING giving up");
+				return true;
+			} else {
+				return done;
+			}
+		}
+	}
+
 }
