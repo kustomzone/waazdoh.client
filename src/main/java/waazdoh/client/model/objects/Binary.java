@@ -75,7 +75,7 @@ public final class Binary implements HashSource {
 		binarycount++;
 
 		used();
-		
+
 		log.info("new binary " + getBinaryPath());
 	}
 
@@ -173,8 +173,7 @@ public final class Binary implements HashSource {
 		resetCRC();
 	}
 
-	public synchronized void add(byte[] bytes) throws FileNotFoundException,
-			IOException {
+	public synchronized void add(byte[] bytes) throws IOException {
 		used();
 		getAccessFile().write(bytes);
 		log.debug("added " + bytes.length + ". File size now "
