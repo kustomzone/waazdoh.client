@@ -5,7 +5,8 @@ import waazdoh.common.WLogger;
 public class ConditionWaiter {
 	private boolean done;
 
-	public ConditionWaiter(Condition c, int maxtime) {
+	public ConditionWaiter(final Condition c, final int nmaxtime) {
+		int maxtime = nmaxtime;
 		long st = System.currentTimeMillis();
 		if (maxtime <= 0) {
 			maxtime = Integer.MAX_VALUE;
