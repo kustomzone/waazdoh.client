@@ -32,21 +32,7 @@ public final class MMessage {
 	private WData bean;
 	private Map<String, byte[]> attachments = new HashMap<String, byte[]>();
 	private int bytecount;
-	//
 	private MessageResponseListener responselistener;
-
-	public MMessage(WData bean) {
-		this.bean = bean;
-		//
-		bytecount = bean.toXML().toString().length();
-		addCreatedTimestamp();
-	}
-
-	private void addCreatedTimestamp() {
-		if (bean.getValue("timestamp") == null) {
-			bean.addValue("timestamp", System.currentTimeMillis());
-		}
-	}
 
 	public MMessage(final String string, MStringID sentby) {
 		bean = new WData(string);
@@ -232,6 +218,12 @@ public final class MMessage {
 
 	public int getByteCount() {
 		return this.bytecount;
+	}
+
+	private void addCreatedTimestamp() {
+		if (bean.getValue("timestamp") == null) {
+			bean.addValue("timestamp", System.currentTimeMillis());
+		}
 	}
 
 	public void addResponseListener(
