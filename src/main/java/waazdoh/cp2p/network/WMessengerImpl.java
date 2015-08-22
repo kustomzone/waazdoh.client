@@ -170,8 +170,8 @@ public class WMessengerImpl implements WMessenger {
 			log.info("" + messages.size() + " handled and returning " + ret);
 			return ret;
 		} else {
-			log.info("Closed. Not handling message, returning null");
-			return null;
+			log.info("Closed. Not handling message, returning empty");
+			return new LinkedList<MMessage>();
 		}
 	}
 

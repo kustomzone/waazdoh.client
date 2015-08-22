@@ -26,29 +26,31 @@ import org.xml.sax.SAXException;
 import waazdoh.common.WLogger;
 
 public final class MessageDecoder extends ByteToMessageDecoder {
+	private static final int MINIMUM_BYTECOUNT = 8;
 	private WLogger log = WLogger.getLogger(this);
 	private ByteArrayOutputStream baos;
 
 	@Override
 	protected void decode(ChannelHandlerContext arg0, ByteBuf cb,
 			List<Object> msgs) throws Exception {
-		if (cb.readableBytes() < 8)
-			return;
-		cb.markReaderIndex();
-		int length = cb.readInt();
+		if (cb.readableBytes() >= MINIMUM_BYTECOUNT) {
+			cb.markReaderIndex();
+			int length = cb.readInt();
 
-		if (cb.readableBytes() < length) {
-			log.info("missing readablebytes " + cb.readableBytes() + " vs "
-					+ length);
-			cb.resetReaderIndex();
-			return;
+			if (cb.readableBytes() < length) {
+				log.info("missing readablebytes " + cb.readableBytes() + " vs "
+						+ length);
+				cb.resetReaderIndex();
+				return;
+			}
+
+			byte[] bs = new byte[length];
+			cb.readBytes(bs);
+
+			DataInputStream dis = new DataInputStream(new ByteArrayInputStream(
+					bs));
+			msgs.add(parse(dis));
 		}
-
-		byte[] bs = new byte[length];
-		cb.readBytes(bs);
-
-		DataInputStream dis = new DataInputStream(new ByteArrayInputStream(bs));
-		msgs.add(parse(dis));
 	}
 
 	private List<MMessage> parse(DataInputStream dis) throws IOException {

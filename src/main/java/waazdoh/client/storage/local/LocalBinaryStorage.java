@@ -46,9 +46,7 @@ public final class LocalBinaryStorage implements BinaryStorage {
 
 	public void addNewBinary(Binary fs) {
 		synchronized (streams) {
-			if (findBinary(fs.getID()) != null) {
-				throw new RuntimeException("Binary " + fs + " already added");
-			} else {
+			if (findBinary(fs.getID()) == null) {
 				log.info("adding binary " + fs);
 				streams.add(fs);
 				streams.notifyAll();
