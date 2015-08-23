@@ -150,6 +150,13 @@ public class TestP2PServer extends WCTestCase {
 			assertNotNull(servera.getID());
 			assertNotNull(serverb.getID());
 
+			new ConditionWaiter(new Condition() {
+				public boolean test() {
+					return serverb.getNode(servera.getID()) != null
+							&& servera.getNode(serverb.getID()) != null;
+				}
+			}, getWaitTime());
+
 			assertNotNull(serverb.getNode(servera.getID()));
 			assertNotNull(servera.getNode(serverb.getID()));
 		} finally {
