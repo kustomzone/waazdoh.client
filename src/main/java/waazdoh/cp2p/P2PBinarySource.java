@@ -25,7 +25,7 @@ public final class P2PBinarySource implements BinarySource {
 	//
 	private WLogger log = WLogger.getLogger(this);
 	private WPreferences preferences;
-	final private FileBeanStorage beanstorage;
+	private final FileBeanStorage beanstorage;
 	private LocalBinaryStorage storage;
 	private WClient client;
 

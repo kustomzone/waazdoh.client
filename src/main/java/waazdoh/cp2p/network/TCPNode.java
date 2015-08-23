@@ -43,7 +43,7 @@ public final class TCPNode implements WNode {
 	private boolean closed;
 
 	private MNodeID id;
-	final private MStringID localid = new MStringID();
+	private final MStringID localid = new MStringID();
 
 	private WMessenger source;
 

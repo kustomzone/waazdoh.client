@@ -60,8 +60,8 @@ public final class P2PServerImpl implements P2PServer {
 	private ReportingService reporting;
 	private BinarySource binarysource;
 
-	final private Map<WNode, NodeStatus> nodestatuses = new HashMap<WNode, NodeStatus>();
-	final private WMessenger messenger;
+	private final Map<WNode, NodeStatus> nodestatuses = new HashMap<WNode, NodeStatus>();
+	private final WMessenger messenger;
 	private boolean dobind;
 	private Thread rebootchecker;
 
