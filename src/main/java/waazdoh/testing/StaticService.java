@@ -56,13 +56,19 @@ public final class StaticService implements ServiceClient {
 
 	@Override
 	public void setAuthenticationToken(String session) {
-		this.session = session;
-		this.userid = new UserID(new MStringID().toString());
+		if (session.length() == 0) {
+			this.session = null;
+			this.userid = null;
+		} else {
+			this.session = session;
 
-		UserVO uservo = new UserVO();
-		uservo.setUsername(username);
-		uservo.setUserid(userid.toString());
-		userlist.put(userid.toString(), uservo);
+			this.userid = new UserID(new MStringID().toString());
+
+			UserVO uservo = new UserVO();
+			uservo.setUsername(username);
+			uservo.setUserid(userid.toString());
+			userlist.put(userid.toString(), uservo);
+		}
 	}
 
 	@Override
@@ -161,8 +167,7 @@ public final class StaticService implements ServiceClient {
 		}
 
 		@Override
-		public List<String> listNewItems(String path, int start,
-				int count) {
+		public List<String> listNewItems(String path, int start, int count) {
 			return list(path);
 		}
 	}
@@ -292,5 +297,4 @@ public final class StaticService implements ServiceClient {
 			return null;
 		}
 	}
-
 }
