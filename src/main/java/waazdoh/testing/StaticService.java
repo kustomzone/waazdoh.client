@@ -271,7 +271,11 @@ public final class StaticService implements ServiceClient {
 
 		@Override
 		public UserVO checkSession() {
-			return userlist.get(userid.toString());
+			if (userid != null) {
+				return userlist.get(userid.toString());
+			} else {
+				return null;
+			}
 		}
 
 		@Override
