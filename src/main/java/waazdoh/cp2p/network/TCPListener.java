@@ -125,9 +125,10 @@ public final class TCPListener {
 			}
 		});
 		t.start();
+		
 		while (!isClosed() && t.isAlive() && bind == null) {
-			synchronized (t) {
-				t.wait(100);
+			synchronized (this) {
+				this.wait(100);
 			}
 		}
 	}
