@@ -17,13 +17,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.xml.sax.SAXException;
-
 import waazdoh.common.MStringID;
 import waazdoh.common.UserID;
-import waazdoh.common.WData;
 import waazdoh.common.WLogger;
-import waazdoh.common.XML;
 import waazdoh.common.client.ServiceClient;
 import waazdoh.common.service.ObjectsService;
 import waazdoh.common.service.StorageAreaService;
@@ -175,14 +171,8 @@ public final class StaticService implements ServiceClient {
 	private final class ObjectsServiceImplementation implements ObjectsService {
 		@Override
 		public boolean write(String objectid, String testdata) {
-			try {
-				new WData(new XML(testdata));
-				data.put(objectid, new ObjectVO(testdata));
-				return true;
-			} catch (SAXException e) {
-				logger.error(e);
-				return false;
-			}
+			data.put(objectid, new ObjectVO(testdata));
+			return true;
 		}
 
 		@Override
