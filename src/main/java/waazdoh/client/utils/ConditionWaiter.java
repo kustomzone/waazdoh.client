@@ -6,6 +6,15 @@ public class ConditionWaiter {
 	private boolean done;
 
 	public ConditionWaiter(final Condition c, final int nmaxtime) {
+		try {
+			loop(c, nmaxtime);
+		} catch (InterruptedException e) {
+			WLogger.getLogger(this).error(e);
+		}
+	}
+
+	private synchronized void loop(final Condition c, final int nmaxtime)
+			throws InterruptedException {
 		int maxtime = nmaxtime;
 		long st = System.currentTimeMillis();
 		if (maxtime <= 0) {
@@ -13,7 +22,7 @@ public class ConditionWaiter {
 		}
 		//
 		while ((System.currentTimeMillis() - st) < maxtime && !c.test()) {
-			doWait();
+			this.wait(100);
 		}
 
 		done = true;
@@ -21,16 +30,6 @@ public class ConditionWaiter {
 
 	public boolean isDone() {
 		return done;
-	}
-
-	private void doWait() {
-		synchronized (this) {
-			try {
-				this.wait(100);
-			} catch (InterruptedException e) {
-				WLogger.getLogger(this).error(e);
-			}
-		}
 	}
 
 	public static interface Condition {
