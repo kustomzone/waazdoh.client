@@ -235,19 +235,17 @@ public final class TCPNode implements WNode {
 		if (cc != null) {
 			synchronized (this) {
 				log.info("closing channel " + cc);
-				try {
-					cc.disconnect();
-					this.wait(100);
-					cc.close().addListener(new ChannelFutureListener() {
-						@Override
-						public void operationComplete(ChannelFuture arg0)
-								throws Exception {
-							log.info("channel closed " + cc);
-						}
-					});
-				} catch (InterruptedException e) {
-					log.error(e);
-				}
+
+				cc.disconnect();
+
+				cc.close().addListener(new ChannelFutureListener() {
+					@Override
+					public void operationComplete(ChannelFuture arg0)
+							throws Exception {
+						log.info("channel closed " + cc);
+					}
+				});
+
 				//
 				channel = null;
 				if (connectionwaiter != null) {
