@@ -42,7 +42,6 @@ public final class TCPListener {
 	//
 	private WLogger log = WLogger.getLogger(this);
 	private WMessenger messenger;
-	private ThreadGroup tg;
 
 	private ServerBootstrap bootstrap;
 
@@ -52,9 +51,8 @@ public final class TCPListener {
 
 	private WPreferences preferences;
 
-	public TCPListener(ThreadGroup tg, WMessenger mMessager, WPreferences p) {
+	public TCPListener(WMessenger mMessager, WPreferences p) {
 		this.messenger = mMessager;
-		this.tg = tg;
 		this.preferences = p;
 	}
 
@@ -64,33 +62,10 @@ public final class TCPListener {
 			EventLoopGroup workerGroup = new NioEventLoopGroup();
 
 			bootstrap = new ServerBootstrap();
-			bootstrap
-					.group(bossGroup, workerGroup)
+			bootstrap.group(bossGroup, workerGroup)
 					.channel(NioServerSocketChannel.class)
-					.childHandler(new ChannelInitializer<SocketChannel>() {
-						@Override
-						protected void initChannel(SocketChannel ch)
-								throws Exception {
-							if (!isClosed()) {
-								log.info("initChannel " + ch);
-								ChannelPipeline pipe = ch.pipeline();
-								pipe.addLast("zipencoder", new JZlibEncoder());
-								pipe.addLast("zipdecoder", new JZlibDecoder());
-								pipe.addLast("messageencoder",
-										new MessageEncoder());
-								pipe.addLast("messagedecoder",
-										new MessageDecoder());
-								pipe.addLast("server", new MServerHandler());
-								//
-								List<MMessage> mlist = new LinkedList<MMessage>();
-								mlist.add(messenger.getMessage("hello"));
-								ch.writeAndFlush(mlist);
-							} else {
-								log.info("InitChannel on closed listener. Closing channel.");
-								ch.close();
-							}
-						}
-					}).option(ChannelOption.SO_BACKLOG, 128)
+					.childHandler(new ChannelInitializerExtension())
+					.option(ChannelOption.SO_BACKLOG, 128)
 					.childOption(ChannelOption.SO_KEEPALIVE, true);
 			//
 			port = preferences.getInteger(WPreferences.NETWORK_SERVER_PORT,
@@ -125,7 +100,7 @@ public final class TCPListener {
 			}
 		});
 		t.start();
-		
+
 		while (!isClosed() && t.isAlive() && bind == null) {
 			synchronized (this) {
 				this.wait(100);
@@ -144,18 +119,9 @@ public final class TCPListener {
 			//
 			if (bind != null) {
 				bind.channel().disconnect();
-				bind.channel().closeFuture().sync().awaitUninterruptibly()
-						.addListener(new ChannelFutureListener() {
-
-							@Override
-							public void operationComplete(ChannelFuture arg0)
-									throws Exception {
-								log.info("close operation complete " + arg0
-										+ " " + TCPListener.this);
-								bind = null;
-								bootstrap = null;
-							}
-						});
+				bind.channel().close().sync().awaitUninterruptibly();
+				bind = null;
+				bootstrap = null;
 			}
 			//
 			while (bind != null) {
@@ -169,6 +135,29 @@ public final class TCPListener {
 
 	public void startClosing() {
 		closed = true;
+	}
+
+	private final class ChannelInitializerExtension extends
+			ChannelInitializer<SocketChannel> {
+		@Override
+		protected void initChannel(SocketChannel ch) throws Exception {
+			if (!isClosed()) {
+				log.info("initChannel " + ch);
+				ChannelPipeline pipe = ch.pipeline();
+				pipe.addLast("zipencoder", new JZlibEncoder());
+				pipe.addLast("zipdecoder", new JZlibDecoder());
+				pipe.addLast("messageencoder", new MessageEncoder());
+				pipe.addLast("messagedecoder", new MessageDecoder());
+				pipe.addLast("server", new MServerHandler());
+				//
+				List<MMessage> mlist = new LinkedList<MMessage>();
+				mlist.add(messenger.getMessage("hello"));
+				ch.writeAndFlush(mlist);
+			} else {
+				log.info("InitChannel on closed listener. Closing channel.");
+				ch.close();
+			}
+		}
 	}
 
 	class MServerHandler extends SimpleChannelInboundHandler<List<MMessage>> {

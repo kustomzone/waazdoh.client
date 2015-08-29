@@ -87,7 +87,7 @@ public final class P2PServerImpl implements P2PServer {
 		addHandlers();
 
 		if (dobind) {
-			tcplistener = new TCPListener(nodechecktg, getMessenger(), p);
+			tcplistener = new TCPListener(getMessenger(), p);
 			tcplistener.start();
 		}
 
