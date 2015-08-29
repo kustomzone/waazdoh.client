@@ -129,7 +129,13 @@ public final class P2PServerImpl implements P2PServer {
 								lastmessagereceived = System
 										.currentTimeMillis();
 							} else {
-								doWait(dt - REBOOT_DELAY);
+								synchronized (rebootchecker) {
+									try {
+										wait(getWaitTime(dt - REBOOT_DELAY));
+									} catch (InterruptedException e) {
+										log.error(e);
+									}
+								}
 							}
 						}
 						log.info("Reboot checker out");
@@ -206,14 +212,19 @@ public final class P2PServerImpl implements P2PServer {
 			Thread t = new Thread(nodechecktg, new Runnable() {
 				@Override
 				public void run() {
-					messageNodeCheckLoop();
+					try {
+						messageNodeCheckLoop();
+					} catch (InterruptedException e) {
+						log.error(e);
+					}
 				}
 			}, "MessageSendLooper");
 			t.start();
 		}
 	}
 
-	private synchronized void messageNodeCheckLoop() {
+	private synchronized void messageNodeCheckLoop()
+			throws InterruptedException {
 		while (isRunning() && nodechecktg.activeCount() <= NODECHECKLOOP_COUNT) {
 			Iterable<WNode> nodeiterator = getNodesIterator();
 			//
@@ -240,7 +251,8 @@ public final class P2PServerImpl implements P2PServer {
 			}
 
 			int timeout = 100 + (int) (Math.random() * 100 * this.nodes.size() * NODECHECKLOOP_COUNT);
-			doWait(timeout);
+
+			this.wait(getWaitTime(timeout));
 		}
 		log.info("Node check loop out. ThreadGroup active:"
 				+ this.nodechecktg.activeCount());
@@ -250,18 +262,13 @@ public final class P2PServerImpl implements P2PServer {
 		nodes.remove(node);
 	}
 
-	private void doWait(long timeout) {
+	private long getWaitTime(long ntimeout) {
+		long timeout = ntimeout;
 		if (timeout < MINIMUM_TIMEOUT) {
 			timeout = MINIMUM_TIMEOUT;
 		}
 
-		synchronized (this) {
-			try {
-				wait(timeout);
-			} catch (InterruptedException e) {
-				log.error(e);
-			}
-		}
+		return timeout;
 	}
 
 	public synchronized NodeStatus getNodeStatus(WNode node) {
