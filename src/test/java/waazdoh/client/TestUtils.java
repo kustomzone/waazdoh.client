@@ -24,6 +24,6 @@ public class TestUtils extends WCTestCase {
 			}
 		}, 100);
 
-		final ConditionWaiter w = new ConditionWaiter(c, 10000);
+		final ConditionWaiter w = ConditionWaiter.wait(c, 10000);
 	}
 }

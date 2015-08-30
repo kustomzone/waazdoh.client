@@ -297,7 +297,7 @@ public final class P2PServerImpl implements P2PServer {
 	}
 
 	private synchronized void addDefaultNodes() {
-		new ConditionWaiter(new ConditionWaiter.Condition() {
+		ConditionWaiter.wait(new ConditionWaiter.Condition() {
 			@Override
 			public boolean test() {
 				String slist = p.get(WPreferences.SERVERLIST, "");

@@ -6,7 +6,7 @@ import waazdoh.client.utils.ConditionWaiter;
 public class TestConditionWaiter extends TestCase {
 
 	public void testWait() {
-		ConditionWaiter w = new ConditionWaiter(
+		ConditionWaiter w = ConditionWaiter.wait(
 				new ConditionWaiter.Condition() {
 
 					@Override

@@ -62,7 +62,7 @@ public class TestP2PBinarySource extends WCTestCase {
 
 		serverb.waitUntilReady();
 
-		new ConditionWaiter(new ConditionWaiter.Condition() {
+		ConditionWaiter.wait(new ConditionWaiter.Condition() {
 
 			@Override
 			public boolean test() {

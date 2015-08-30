@@ -43,7 +43,7 @@ public class TestP2PServer extends WCTestCase {
 
 	public void testWaitForNode() {
 		final P2PServer s = getServer();
-		new ConditionWaiter(new Condition() {
+		ConditionWaiter.wait(new Condition() {
 			@Override
 			public boolean test() {
 				return s.getNodesIterator().iterator().next() != null;
@@ -62,7 +62,7 @@ public class TestP2PServer extends WCTestCase {
 		assertNull(n.getID());
 
 		// the node gets closed
-		new ConditionWaiter(new Condition() {
+		ConditionWaiter.wait(new Condition() {
 			public boolean test() {
 				return n.isClosed();
 			}
@@ -71,7 +71,7 @@ public class TestP2PServer extends WCTestCase {
 		assertTrue(n.isClosed());
 		assertNull(n.getID());
 		// node gets removed
-		new ConditionWaiter(new Condition() {
+		ConditionWaiter.wait(new Condition() {
 			public boolean test() {
 				return s.getNodeStatus(n) == null;
 			}
@@ -136,7 +136,7 @@ public class TestP2PServer extends WCTestCase {
 			// final Node n = serverb.addNode(new MHost("localhost"),
 			// servera.getPort());
 			log.info("time waiting");
-			new ConditionWaiter(new Condition() {
+			ConditionWaiter.wait(new Condition() {
 				public boolean test() {
 					// connected to some node
 					return serverb.isConnected() && servera.isConnected();
@@ -150,7 +150,7 @@ public class TestP2PServer extends WCTestCase {
 			assertNotNull(servera.getID());
 			assertNotNull(serverb.getID());
 
-			new ConditionWaiter(new Condition() {
+			ConditionWaiter.wait(new Condition() {
 				public boolean test() {
 					return serverb.getNode(servera.getID()) != null
 							&& servera.getNode(serverb.getID()) != null;
@@ -183,7 +183,7 @@ public class TestP2PServer extends WCTestCase {
 		// servera.getPort());
 		log.info("waiting connection");
 
-		new ConditionWaiter(new Condition() {
+		ConditionWaiter.wait(new Condition() {
 
 			@Override
 			public boolean test() {
@@ -256,7 +256,7 @@ public class TestP2PServer extends WCTestCase {
 
 		log.info("Sending pingpong");
 
-		new ConditionWaiter(new Condition() {
+		ConditionWaiter.wait(new Condition() {
 			public boolean test() {
 				log.info("broadcasting pingpong");
 				servera.getMessenger().broadcastMessage(
@@ -280,7 +280,7 @@ public class TestP2PServer extends WCTestCase {
 		});
 
 		a.reportDownload(new MStringID(), false);
-		new ConditionWaiter(new Condition() {
+		ConditionWaiter.wait(new Condition() {
 
 			@Override
 			public boolean test() {

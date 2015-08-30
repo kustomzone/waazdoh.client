@@ -130,7 +130,7 @@ public final class TestBinary extends WCTestCase {
 			}
 		});
 		a.setReady();
-		new ConditionWaiter(new ConditionWaiter.Condition() {
+		ConditionWaiter.wait(new ConditionWaiter.Condition() {
 			@Override
 			public boolean test() {
 				return sb.length() > 0;

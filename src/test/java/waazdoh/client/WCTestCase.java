@@ -102,7 +102,7 @@ public class WCTestCase extends TestCase {
 	}
 
 	protected void waitForValue(final String name, int time) {
-		new ConditionWaiter(new ConditionWaiter.Condition() {
+		ConditionWaiter.wait(new ConditionWaiter.Condition() {
 			@Override
 			public boolean test() {
 				return values.get(name) != null;
