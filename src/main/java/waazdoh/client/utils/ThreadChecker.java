@@ -37,8 +37,8 @@ public class ThreadChecker {
 		}).start();
 	}
 
-	private void loop(final IChecker checker, final long timeout, long st)
-			throws InterruptedException {
+	private synchronized void loop(final IChecker checker, final long timeout,
+			long st) throws InterruptedException {
 		while (System.currentTimeMillis() - st < timeout) {
 			if (!checker.check()) {
 				break;
