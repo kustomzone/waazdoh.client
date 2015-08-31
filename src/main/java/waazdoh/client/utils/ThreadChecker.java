@@ -8,21 +8,19 @@ import waazdoh.common.WLogger;
 
 public class ThreadChecker {
 
-	private IChecker checker;
 	private WLogger log = WLogger.getLogger(this);
 
 	public ThreadChecker(final IChecker checker) {
-		this.checker = checker;
 		start(checker, 20000);
 	}
 
 	public ThreadChecker(final IChecker checker, long timeout) {
-		this.checker = checker;
 		start(checker, timeout);
 	}
 
 	private void start(final IChecker checker, final long timeout) {
 		new Thread(new Runnable() {
+			@Override
 			public void run() {
 				synchronized (this) {
 					long st = System.currentTimeMillis();

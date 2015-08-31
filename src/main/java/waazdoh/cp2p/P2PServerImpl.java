@@ -119,26 +119,7 @@ public final class P2PServerImpl implements P2PServer {
 				@Override
 				public void run() {
 					try {
-						long lastmessagereceived = getMessenger()
-								.getLastMessageReceived();
-						while (isRunning()) {
-							long dt = System.currentTimeMillis()
-									- lastmessagereceived;
-							if (dt > REBOOT_DELAY) {
-								reboot();
-								lastmessagereceived = System
-										.currentTimeMillis();
-							} else {
-								synchronized (rebootchecker) {
-									try {
-										wait(getWaitTime(dt - REBOOT_DELAY));
-									} catch (InterruptedException e) {
-										log.error(e);
-									}
-								}
-							}
-						}
-						log.info("Reboot checker out");
+						loopChecker();
 					} finally {
 						rebootchecker = null;
 					}
@@ -153,6 +134,7 @@ public final class P2PServerImpl implements P2PServer {
 		this.binarysource = storage;
 	}
 
+	@Override
 	public void setReportingService(ReportingService reporting) {
 		this.reporting = reporting;
 	}
@@ -164,6 +146,7 @@ public final class P2PServerImpl implements P2PServer {
 		}
 	}
 
+	@Override
 	public String getInfoText() {
 		List<WNode> ns = nodes;
 		if (ns != null) {
@@ -176,6 +159,7 @@ public final class P2PServerImpl implements P2PServer {
 		}
 	}
 
+	@Override
 	public WNode addNode(MHost string, int i) {
 		log.info("addnode " + string + " " + i);
 		WNode n = new TCPNode(string, i, getMessenger());
@@ -183,6 +167,7 @@ public final class P2PServerImpl implements P2PServer {
 		return n;
 	}
 
+	@Override
 	public WNode addNode(MNodeID nodeid) {
 		WNode n = new PassiveNode(nodeid, getMessenger());
 		addNode(n);
@@ -229,25 +214,7 @@ public final class P2PServerImpl implements P2PServer {
 			Iterable<WNode> nodeiterator = getNodesIterator();
 			//
 			for (WNode node : nodeiterator) {
-				NodeStatus nodestatus = getNodeStatus(node);
-
-				if (node.isConnected() && nodestatus.checkPing()) {
-					sendPing(node);
-				}
-				//
-				if (node.getID() != null
-						&& node.getID().equals(getMessenger().getID())) {
-					log.info("Having myself as remote node. Removing.");
-					node.close();
-					removeNode(node);
-				} else if (getNodeStatus(node).shouldDie() || node.isClosed()) {
-					log.info("Removing node " + node + " nodes:" + nodeiterator);
-					if (nodeiterator != null) {
-						node.close();
-						removeNode(node);
-						nodestatuses.remove(node);
-					}
-				}
+				checkNode(node);
 			}
 
 			int timeout = 100 + (int) (Math.random() * 100 * this.nodes.size() * NODECHECKLOOP_COUNT);
@@ -256,6 +223,26 @@ public final class P2PServerImpl implements P2PServer {
 		}
 		log.info("Node check loop out. ThreadGroup active:"
 				+ this.nodechecktg.activeCount());
+	}
+
+	private void checkNode(WNode node) {
+		NodeStatus nodestatus = getNodeStatus(node);
+
+		if (node.isConnected() && nodestatus.checkPing()) {
+			sendPing(node);
+		}
+		//
+		if (node.getID() != null
+				&& node.getID().equals(getMessenger().getID())) {
+			log.info("Having myself as remote node. Removing.");
+			node.close();
+			removeNode(node);
+		} else if (getNodeStatus(node).shouldDie() || node.isClosed()) {
+			log.info("Removing node " + node);
+			node.close();
+			removeNode(node);
+			nodestatuses.remove(node);
+		}
 	}
 
 	private synchronized void removeNode(WNode node) {
@@ -271,6 +258,7 @@ public final class P2PServerImpl implements P2PServer {
 		return timeout;
 	}
 
+	@Override
 	public synchronized NodeStatus getNodeStatus(WNode node) {
 		return nodestatuses.get(node);
 	}
@@ -360,10 +348,12 @@ public final class P2PServerImpl implements P2PServer {
 		}
 	}
 
+	@Override
 	public boolean isRunning() {
 		return !closed && nodes != null;
 	}
 
+	@Override
 	public synchronized void close() {
 		log.info("closing server");
 		startClosing();
@@ -374,6 +364,7 @@ public final class P2PServerImpl implements P2PServer {
 		log.info("closing done");
 	}
 
+	@Override
 	public void startClosing() {
 		log.info("starting closing");
 		closed = true;
@@ -428,6 +419,7 @@ public final class P2PServerImpl implements P2PServer {
 		}
 	}
 
+	@Override
 	public WNode getNode(MNodeID nid) {
 		if (nid != null && nodes != null) {
 			for (WNode node : nodes) {
@@ -449,6 +441,7 @@ public final class P2PServerImpl implements P2PServer {
 		getMessenger().broadcastMessage(m, null, exceptions);
 	}
 
+	@Override
 	public MNodeID getID() {
 		if (getMessenger() != null) {
 			return getMessenger().getID();
@@ -473,6 +466,7 @@ public final class P2PServerImpl implements P2PServer {
 		}
 	}
 
+	@Override
 	public void addDownload(Binary bs) {
 		synchronized (downloads) {
 			if (downloads.get(bs.getID()) == null) {
@@ -483,16 +477,19 @@ public final class P2PServerImpl implements P2PServer {
 		}
 	}
 
+	@Override
 	public void start() {
 		startNetwork();
 	}
 
+	@Override
 	public boolean canDownload() {
 		return downloads.size() < p.getInteger(
 				WPreferences.NETWORK_MAX_DOWNLOADS,
 				WPreferences.NETWORK_MAX_DOWNLOADS_DEFAULT);
 	}
 
+	@Override
 	public void clearMemory() {
 		synchronized (listeners) {
 			List<ServerListener> nsourcelisteners = new LinkedList<ServerListener>(
@@ -517,6 +514,7 @@ public final class P2PServerImpl implements P2PServer {
 		}
 	}
 
+	@Override
 	public boolean waitForDownloadSlot(final int i) {
 		try {
 			int waittime = i;
@@ -554,6 +552,7 @@ public final class P2PServerImpl implements P2PServer {
 		return false;
 	}
 
+	@Override
 	public void waitForConnection(int maxwaittime) {
 		try {
 			MTimedFlag timer = new MTimedFlag(maxwaittime);
@@ -571,6 +570,7 @@ public final class P2PServerImpl implements P2PServer {
 		}
 	}
 
+	@Override
 	public int getPort() {
 		if (tcplistener != null) {
 			return tcplistener.getPort();
@@ -579,6 +579,7 @@ public final class P2PServerImpl implements P2PServer {
 		}
 	}
 
+	@Override
 	public WPreferences getPreferences() {
 		return p;
 	}
@@ -586,6 +587,26 @@ public final class P2PServerImpl implements P2PServer {
 	@Override
 	public WMessenger getMessenger() {
 		return this.messenger;
+	}
+
+	private void loopChecker() {
+		long lastmessagereceived = getMessenger().getLastMessageReceived();
+		while (isRunning()) {
+			long dt = System.currentTimeMillis() - lastmessagereceived;
+			if (dt > REBOOT_DELAY) {
+				reboot();
+				lastmessagereceived = System.currentTimeMillis();
+			} else {
+				synchronized (rebootchecker) {
+					try {
+						wait(getWaitTime(dt - REBOOT_DELAY));
+					} catch (InterruptedException e) {
+						log.error(e);
+					}
+				}
+			}
+		}
+		log.info("Reboot checker out");
 	}
 
 	private final class MessageResponseListenerImplementation implements
