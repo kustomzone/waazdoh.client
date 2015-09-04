@@ -232,8 +232,7 @@ public final class P2PServerImpl implements P2PServer {
 			sendPing(node);
 		}
 		//
-		if (node.getID() != null
-				&& node.getID().equals(getMessenger().getID())) {
+		if (node.getID() != null && node.getID().equals(getMessenger().getID())) {
 			log.info("Having myself as remote node. Removing.");
 			node.close();
 			removeNode(node);
@@ -599,7 +598,7 @@ public final class P2PServerImpl implements P2PServer {
 			} else {
 				synchronized (rebootchecker) {
 					try {
-						wait(getWaitTime(dt - REBOOT_DELAY));
+						rebootchecker.wait(getWaitTime(dt - REBOOT_DELAY));
 					} catch (InterruptedException e) {
 						log.error(e);
 					}

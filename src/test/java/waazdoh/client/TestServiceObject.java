@@ -40,7 +40,7 @@ public class TestServiceObject extends WCTestCase {
 		ServiceObjectData data1 = new ServiceObjectDataImplementation();
 
 		WClient c1 = getClient(getRandomUserName(), false);
-		o = new ServiceObject("test", c1, data1, WaazdohInfo.version,
+		o = new ServiceObject("test", c1, data1, WaazdohInfo.VERSION,
 				"WAAZDOHTEST");
 
 		final Map<String, String> map = new HashMap<String, String>();
@@ -63,7 +63,7 @@ public class TestServiceObject extends WCTestCase {
 		ServiceObjectData data1 = new ServiceObjectDataImplementation();
 
 		WClient c1 = getClient(getRandomUserName(), false);
-		o = new ServiceObject("test", c1, data1, WaazdohInfo.version,
+		o = new ServiceObject("test", c1, data1, WaazdohInfo.VERSION,
 				"WAAZDOHTEST");
 
 		o.save();
@@ -76,7 +76,7 @@ public class TestServiceObject extends WCTestCase {
 
 		WClient c2 = getClient(getRandomUserName(), false);
 		ServiceObject o1 = new ServiceObject("test", c2, data2,
-				WaazdohInfo.version, "WAAZDOHTEST");
+				WaazdohInfo.VERSION, "WAAZDOHTEST");
 		o1.load(id.getStringID());
 
 		WData o2data = data2.getBean();

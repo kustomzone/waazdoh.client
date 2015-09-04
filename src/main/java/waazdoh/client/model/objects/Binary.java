@@ -68,7 +68,7 @@ public final class Binary implements HashSource {
 		if (service != null) {
 			this.creatorid = service.getUserID();
 		}
-		version = WaazdohInfo.version;
+		version = WaazdohInfo.VERSION;
 		this.extension = extension;
 		this.comment = comment;
 

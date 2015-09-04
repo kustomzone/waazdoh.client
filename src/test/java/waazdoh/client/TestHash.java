@@ -45,7 +45,7 @@ public class TestHash extends WCTestCase {
 		};
 
 		WClient c = getClient(getRandomUserName(), false);
-		o = new ServiceObject("test", c, so, WaazdohInfo.version, "WAAZDOHTEST");
+		o = new ServiceObject("test", c, so, WaazdohInfo.VERSION, "WAAZDOHTEST");
 
 		ObjectID id = o.getID();
 		assertNotNull(id);
