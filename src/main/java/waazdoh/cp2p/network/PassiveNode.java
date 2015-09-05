@@ -81,6 +81,7 @@ public final class PassiveNode implements WNode {
 		return false;
 	}
 
+	@Override
 	public MNodeID getID() {
 		return id;
 	}
@@ -106,6 +107,7 @@ public final class PassiveNode implements WNode {
 		outgoingmessages.clear();
 	}
 
+	@Override
 	public void close() {
 		log.info("close");
 		this.closed = true;
@@ -115,10 +117,12 @@ public final class PassiveNode implements WNode {
 		source = null;
 	}
 
+	@Override
 	public boolean isConnected() {
 		return !isClosed() && getID() != null;
 	}
 
+	@Override
 	public boolean isClosed() {
 		return source == null || closed;
 	}
