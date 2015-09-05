@@ -67,10 +67,12 @@ public class WMessengerImpl implements WMessenger {
 		}
 	}
 
+	@Override
 	public boolean isClosed() {
 		return closed;
 	}
 
+	@Override
 	public void close() {
 		log.info("Closing");
 		closed = true;
@@ -87,6 +89,7 @@ public class WMessengerImpl implements WMessenger {
 		}
 	}
 
+	@Override
 	public void addResponseListener(MessageID id,
 			MessageResponseListener messageResponseListener) {
 		synchronized (responselisteners) {
@@ -175,6 +178,7 @@ public class WMessengerImpl implements WMessenger {
 		}
 	}
 
+	@Override
 	public void broadcastMessage(MMessage notification) {
 		broadcastMessage(notification, null);
 	}
