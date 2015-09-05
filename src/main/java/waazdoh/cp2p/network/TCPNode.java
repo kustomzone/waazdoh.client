@@ -132,6 +132,7 @@ public final class TCPNode implements WNode {
 		isactive = true;
 	}
 
+	@Override
 	public synchronized void close() {
 		log.info("closing " + this);
 		closed = true;
@@ -166,6 +167,7 @@ public final class TCPNode implements WNode {
 		}
 	}
 
+	@Override
 	public void addInfoTo(MMessage message) {
 		if (host != null) {
 			WData nodeinfo = message.add("nodeinfo");
@@ -175,6 +177,7 @@ public final class TCPNode implements WNode {
 		}
 	}
 
+	@Override
 	public MNodeID getID() {
 		return id;
 	}
@@ -255,7 +258,7 @@ public final class TCPNode implements WNode {
 		}
 	}
 
-	void channelActive(Channel c) {
+	public void channelActive(Channel c) {
 		log.info("channelActive " + c);
 		touch = System.currentTimeMillis();
 		isactive = true;
@@ -263,16 +266,17 @@ public final class TCPNode implements WNode {
 		channel = c;
 	}
 
-	void channelUnregistered(Channel c) {
+	public void channelUnregistered(Channel c) {
 		//
 	}
 
-	void channelRegistered(Channel c) {
+	public void channelRegistered(Channel c) {
 		log.info("channelRegistered " + c);
 		channel = c;
 	}
 
-	void channelInactive(Channel ctx) {
+	public void channelInactive(Channel ctx) {
+		log.info("channel inactive " + ctx);
 		isactive = false;
 	}
 
