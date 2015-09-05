@@ -596,9 +596,9 @@ public final class P2PServerImpl implements P2PServer {
 				reboot();
 				lastmessagereceived = System.currentTimeMillis();
 			} else {
-				synchronized (rebootchecker) {
+				synchronized (this) {
 					try {
-						rebootchecker.wait(getWaitTime(dt - REBOOT_DELAY));
+						this.wait(getWaitTime(dt - REBOOT_DELAY));
 					} catch (InterruptedException e) {
 						log.error(e);
 					}
