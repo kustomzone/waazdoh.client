@@ -12,6 +12,7 @@ import waazdoh.common.MStringID;
 import waazdoh.common.MTimedFlag;
 import waazdoh.common.WLogger;
 import waazdoh.common.WPreferences;
+import waazdoh.common.testing.StaticTestPreferences;
 import waazdoh.cp2p.P2PServer;
 import waazdoh.cp2p.P2PServerImpl;
 import waazdoh.cp2p.common.MHost;
@@ -19,7 +20,6 @@ import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.SimpleMessageHandler;
 import waazdoh.cp2p.network.ServerListener;
 import waazdoh.cp2p.network.WNode;
-import waazdoh.testing.StaticTestPreferences;
 
 public class TestP2PServer extends WCTestCase {
 

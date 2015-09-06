@@ -11,7 +11,7 @@ import waazdoh.client.WCTestCase;
 import waazdoh.client.WClient;
 import waazdoh.client.model.objects.Binary;
 import waazdoh.common.WLogger;
-import waazdoh.testing.StaticTestPreferences;
+import waazdoh.common.testing.StaticTestPreferences;
 
 public final class ITTestBinaryTransfer extends WCTestCase {
 	private WLogger log = WLogger.getLogger(this);

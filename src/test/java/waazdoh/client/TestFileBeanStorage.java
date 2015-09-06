@@ -3,7 +3,7 @@ package waazdoh.client;
 import waazdoh.client.storage.local.FileBeanStorage;
 import waazdoh.common.MStringID;
 import waazdoh.common.WData;
-import waazdoh.testing.StaticTestPreferences;
+import waazdoh.common.testing.StaticTestPreferences;
 
 public class TestFileBeanStorage extends WCTestCase {
 
