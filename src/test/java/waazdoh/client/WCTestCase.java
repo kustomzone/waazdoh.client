@@ -16,12 +16,12 @@ import waazdoh.client.utils.ThreadChecker;
 import waazdoh.common.WLogger;
 import waazdoh.common.WPreferences;
 import waazdoh.common.client.MemoryBeanStorage;
+import waazdoh.common.testing.StaticService;
+import waazdoh.common.testing.StaticTestPreferences;
 import waazdoh.cp2p.P2PBinarySource;
 import waazdoh.cp2p.P2PServer;
 import waazdoh.cp2p.P2PServerImpl;
 import waazdoh.cp2p.common.MHost;
-import waazdoh.testing.StaticService;
-import waazdoh.testing.StaticTestPreferences;
 
 public class WCTestCase extends TestCase {
 	private static final String PREFERENCES_PREFIX = "wcclienttests";
