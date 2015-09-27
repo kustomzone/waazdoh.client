@@ -17,8 +17,8 @@ import waazdoh.common.HashSource;
 import waazdoh.common.MStringID;
 import waazdoh.common.ObjectID;
 import waazdoh.common.UserID;
-import waazdoh.common.WData;
 import waazdoh.common.WLogger;
+import waazdoh.common.WObject;
 import waazdoh.common.vo.ObjectVO;
 
 public final class ServiceObject implements HashSource {
@@ -36,7 +36,7 @@ public final class ServiceObject implements HashSource {
 
 	private String tagname;
 	private MStringID copyof;
-	private WData storedbean = new WData("temp");
+	private WObject storedbean = new WObject();
 
 	private List<ServiceObjectListener> listeners = new LinkedList<ServiceObjectListener>();
 
@@ -64,7 +64,7 @@ public final class ServiceObject implements HashSource {
 					.read(oid.toString());
 			if (response != null && response.isSuccess()) {
 				id = new ObjectID(oid, this);
-				return parseBean(response.getWData());
+				return parseObject(response.getObject());
 			} else {
 				log.info("loading " + tagname + " bean failed " + oid);
 				return false;
@@ -74,16 +74,16 @@ public final class ServiceObject implements HashSource {
 		}
 	}
 
-	private boolean parseBean(WData bean) {
-		id = new ObjectID(bean.getAttribute("id"), this);
+	private boolean parseObject(WObject o) {
+		id = new ObjectID(o.getAttribute("id"), this);
 
-		creatorid = bean.getUserAttribute("creator");
-		creationtime = bean.getLongValue("creationtime");
-		modifytime = bean.getLongValue("modified");
-		version = bean.getValue("version");
-		copyof = bean.getIDValue("copyof");
+		creatorid = o.getUserAttribute("creator");
+		creationtime = o.getLongValue("creationtime");
+		modifytime = o.getLongValue("modified");
+		version = o.getValue("version");
+		copyof = o.getIDValue("copyof");
 		//
-		return data.parseBean(bean);
+		return data.parseBean(o);
 	}
 
 	public WClient getEnvironment() {
@@ -94,8 +94,8 @@ public final class ServiceObject implements HashSource {
 		return id;
 	}
 
-	public WData getBean() {
-		WData bt = new WData(tagname);
+	public WObject getBean() {
+		WObject bt = new WObject(tagname);
 		bt.addValue("creationtime", getCreationtime());
 		bt.addValue("modified", getModifytime());
 		bt.addValue("creator", creatorid.toString());
@@ -125,7 +125,7 @@ public final class ServiceObject implements HashSource {
 
 	@Override
 	public String getHash() {
-		return data.getBean().getContentHash();
+		return data.getObject().getContentHash();
 	}
 
 	public void save() {
@@ -137,7 +137,7 @@ public final class ServiceObject implements HashSource {
 			creatorid = env.getUserID();
 		}
 
-		WData current = data.getBean();
+		WObject current = data.getObject();
 		current.setAttribute("id", id.toString());
 		if (!storedbean.equals(current)) {
 
@@ -147,17 +147,15 @@ public final class ServiceObject implements HashSource {
 			log.info("" + id + " current " + current.getContentHash());
 
 			modified();
-			WData storing = data.getBean();
+			WObject storing = data.getObject();
 			storing.setAttribute("id", id.toString());
 			log.info("" + id + " storing " + storing.toText());
 			//
 			storedbean = storing;
 			log.info("adding bean" + id);
 
-			env.getService()
-					.getObjects()
-					.write(id.getStringID().toString(),
-							storing.toXML().toString());
+			env.getService().getObjects()
+					.write(id.getStringID().toString(), storing.toText());
 		}
 	}
 

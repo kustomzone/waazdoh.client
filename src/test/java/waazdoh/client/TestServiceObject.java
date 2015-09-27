@@ -7,7 +7,7 @@ import java.util.Map;
 import org.xml.sax.SAXException;
 
 import waazdoh.common.ObjectID;
-import waazdoh.common.WData;
+import waazdoh.common.WObject;
 import waazdoh.common.WaazdohInfo;
 
 public class TestServiceObject extends WCTestCase {
@@ -18,15 +18,15 @@ public class TestServiceObject extends WCTestCase {
 		long time = System.currentTimeMillis();
 
 		@Override
-		public boolean parseBean(WData bean) {
+		public boolean parseBean(WObject bean) {
 			d = bean.getDoubleValue("d");
 			time = bean.getLongValue("time");
 			return true;
 		}
 
 		@Override
-		public WData getBean() {
-			WData b = o.getBean();
+		public WObject getObject() {
+			WObject b = o.getBean();
 			b.addValue("d", d);
 			b.addValue("time", time);
 			return b;
@@ -79,9 +79,9 @@ public class TestServiceObject extends WCTestCase {
 				WaazdohInfo.VERSION, "WAAZDOHTEST");
 		o1.load(id.getStringID());
 
-		WData o2data = data2.getBean();
+		WObject o2data = data2.getObject();
 
-		WData o1data = data1.getBean();
+		WObject o1data = data1.getObject();
 		assertNull(o1data.getAttribute("id"));
 		assertNull(o2data.getAttribute("id"));
 

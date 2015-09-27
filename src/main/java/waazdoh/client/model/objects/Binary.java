@@ -29,6 +29,7 @@ import waazdoh.common.MStringID;
 import waazdoh.common.UserID;
 import waazdoh.common.WData;
 import waazdoh.common.WLogger;
+import waazdoh.common.WObject;
 import waazdoh.common.WaazdohInfo;
 import waazdoh.common.vo.ObjectVO;
 
@@ -200,16 +201,11 @@ public final class Binary implements HashSource {
 		}
 	}
 
-	private void load(WData d) {
+	private void load(WObject d) {
 		WData data;
-		if (d.get(BEAN_TAG) != null) {
-			data = d.get(BEAN_TAG);
-			id = new BinaryID(d.getAttribute("id"));
-		} else {
-			data = d;
-		}
+		id = new BinaryID(d.getAttribute("id"));
 		//
-		this.length = data.getIntValue("length");
+		this.length = d.getIntValue("length");
 		this.storedcrc = new MCRC(d.getLongValue("crc"));
 		this.creatorid = new UserID(d.getValue("creator"));
 		this.version = d.getValue("version");
@@ -220,9 +216,9 @@ public final class Binary implements HashSource {
 	private synchronized boolean loadFromService(MStringID pid) {
 		ObjectVO o = client.getObjects().read(pid.toString());
 		if (o != null) {
-			WData b = o.getWData();
+			WObject b = o.getObject();
 			log.info("loading Binary " + b);
-			load(b.find(BEAN_TAG));
+			load(b);
 			used();
 			return true;
 		} else {
@@ -239,12 +235,12 @@ public final class Binary implements HashSource {
 	public void save() {
 		creatorid = client.getUserID();
 
-		WData bean = getBean();
+		WObject bean = getBean();
 		bean.setAttribute("id", getID().toString());
 
-		client.getObjects().write(getID().toString(), bean.toXML().toString());
+		client.getObjects().write(getID().toString(), bean.toText());
 		//
-		client.getBeanStorage().addBean(getID(), bean);
+		client.getBeanStorage().addObject(getID(), bean);
 	}
 
 	@Override
@@ -261,8 +257,8 @@ public final class Binary implements HashSource {
 		return true;
 	}
 
-	public WData getBean() {
-		WData b = new WData(BEAN_TAG);
+	public WObject getBean() {
+		WObject b = new WObject(BEAN_TAG);
 		//
 		b.addValue("length", "" + length);
 		b.addValue("crc", "" + currentCRC().getValue());

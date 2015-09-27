@@ -20,15 +20,13 @@ import java.util.Iterator;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
-import org.xml.sax.SAXException;
 
 import waazdoh.client.model.StringIDLocalPath;
 import waazdoh.common.BeanStorage;
 import waazdoh.common.MStringID;
-import waazdoh.common.WData;
 import waazdoh.common.WLogger;
+import waazdoh.common.WObject;
 import waazdoh.common.WPreferences;
-import waazdoh.common.XML;
 
 public final class FileBeanStorage implements BeanStorage {
 	private WLogger log = WLogger.getLogger(this);
@@ -41,7 +39,7 @@ public final class FileBeanStorage implements BeanStorage {
 		file.mkdirs();
 	}
 
-	public WData getBean(final MStringID id) {
+	public WObject getBean(final MStringID id) {
 		try {
 			File f = getFile(id);
 			if (f.exists()) {
@@ -56,16 +54,13 @@ public final class FileBeanStorage implements BeanStorage {
 				}
 				br.close();
 				//
-				XML xml = new XML(sb.toString());
-
-				return new WData(xml);
+				WObject o = new WObject();
+				o.parse(sb.toString());
+				return o;
 			} else {
 				return null;
 			}
 		} catch (IOException e) {
-			log.error(e);
-			return null;
-		} catch (SAXException e) {
 			log.error(e);
 			return null;
 		}
@@ -94,13 +89,13 @@ public final class FileBeanStorage implements BeanStorage {
 		}
 	}
 
-	public void addBean(final MStringID id, WData response) {
+	public void addObject(final MStringID id, WObject response) {
 		try {
 			File f = getFile(id);
 			FileWriter fw;
 			fw = new FileWriter(f);
 			BufferedWriter bw = new BufferedWriter(fw);
-			bw.write(response.toXML().toString());
+			bw.write(response.toText());
 			bw.close();
 		} catch (IOException e) {
 			log.error(e);
