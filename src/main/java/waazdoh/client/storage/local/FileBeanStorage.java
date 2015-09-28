@@ -10,12 +10,12 @@
  ******************************************************************************/
 package waazdoh.client.storage.local;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Iterator;
 
 import org.apache.commons.io.FileUtils;
@@ -43,19 +43,10 @@ public final class FileBeanStorage implements BeanStorage {
 		try {
 			File f = getFile(id);
 			if (f.exists()) {
-				BufferedReader br = new BufferedReader(new FileReader(f));
-				StringBuilder sb = new StringBuilder();
-				while (true) {
-					String line = br.readLine();
-					if (line == null) {
-						break;
-					}
-					sb.append(line);
-				}
-				br.close();
-				//
+				String content = new String(Files.readAllBytes(Paths.get(f
+						.getAbsolutePath())));
 				WObject o = new WObject();
-				o.parse(sb.toString());
+				o.parse(content);
 				return o;
 			} else {
 				return null;
@@ -78,7 +69,7 @@ public final class FileBeanStorage implements BeanStorage {
 			fpath.mkdirs();
 		}
 		//
-		return filepath + id + ".xml";
+		return filepath + id + ".yml";
 	}
 
 	@Override
@@ -130,7 +121,7 @@ public final class FileBeanStorage implements BeanStorage {
 					public MStringID next() {
 						File f = fileiterator.next();
 						String name = f.getName();
-						return new MStringID(name.replace(".xml", ""));
+						return new MStringID(name.replace(".yml", ""));
 					}
 				};
 			}
