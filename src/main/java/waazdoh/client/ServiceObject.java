@@ -120,7 +120,7 @@ public final class ServiceObject implements HashSource {
 	public boolean publish() {
 		log.info("publishing " + id);
 		save();
-		return env.getService().getObjects().publish(id.toString());
+		return env.getService().getObjects().publish(id.toString()).isSuccess();
 	}
 
 	@Override
