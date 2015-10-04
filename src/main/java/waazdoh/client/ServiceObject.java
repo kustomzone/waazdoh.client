@@ -83,7 +83,7 @@ public final class ServiceObject implements HashSource {
 		version = o.getValue("version");
 		copyof = o.getIDValue("copyof");
 		//
-		return data.parseBean(o);
+		return data.parse(o);
 	}
 
 	public WClient getEnvironment() {

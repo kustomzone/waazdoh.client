@@ -34,7 +34,7 @@ public class TestHash extends WCTestCase {
 		ServiceObjectData so = new ServiceObjectData() {
 
 			@Override
-			public boolean parseBean(WObject bean) {
+			public boolean parse(WObject bean) {
 				// FAILS
 				return false;
 			}

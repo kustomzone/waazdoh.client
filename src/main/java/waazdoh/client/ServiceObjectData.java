@@ -4,7 +4,7 @@ import waazdoh.common.WObject;
 
 public interface ServiceObjectData {
 
-	boolean parseBean(WObject bean);
+	boolean parse(WObject bean);
 
 	WObject getObject();
 

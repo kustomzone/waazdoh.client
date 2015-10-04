@@ -18,7 +18,7 @@ public class TestServiceObject extends WCTestCase {
 		long time = System.currentTimeMillis();
 
 		@Override
-		public boolean parseBean(WObject bean) {
+		public boolean parse(WObject bean) {
 			d = bean.getDoubleValue("d");
 			time = bean.getLongValue("time");
 			return true;
