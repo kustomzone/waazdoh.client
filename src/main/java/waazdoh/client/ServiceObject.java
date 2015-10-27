@@ -62,7 +62,8 @@ public final class ServiceObject implements HashSource {
 		if (oid != null) {
 			ObjectVO response = env.getService().getObjects()
 					.read(oid.toString());
-			if (response != null && response.isSuccess()) {
+			if (response != null && response.isSuccess()
+					&& env.filter(response.getObject())) {
 				id = new ObjectID(oid, this);
 				return parseObject(response.getObject());
 			} else {

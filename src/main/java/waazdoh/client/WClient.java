@@ -1,6 +1,7 @@
 package waazdoh.client;
 
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -8,6 +9,7 @@ import waazdoh.client.model.User;
 import waazdoh.common.BeanStorage;
 import waazdoh.common.UserID;
 import waazdoh.common.WLogger;
+import waazdoh.common.WObject;
 import waazdoh.common.WPreferences;
 import waazdoh.common.client.ServiceClient;
 import waazdoh.common.service.ObjectsService;
@@ -25,6 +27,7 @@ public class WClient {
 	private UserID userid;
 
 	private WLogger logger = WLogger.getLogger(this);
+	private List<Filter> filters = new LinkedList<WClient.Filter>();
 
 	public WClient(WPreferences p, BinarySource binarysource,
 			BeanStorage beanstorage, ServiceClient nservice) {
@@ -163,4 +166,22 @@ public class WClient {
 		return getService().getObjects();
 	}
 
+	public boolean filter(WObject o) {
+		for (Filter filter : filters) {
+			if (!filter.check(o)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	public void addObjectFilter(Filter f) {
+		filters.add(f);
+	}
+
+	public static interface Filter {
+		boolean check(WObject o);
+
+	}
 }
