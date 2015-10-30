@@ -25,7 +25,7 @@ public class TestFileBeanStorage extends WCTestCase {
 		assertEquals(madeupid, id);
 		//
 		WObject b = s.getBean(id);
-		assertEquals(beanname, b.getName());
+		assertEquals(beanname, b.getType());
 	}
 
 }
