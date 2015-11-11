@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.xml.sax.SAXException;
 
+import waazdoh.client.WClient.Filter;
+import waazdoh.common.MTimedFlag;
 import waazdoh.common.ObjectID;
 import waazdoh.common.WObject;
 import waazdoh.common.WaazdohInfo;
@@ -62,14 +64,7 @@ public class TestServiceObject extends WCTestCase {
 	public void testServiceObject() throws SAXException, MalformedURLException {
 		ServiceObjectData data1 = new ServiceObjectDataImplementation();
 
-		WClient c1 = getClient(getRandomUserName(), false);
-		o = new ServiceObject("test", c1, data1, WaazdohInfo.VERSION,
-				"WAAZDOHTEST");
-
-		o.save();
-		o.publish();
-
-		ObjectID id = o.getID();
+		ObjectID id = createAndPublish(data1);
 		assertNotNull(id);
 
 		ServiceObjectDataImplementation data2 = new ServiceObjectDataImplementation();
@@ -77,6 +72,7 @@ public class TestServiceObject extends WCTestCase {
 		WClient c2 = getClient(getRandomUserName(), false);
 		ServiceObject o1 = new ServiceObject("test", c2, data2,
 				WaazdohInfo.VERSION, "WAAZDOHTEST");
+
 		o1.load(id.getStringID());
 
 		WObject o2data = data2.getObject();
@@ -88,4 +84,59 @@ public class TestServiceObject extends WCTestCase {
 		assertEquals(o1data, o2data);
 		assertEquals(o1data.getContentHash(), o2data.getContentHash());
 	}
+
+	public void testFilter() throws SAXException, MalformedURLException {
+		ServiceObjectData data1 = new ServiceObjectDataImplementation();
+
+		ObjectID id = createAndPublish(data1);
+		assertNotNull(id);
+
+		ServiceObjectDataImplementation data2 = new ServiceObjectDataImplementation();
+
+		WClient c2 = getClient(getRandomUserName(), false);
+		ServiceObject o1 = new ServiceObject("test", c2, data2,
+				WaazdohInfo.VERSION, "WAAZDOHTEST");
+
+		final MTimedFlag f = new MTimedFlag(getWaitTime());
+
+		c2.addObjectFilter(new Filter() {
+			int counter = 0;
+
+			@Override
+			public boolean check(WObject o) {
+				f.trigger();
+				return counter++ > 0;
+			}
+		});
+
+		o1.load(id.getStringID());
+		assertTrue(f.isTriggered());
+		assertTrue(!data1.getObject().equals(data2.getObject()));
+
+		o1.load(id.getStringID());
+		assertTrue(f.isTriggered());
+
+		WObject o2data = data2.getObject();
+
+		WObject o1data = data1.getObject();
+		assertNull(o1data.getAttribute("id"));
+		assertNull(o2data.getAttribute("id"));
+
+		assertTrue(data1.getObject().equals(data2.getObject()));
+		assertEquals(o1data.getContentHash(), o2data.getContentHash());
+	}
+
+	private ObjectID createAndPublish(ServiceObjectData data1)
+			throws MalformedURLException, SAXException {
+		WClient c1 = getClient(getRandomUserName(), false);
+		o = new ServiceObject("test", c1, data1, WaazdohInfo.VERSION,
+				"WAAZDOHTEST");
+
+		o.save();
+		o.publish();
+
+		ObjectID id = o.getID();
+		return id;
+	}
+
 }
