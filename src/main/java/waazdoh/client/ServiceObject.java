@@ -20,6 +20,7 @@ import waazdoh.common.UserID;
 import waazdoh.common.WLogger;
 import waazdoh.common.WObject;
 import waazdoh.common.vo.ObjectVO;
+import waazdoh.common.vo.ReturnVO;
 
 public final class ServiceObject implements HashSource {
 	private UserID creatorid;
@@ -43,6 +44,8 @@ public final class ServiceObject implements HashSource {
 	private String version;
 
 	private String prefix;
+
+	private String lastpublishedid;
 
 	public ServiceObject(final String tagname, final WClient env,
 			final ServiceObjectData data, final String version,
@@ -110,6 +113,11 @@ public final class ServiceObject implements HashSource {
 		return bt;
 	}
 
+	@Override
+	public String toString() {
+		return "ServiceObject[" + tagname + "][" + id + "]";
+	}
+
 	public long getModifytime() {
 		return modifytime;
 	}
@@ -119,9 +127,19 @@ public final class ServiceObject implements HashSource {
 	}
 
 	public boolean publish() {
-		log.info("publishing " + id);
 		save();
-		return env.getService().getObjects().publish(id.toString()).isSuccess();
+		String sid = id.toString();
+		if (lastpublishedid == null || !lastpublishedid.equals(sid)) {
+			long st = System.currentTimeMillis();
+			log.info("publishing " + st + " id:" + id);
+			lastpublishedid = sid;
+			ReturnVO ret = env.getService().getObjects().publish(sid);
+			log.info("published " + ret + " dtime:"
+					+ (System.currentTimeMillis() - st));
+			return ret.isSuccess();
+		} else {
+			return true;
+		}
 	}
 
 	@Override
@@ -130,8 +148,6 @@ public final class ServiceObject implements HashSource {
 	}
 
 	public void save() {
-		log.info("possibly saving " + id);
-
 		if (!env.getUserID().equals(creatorid)) {
 			copyof = getID().getStringID();
 			id = new ObjectID(this, prefix);
@@ -139,7 +155,8 @@ public final class ServiceObject implements HashSource {
 		}
 
 		WObject current = data.getObject();
-		current.setAttribute("id", id.toString());
+		String sid = id.toString();
+		current.setAttribute("id", sid);
 		if (!storedbean.equals(current)) {
 
 			log.info("" + id + " stored " + storedbean.toText());
@@ -148,15 +165,16 @@ public final class ServiceObject implements HashSource {
 			log.info("" + id + " current " + current.getContentHash());
 
 			modified();
+			sid = id.toString();
 			WObject storing = data.getObject();
-			storing.setAttribute("id", id.toString());
+			storing.setAttribute("id", sid);
 			log.info("" + id + " storing " + storing.toText());
 			//
 			storedbean = storing;
-			log.info("adding bean" + id);
 
-			env.getService().getObjects()
-					.write(id.getStringID().toString(), storing.toText());
+			log.info("writing to service " + sid);
+			env.getService().getObjects().write(sid, storing.toText());
+			log.info("stored " + sid);
 		}
 	}
 
@@ -173,5 +191,10 @@ public final class ServiceObject implements HashSource {
 
 	public void addListener(ServiceObjectListener trackListener) {
 		listeners.add(trackListener);
+	}
+
+	public boolean hasChanged() {
+		return lastpublishedid == null
+				|| !lastpublishedid.equals(id.toString());
 	}
 }
