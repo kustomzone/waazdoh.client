@@ -61,7 +61,6 @@ public final class ServiceObject implements HashSource {
 	}
 
 	public boolean load(MStringID oid) {
-		log.info("loading " + oid);
 		if (oid != null) {
 			ObjectVO response = env.getService().getObjects()
 					.read(oid.toString());
