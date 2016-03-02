@@ -47,8 +47,7 @@ public final class ServiceObject implements HashSource {
 
 	private String lastpublishedid;
 
-	public ServiceObject(final String tagname, final WClient env,
-			final ServiceObjectData data, final String version,
+	public ServiceObject(final String tagname, final WClient env, final ServiceObjectData data, final String version,
 			final String nprefix) {
 		this.tagname = tagname;
 		this.creatorid = env.getUserID();
@@ -62,10 +61,8 @@ public final class ServiceObject implements HashSource {
 
 	public boolean load(MStringID oid) {
 		if (oid != null) {
-			ObjectVO response = env.getService().getObjects()
-					.read(oid.toString());
-			if (response != null && response.isSuccess()
-					&& env.filter(response.getObject())) {
+			ObjectVO response = env.getService().getObjects().read(oid.toString());
+			if (response != null && response.isSuccess() && env.filter(response.getObject())) {
 				id = new ObjectID(oid, this);
 				return parseObject(response.getObject());
 			} else {
@@ -103,8 +100,7 @@ public final class ServiceObject implements HashSource {
 		bt.addValue("modified", getModifytime());
 		bt.addValue("creator", creatorid.toString());
 		bt.addValue("version", version);
-		bt.addValue("license",
-				"GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html");
+		bt.addValue("license", "GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html");
 		if (copyof != null) {
 			bt.addValue("copyof", copyof.toString());
 		}
@@ -133,8 +129,7 @@ public final class ServiceObject implements HashSource {
 			log.info("publishing " + st + " id:" + id);
 			lastpublishedid = sid;
 			ReturnVO ret = env.getService().getObjects().publish(sid);
-			log.info("published " + ret + " dtime:"
-					+ (System.currentTimeMillis() - st));
+			log.info("published " + ret + " dtime:" + (System.currentTimeMillis() - st));
 			return ret.isSuccess();
 		} else {
 			return true;
@@ -181,8 +176,7 @@ public final class ServiceObject implements HashSource {
 		modifytime = System.currentTimeMillis();
 		log.info("modified " + id);
 		//
-		List<ServiceObjectListener> ls = new LinkedList<ServiceObjectListener>(
-				listeners);
+		List<ServiceObjectListener> ls = new LinkedList<ServiceObjectListener>(listeners);
 		for (ServiceObjectListener trackListener : ls) {
 			trackListener.modified();
 		}
@@ -193,7 +187,6 @@ public final class ServiceObject implements HashSource {
 	}
 
 	public boolean hasChanged() {
-		return lastpublishedid == null
-				|| !lastpublishedid.equals(id.toString());
+		return lastpublishedid == null || !lastpublishedid.equals(id.toString());
 	}
 }
