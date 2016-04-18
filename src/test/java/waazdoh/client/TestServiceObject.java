@@ -87,6 +87,7 @@ public class TestServiceObject extends WCTestCase {
 
 		String o1hash = o1.getHash();
 		data2.update();
+		assertTrue(o1.hasChanged());
 
 		o1.save();
 		assertNotNull(o1.getCopyOf());
