@@ -189,4 +189,8 @@ public final class ServiceObject implements HashSource {
 	public boolean hasChanged() {
 		return lastpublishedid == null || !lastpublishedid.equals(id.toString());
 	}
+
+	public MStringID getCopyOf() {
+		return copyof;
+	}
 }

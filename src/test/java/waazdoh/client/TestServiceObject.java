@@ -7,6 +7,7 @@ import java.util.Map;
 import org.xml.sax.SAXException;
 
 import waazdoh.client.WClient.Filter;
+import waazdoh.common.MStringID;
 import waazdoh.common.MTimedFlag;
 import waazdoh.common.ObjectID;
 import waazdoh.common.WObject;
@@ -14,8 +15,7 @@ import waazdoh.common.WaazdohInfo;
 
 public class TestServiceObject extends WCTestCase {
 
-	private final class ServiceObjectDataImplementation implements
-			ServiceObjectData {
+	private final class ServiceObjectDataImplementation implements ServiceObjectData {
 		double d = Math.random();
 		long time = System.currentTimeMillis();
 
@@ -33,17 +33,19 @@ public class TestServiceObject extends WCTestCase {
 			b.addValue("time", time);
 			return b;
 		}
+
+		public void update() {
+			d = Math.random();
+		}
 	}
 
 	ServiceObject o;
 
-	public void testModifiedListener() throws MalformedURLException,
-			SAXException {
+	public void testModifiedListener() throws MalformedURLException, SAXException {
 		ServiceObjectData data1 = new ServiceObjectDataImplementation();
 
 		WClient c1 = getClient(getRandomUserName(), false);
-		o = new ServiceObject("test", c1, data1, WaazdohInfo.VERSION,
-				"WAAZDOHTEST");
+		o = new ServiceObject("test", c1, data1, WaazdohInfo.VERSION, "WAAZDOHTEST");
 
 		final Map<String, String> map = new HashMap<String, String>();
 
@@ -70,8 +72,7 @@ public class TestServiceObject extends WCTestCase {
 		ServiceObjectDataImplementation data2 = new ServiceObjectDataImplementation();
 
 		WClient c2 = getClient(getRandomUserName(), false);
-		ServiceObject o1 = new ServiceObject("test", c2, data2,
-				WaazdohInfo.VERSION, "WAAZDOHTEST");
+		ServiceObject o1 = new ServiceObject("test", c2, data2, WaazdohInfo.VERSION, "WAAZDOHTEST");
 
 		o1.load(id.getStringID());
 
@@ -83,6 +84,13 @@ public class TestServiceObject extends WCTestCase {
 
 		assertEquals(o1data, o2data);
 		assertEquals(o1data.getContentHash(), o2data.getContentHash());
+
+		String o1hash = o1.getHash();
+		data2.update();
+
+		o1.save();
+		assertNotNull(o1.getCopyOf());
+		assertFalse(o1.getHash().equals(o1hash));
 	}
 
 	public void testFilter() throws SAXException, MalformedURLException {
@@ -94,8 +102,7 @@ public class TestServiceObject extends WCTestCase {
 		ServiceObjectDataImplementation data2 = new ServiceObjectDataImplementation();
 
 		WClient c2 = getClient(getRandomUserName(), false);
-		ServiceObject o1 = new ServiceObject("test", c2, data2,
-				WaazdohInfo.VERSION, "WAAZDOHTEST");
+		ServiceObject o1 = new ServiceObject("test", c2, data2, WaazdohInfo.VERSION, "WAAZDOHTEST");
 
 		final MTimedFlag f = new MTimedFlag(getWaitTime());
 
@@ -126,11 +133,9 @@ public class TestServiceObject extends WCTestCase {
 		assertEquals(o1data.getContentHash(), o2data.getContentHash());
 	}
 
-	private ObjectID createAndPublish(ServiceObjectData data1)
-			throws MalformedURLException, SAXException {
+	private ObjectID createAndPublish(ServiceObjectData data1) throws MalformedURLException, SAXException {
 		WClient c1 = getClient(getRandomUserName(), false);
-		o = new ServiceObject("test", c1, data1, WaazdohInfo.VERSION,
-				"WAAZDOHTEST");
+		o = new ServiceObject("test", c1, data1, WaazdohInfo.VERSION, "WAAZDOHTEST");
 
 		o.save();
 		o.publish();
