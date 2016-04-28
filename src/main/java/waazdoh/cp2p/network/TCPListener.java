@@ -62,14 +62,11 @@ public final class TCPListener {
 			EventLoopGroup workerGroup = new NioEventLoopGroup();
 
 			bootstrap = new ServerBootstrap();
-			bootstrap.group(bossGroup, workerGroup)
-					.channel(NioServerSocketChannel.class)
-					.childHandler(new ChannelInitializerExtension())
-					.option(ChannelOption.SO_BACKLOG, 128)
+			bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
+					.childHandler(new ChannelInitializerExtension()).option(ChannelOption.SO_BACKLOG, 128)
 					.childOption(ChannelOption.SO_KEEPALIVE, true);
 			//
-			port = preferences.getInteger(WPreferences.NETWORK_SERVER_PORT,
-					DEFAULT_PORT);
+			port = preferences.getInteger(WPreferences.NETWORK_SERVER_PORT, DEFAULT_PORT);
 			//
 			try {
 				while (!isClosed() && bind == null && port < 65000) {
@@ -91,8 +88,7 @@ public final class TCPListener {
 		}
 	}
 
-	private synchronized void startListening(final ServerBootstrap bootstrap)
-			throws InterruptedException {
+	private synchronized void startListening(final ServerBootstrap bootstrap) throws InterruptedException {
 		Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -137,8 +133,7 @@ public final class TCPListener {
 		closed = true;
 	}
 
-	private final class ChannelInitializerExtension extends
-			ChannelInitializer<SocketChannel> {
+	private final class ChannelInitializerExtension extends ChannelInitializer<SocketChannel> {
 		@Override
 		protected void initChannel(SocketChannel ch) throws Exception {
 			if (!isClosed()) {
@@ -162,15 +157,13 @@ public final class TCPListener {
 
 	class MServerHandler extends SimpleChannelInboundHandler<List<MMessage>> {
 		@Override
-		protected void channelRead0(ChannelHandlerContext ctx, List<MMessage> ms)
-				throws Exception {
+		protected void channelRead0(ChannelHandlerContext ctx, List<MMessage> ms) throws Exception {
 			log.info("messageReceived " + ms);
 			if (!closed) {
 				List<MMessage> response = messenger.handle(ms);
 				if (response != null) {
 					log.debug("sending back response " + response);
-					ctx.writeAndFlush(response).addListener(
-							ChannelFutureListener.CLOSE_ON_FAILURE);
+					ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
 				} else {
 					log.info("Response null for " + ms + ". Closing " + ctx);
 					ctx.close();
@@ -181,8 +174,7 @@ public final class TCPListener {
 		}
 
 		@Override
-		public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
-				throws Exception {
+		public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 			log.info("got exception " + cause);
 			log.error(cause);
 		}

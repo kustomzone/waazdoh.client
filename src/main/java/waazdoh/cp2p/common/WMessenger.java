@@ -27,17 +27,13 @@ public interface WMessenger {
 
 	MMessage newResponseMessage(MMessage childb, String string);
 
-	void addResponseListener(MessageID id,
-			MessageResponseListener responseListener);
+	void addResponseListener(MessageID id, MessageResponseListener responseListener);
 
 	void broadcastMessage(MMessage b);
 
-	void broadcastMessage(MMessage notification,
-			MessageResponseListener messageResponseListener);
+	void broadcastMessage(MMessage notification, MessageResponseListener messageResponseListener);
 
-	void broadcastMessage(MMessage message,
-			MessageResponseListener messageResponseListener,
-			Set<MNodeID> exceptions);
+	void broadcastMessage(MMessage message, MessageResponseListener messageResponseListener, Set<MNodeID> exceptions);
 
 	String getInfoText();
 

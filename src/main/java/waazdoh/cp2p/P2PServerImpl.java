@@ -185,11 +185,17 @@ public final class P2PServerImpl implements P2PServer {
 					sourceListener.nodeAdded(n);
 				}
 			}
+
+			startNodeCheckLoops();
 		}
 	}
 
 	void startNodeCheckLoops() {
-		int loopcount = NODECHECKLOOP_COUNT;
+		int loopcount = NODECHECKLOOP_COUNT - nodechecktg.activeCount();
+		if (loopcount < 1) {
+			loopcount = 1;
+		}
+
 		for (int i = 0; i < loopcount; i++) {
 			Thread t = new Thread(nodechecktg, new Runnable() {
 				@Override
@@ -318,7 +324,7 @@ public final class P2PServerImpl implements P2PServer {
 				}
 			}
 		} else {
-			log.info("Serverlist null. Closing.");
+			log.info("Serverlist null. Not adding any nodes.");
 		}
 	}
 
@@ -363,6 +369,7 @@ public final class P2PServerImpl implements P2PServer {
 		//
 		shutdown();
 		nodes = null;
+		nodestatuses.clear();
 
 		log.info("closing done");
 	}
