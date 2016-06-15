@@ -29,8 +29,7 @@ public class WClient {
 	private WLogger logger = WLogger.getLogger(this);
 	private List<Filter> filters = new LinkedList<WClient.Filter>();
 
-	public WClient(WPreferences p, BinarySource binarysource,
-			BeanStorage beanstorage, ServiceClient nservice) {
+	public WClient(WPreferences p, BinarySource binarysource, BeanStorage beanstorage, ServiceClient nservice) {
 		this.preferences = p;
 		this.source = binarysource;
 		this.beanstorage = beanstorage;
@@ -50,8 +49,7 @@ public class WClient {
 	}
 
 	public boolean isLoggedIn() {
-		return this.userid != null
-				&& getService().getAuthenticationToken() != null;
+		return this.userid != null && getService().getAuthenticationToken() != null;
 	}
 
 	public UserID getUserID() {
@@ -75,8 +73,7 @@ public class WClient {
 	}
 
 	public boolean trySavedSession() {
-		return setSession(getPreferences().get(
-				WPreferences.PREFERENCES_SESSION, ""));
+		return setSession(getPreferences().get(WPreferences.PREFERENCES_SESSION, ""));
 	}
 
 	public boolean setSession(final String session) {
@@ -87,8 +84,7 @@ public class WClient {
 				if (user != null && user.isSuccess()) {
 					this.userid = new UserID(user.getUserid());
 					source.setClient(this);
-					getPreferences().set(WPreferences.PREFERENCES_SESSION,
-							session);
+					getPreferences().set(WPreferences.PREFERENCES_SESSION, session);
 					loggedIn();
 					return true;
 				} else {
@@ -125,15 +121,14 @@ public class WClient {
 
 	public AppLoginVO checkAppLogin(String id) {
 		AppLoginVO b = getService().getUsers().checkAppLogin(id);
-		if (b.getSessionid() != null) {
+		if (b != null && b.getSessionid() != null) {
 			setSession(b.getSessionid());
 		}
 		return b;
 	}
 
 	public String readStorageArea(String string) {
-		return getService().getStorageArea().read(
-				getService().getUser().getUsername(), string);
+		return getService().getStorageArea().read(getService().getUser().getUsername(), string);
 	}
 
 	public List<String> search(String searchitem, int index, int count) {
