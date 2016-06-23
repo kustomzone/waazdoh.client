@@ -1,5 +1,6 @@
 package waazdoh.client;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,16 +33,14 @@ public class WCTestCase extends TestCase {
 	private int usernamecounter = 0;
 
 	protected void setUp() throws Exception {
-		log.info("************************ STARTING A TEST " + this + " "
-				+ this.getName() + " ********");
+		log.info("************************ STARTING A TEST " + this + " " + this.getName() + " ********");
 		values.clear();
 		servers.clear();
 		StaticTestPreferences.clearPorts();
 	};
 
 	protected void tearDown() throws Exception {
-		log.info("************************* CLOSING " + this + " "
-				+ this.getName() + " ********");
+		log.info("************************* CLOSING " + this + " " + this.getName() + " ********");
 
 		new ThreadChecker(new ThreadChecker.IChecker() {
 
@@ -128,8 +127,7 @@ public class WCTestCase extends TestCase {
 	}
 
 	protected P2PServer getOtherServerNoBind() {
-		P2PServer nobindserver = new P2PServerImpl(new StaticTestPreferences(
-				"otherserver", "otherserver"), false);
+		P2PServer nobindserver = new P2PServerImpl(new StaticTestPreferences("otherserver", "otherserver"), false);
 
 		nobindserver.start();
 
@@ -149,12 +147,9 @@ public class WCTestCase extends TestCase {
 		}
 	}
 
-	protected WClient getClient(final String username, final boolean bind)
-			throws MalformedURLException, SAXException {
-		WPreferences p = new StaticTestPreferences("waazdohclienttests",
-				username);
-		P2PBinarySource source = new P2PBinarySource(p, new FileBeanStorage(p),
-				bind);
+	protected WClient getClient(final String username, final boolean bind) throws MalformedURLException, SAXException {
+		WPreferences p = new StaticTestPreferences("waazdohclienttests", username);
+		P2PBinarySource source = new P2PBinarySource(p, new FileBeanStorage(p), bind);
 		StaticService service = new StaticService(username);
 		String session = service.createSession();
 
@@ -168,8 +163,7 @@ public class WCTestCase extends TestCase {
 	}
 
 	protected String getRandomUserName() {
-		return "username" + (usernamecounter++) + "_"
-				+ System.currentTimeMillis();
+		return "username" + (usernamecounter++) + "_" + System.currentTimeMillis();
 	}
 
 	protected int getWaitTime() {
@@ -181,7 +175,8 @@ public class WCTestCase extends TestCase {
 	}
 
 	protected String getTempPath() {
-		String tempDir = System.getProperty("java.io.tmpdir");
+		String tempDir = System.getProperty("java.io.tmpdir") + File.separator + "user_"
+				+ System.getProperty("user.name");
 		return tempDir;
 	}
 
