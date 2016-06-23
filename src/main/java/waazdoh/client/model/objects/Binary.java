@@ -230,6 +230,7 @@ public final class Binary implements HashSource {
 	public void publish() {
 		save();
 		client.getObjects().publish(getID().toString());
+		client.getBinarySource().published(getID());
 	}
 
 	public void save() {

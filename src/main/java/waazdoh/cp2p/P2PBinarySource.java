@@ -17,8 +17,12 @@ import waazdoh.client.model.BinaryID;
 import waazdoh.client.model.objects.Binary;
 import waazdoh.client.storage.local.FileBeanStorage;
 import waazdoh.client.storage.local.LocalBinaryStorage;
+import waazdoh.common.MStringID;
 import waazdoh.common.WLogger;
 import waazdoh.common.WPreferences;
+import waazdoh.cp2p.common.WMessenger;
+import waazdoh.cp2p.messaging.MMessage;
+import waazdoh.cp2p.messaging.MMessageHandler;
 
 public final class P2PBinarySource implements BinarySource {
 	private P2PServer server;
@@ -29,8 +33,7 @@ public final class P2PBinarySource implements BinarySource {
 	private LocalBinaryStorage storage;
 	private WClient client;
 
-	public P2PBinarySource(WPreferences p, FileBeanStorage beanstorage,
-			boolean bind2) {
+	public P2PBinarySource(WPreferences p, FileBeanStorage beanstorage, boolean bind2) {
 		this.server = new P2PServerImpl(p, bind2);
 		server.setBinarySource(this);
 
@@ -38,8 +41,7 @@ public final class P2PBinarySource implements BinarySource {
 		this.preferences = p;
 	}
 
-	public P2PBinarySource(WPreferences np, FileBeanStorage nbeanstorage,
-			P2PServer nserver) {
+	public P2PBinarySource(WPreferences np, FileBeanStorage nbeanstorage, P2PServer nserver) {
 		this.beanstorage = nbeanstorage;
 		this.preferences = np;
 		this.server = nserver;
@@ -53,14 +55,20 @@ public final class P2PBinarySource implements BinarySource {
 	}
 
 	@Override
+	public void addMessageHandler(String messagename, MMessageHandler handler) {
+		if (server != null) {
+			server.getMessenger().addMessageHandler(messagename, handler);
+		}
+	}
+
+	@Override
 	public String toString() {
 		return "P2PBinarySource[" + server + "]";
 	}
 
 	@Override
 	public boolean isRunning() {
-		return storage != null && this.beanstorage != null
-				&& server.isRunning();
+		return storage != null && this.beanstorage != null && server.isRunning();
 	}
 
 	@Override
@@ -106,8 +114,7 @@ public final class P2PBinarySource implements BinarySource {
 					fs = null;
 				}
 			} else {
-				log.info("Cannot download " + fsid
-						+ ". Download queue is full ");
+				log.info("Cannot download " + fsid + ". Download queue is full ");
 
 			}
 			//
@@ -122,6 +129,13 @@ public final class P2PBinarySource implements BinarySource {
 	@Override
 	public Binary newBinary(final String string, String extension) {
 		return storage.newBinary(string, extension);
+	}
+
+	@Override
+	public void published(BinaryID id) {
+		MMessage m = server.getMessenger().getMessage(WMessenger.MESSAGENAME_PUBLISHED);
+		m.addIDAttribute("binaryid", new MStringID(id.toString()));
+		server.getMessenger().broadcastMessage(m);
 	}
 
 	@Override
@@ -148,8 +162,7 @@ public final class P2PBinarySource implements BinarySource {
 
 	@Override
 	public void waitUntilReady() {
-		server.waitForConnection(preferences.getInteger(
-				"waazdoh.maxtime.waituntilready", 120000));
+		server.waitForConnection(preferences.getInteger("waazdoh.maxtime.waituntilready", 120000));
 	}
 
 	public WPreferences getPreferences() {

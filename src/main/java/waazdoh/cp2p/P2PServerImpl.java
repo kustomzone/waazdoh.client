@@ -33,6 +33,7 @@ import waazdoh.cp2p.common.MHost;
 import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.common.WMessenger;
 import waazdoh.cp2p.messaging.MMessage;
+import waazdoh.cp2p.messaging.MMessageHandler;
 import waazdoh.cp2p.messaging.MessageResponseListener;
 import waazdoh.cp2p.network.PassiveNode;
 import waazdoh.cp2p.network.ServerListener;

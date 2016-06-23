@@ -19,6 +19,8 @@ import waazdoh.cp2p.messaging.MessageID;
 import waazdoh.cp2p.messaging.MessageResponseListener;
 
 public interface WMessenger {
+	String MESSAGENAME_PUBLISHED = "published";
+
 	MNodeID getID();
 
 	List<MMessage> handle(List<MMessage> ms);
