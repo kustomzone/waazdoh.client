@@ -35,12 +35,12 @@ public class Login {
 				}
 			}
 		}
-		
+
 		return null;
 	}
 
 	private WClient tryLogin(String prefix, String username) {
-		p = new PropertiesPreferences(prefix, username);
+		p = new PropertiesPreferences(prefix + "/" + username);
 
 		FileBeanStorage beanstorage = new FileBeanStorage(p);
 		P2PBinarySource binarysource = new P2PBinarySource(p, beanstorage, true);
