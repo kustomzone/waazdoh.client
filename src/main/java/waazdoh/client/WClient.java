@@ -14,6 +14,7 @@ import waazdoh.common.WPreferences;
 import waazdoh.common.client.ServiceClient;
 import waazdoh.common.service.ObjectsService;
 import waazdoh.common.vo.AppLoginVO;
+import waazdoh.common.vo.StorageAreaVO;
 import waazdoh.common.vo.UserVO;
 
 public class WClient {
@@ -128,7 +129,8 @@ public class WClient {
 	}
 
 	public String readStorageArea(String string) {
-		return getService().getStorageArea().read(getService().getUser().getUsername(), string);
+		return getService().getStorageArea()
+				.read(new StorageAreaVO(getService().getUser().getUsername(), string, null));
 	}
 
 	public List<String> search(String searchitem, int index, int count) {
@@ -154,7 +156,9 @@ public class WClient {
 
 	@Override
 	public String toString() {
-		return "WClient[connected:" + isRunning() + "][bsource:" + source + "]";
+		UserVO user = getService().getUser();
+		String username = user != null ? user.getUsername() : "unknown";
+		return "WClient[" + username + "][connected:" + isRunning() + "][bsource:" + source + "]";
 	}
 
 	public ObjectsService getObjects() {

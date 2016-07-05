@@ -216,7 +216,7 @@ public final class Binary implements HashSource {
 	private synchronized boolean loadFromService(MStringID pid) {
 		ObjectVO o = client.getObjects().read(pid.toString());
 		if (o != null) {
-			WObject b = o.getObject();
+			WObject b = o.toObject();
 			log.info("loading Binary " + b);
 			load(b);
 			used();

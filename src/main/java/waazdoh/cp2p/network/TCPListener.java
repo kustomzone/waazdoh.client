@@ -10,6 +10,9 @@
  ******************************************************************************/
 package waazdoh.cp2p.network;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -24,10 +27,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.compression.JZlibDecoder;
 import io.netty.handler.codec.compression.JZlibEncoder;
-
-import java.util.LinkedList;
-import java.util.List;
-
 import waazdoh.common.WLogger;
 import waazdoh.common.WPreferences;
 import waazdoh.cp2p.common.WMessenger;
@@ -54,6 +53,10 @@ public final class TCPListener {
 	public TCPListener(WMessenger mMessager, WPreferences p) {
 		this.messenger = mMessager;
 		this.preferences = p;
+	}
+
+	public String toString() {
+		return "TCPListener[" + (bind != null ? ("" + port) : "not listening") + "]";
 	}
 
 	public void start() {
