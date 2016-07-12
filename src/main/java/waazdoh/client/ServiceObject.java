@@ -17,9 +17,10 @@ import waazdoh.common.HashSource;
 import waazdoh.common.MStringID;
 import waazdoh.common.ObjectID;
 import waazdoh.common.UserID;
-import waazdoh.common.WData;
 import waazdoh.common.WLogger;
+import waazdoh.common.WObject;
 import waazdoh.common.vo.ObjectVO;
+import waazdoh.common.vo.ReturnVO;
 
 public final class ServiceObject implements HashSource {
 	private UserID creatorid;
@@ -36,7 +37,7 @@ public final class ServiceObject implements HashSource {
 
 	private String tagname;
 	private MStringID copyof;
-	private WData storedbean = new WData("temp");
+	private WObject storedbean = new WObject();
 
 	private List<ServiceObjectListener> listeners = new LinkedList<ServiceObjectListener>();
 
@@ -44,8 +45,9 @@ public final class ServiceObject implements HashSource {
 
 	private String prefix;
 
-	public ServiceObject(final String tagname, final WClient env,
-			final ServiceObjectData data, final String version,
+	private String lastpublishedid;
+
+	public ServiceObject(final String tagname, final WClient env, final ServiceObjectData data, final String version,
 			final String nprefix) {
 		this.tagname = tagname;
 		this.creatorid = env.getUserID();
@@ -58,13 +60,11 @@ public final class ServiceObject implements HashSource {
 	}
 
 	public boolean load(MStringID oid) {
-		log.info("loading " + oid);
 		if (oid != null) {
-			ObjectVO response = env.getService().getObjects()
-					.read(oid.toString());
-			if (response != null && response.isSuccess()) {
+			ObjectVO response = env.getService().getObjects().read(oid.toString());
+			if (response != null && response.isSuccess() && env.filter(response.toObject())) {
 				id = new ObjectID(oid, this);
-				return parseBean(response.getWData());
+				return parseObject(response.toObject());
 			} else {
 				log.info("loading " + tagname + " bean failed " + oid);
 				return false;
@@ -74,16 +74,16 @@ public final class ServiceObject implements HashSource {
 		}
 	}
 
-	private boolean parseBean(WData bean) {
-		id = new ObjectID(bean.getAttribute("id"), this);
+	private boolean parseObject(WObject o) {
+		id = new ObjectID(o.getAttribute("id"), this);
 
-		creatorid = bean.getUserAttribute("creator");
-		creationtime = bean.getLongValue("creationtime");
-		modifytime = bean.getLongValue("modified");
-		version = bean.getValue("version");
-		copyof = bean.getIDValue("copyof");
+		creatorid = o.getUserAttribute("creator");
+		creationtime = o.getLongValue("creationtime");
+		modifytime = o.getLongValue("modified");
+		version = o.getValue("version");
+		copyof = o.getIDValue("copyof");
 		//
-		return data.parseBean(bean);
+		return data.parse(o);
 	}
 
 	public WClient getEnvironment() {
@@ -94,19 +94,23 @@ public final class ServiceObject implements HashSource {
 		return id;
 	}
 
-	public WData getBean() {
-		WData bt = new WData(tagname);
+	public WObject getBean() {
+		WObject bt = new WObject(tagname);
 		bt.addValue("creationtime", getCreationtime());
 		bt.addValue("modified", getModifytime());
 		bt.addValue("creator", creatorid.toString());
 		bt.addValue("version", version);
-		bt.addValue("license",
-				"GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html");
+		bt.addValue("license", "GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html");
 		if (copyof != null) {
 			bt.addValue("copyof", copyof.toString());
 		}
 
 		return bt;
+	}
+
+	@Override
+	public String toString() {
+		return "ServiceObject[" + tagname + "][" + id + "]";
 	}
 
 	public long getModifytime() {
@@ -118,27 +122,35 @@ public final class ServiceObject implements HashSource {
 	}
 
 	public boolean publish() {
-		log.info("publishing " + id);
 		save();
-		return env.getService().getObjects().publish(id.toString());
+		String sid = id.toString();
+		if (lastpublishedid == null || !lastpublishedid.equals(sid)) {
+			long st = System.currentTimeMillis();
+			log.info("publishing " + st + " id:" + id);
+			lastpublishedid = sid;
+			ReturnVO ret = env.getService().getObjects().publish(sid);
+			log.info("published " + ret + " dtime:" + (System.currentTimeMillis() - st));
+			return ret.isSuccess();
+		} else {
+			return true;
+		}
 	}
 
 	@Override
 	public String getHash() {
-		return data.getBean().getContentHash();
+		return data.getObject().getContentHash();
 	}
 
 	public void save() {
-		log.info("possibly saving " + id);
-
 		if (!env.getUserID().equals(creatorid)) {
 			copyof = getID().getStringID();
 			id = new ObjectID(this, prefix);
 			creatorid = env.getUserID();
 		}
 
-		WData current = data.getBean();
-		current.setAttribute("id", id.toString());
+		WObject current = data.getObject();
+		String sid = id.toString();
+		current.setAttribute("id", sid);
 		if (!storedbean.equals(current)) {
 
 			log.info("" + id + " stored " + storedbean.toText());
@@ -147,17 +159,16 @@ public final class ServiceObject implements HashSource {
 			log.info("" + id + " current " + current.getContentHash());
 
 			modified();
-			WData storing = data.getBean();
-			storing.setAttribute("id", id.toString());
+			sid = id.toString();
+			WObject storing = data.getObject();
+			storing.setAttribute("id", sid);
 			log.info("" + id + " storing " + storing.toText());
 			//
 			storedbean = storing;
-			log.info("adding bean" + id);
 
-			env.getService()
-					.getObjects()
-					.write(id.getStringID().toString(),
-							storing.toXML().toString());
+			log.info("writing to service " + sid);
+			env.getService().getObjects().write(sid, storing.toText());
+			log.info("stored " + sid);
 		}
 	}
 
@@ -165,8 +176,7 @@ public final class ServiceObject implements HashSource {
 		modifytime = System.currentTimeMillis();
 		log.info("modified " + id);
 		//
-		List<ServiceObjectListener> ls = new LinkedList<ServiceObjectListener>(
-				listeners);
+		List<ServiceObjectListener> ls = new LinkedList<ServiceObjectListener>(listeners);
 		for (ServiceObjectListener trackListener : ls) {
 			trackListener.modified();
 		}
@@ -174,5 +184,13 @@ public final class ServiceObject implements HashSource {
 
 	public void addListener(ServiceObjectListener trackListener) {
 		listeners.add(trackListener);
+	}
+
+	public boolean hasChanged() {
+		return lastpublishedid == null || !lastpublishedid.equals(id.toString());
+	}
+
+	public MStringID getCopyOf() {
+		return copyof;
 	}
 }
