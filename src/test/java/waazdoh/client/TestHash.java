@@ -8,6 +8,7 @@ import org.xml.sax.SAXException;
 
 import waazdoh.common.ObjectID;
 import waazdoh.common.WData;
+import waazdoh.common.WObject;
 import waazdoh.common.WaazdohInfo;
 import waazdoh.common.XML;
 
@@ -19,10 +20,10 @@ public class TestHash extends WCTestCase {
 		WData abean = new WData("test");
 		abean.addValue("testvalue", false);
 		String ahash = abean.getContentHash();
-		
+
 		WData bbean = new WData(new XML(new StringReader(abean.toXML()
 				.toString())));
-		
+
 		String bhash = bbean.getContentHash();
 
 		assertEquals(ahash, bhash);
@@ -31,15 +32,16 @@ public class TestHash extends WCTestCase {
 	public void testServiceObjectHash() throws SAXException,
 			MalformedURLException {
 		ServiceObjectData so = new ServiceObjectData() {
+
 			@Override
-			public boolean parseBean(WData bean) {
+			public boolean parse(WObject bean) {
 				// FAILS
 				return false;
 			}
 
 			@Override
-			public WData getBean() {
-				WData b = o.getBean();
+			public WObject getObject() {
+				WObject b = o.getBean();
 				return b;
 			}
 		};

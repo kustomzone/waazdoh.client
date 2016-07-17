@@ -12,6 +12,7 @@ package waazdoh.client;
 
 import waazdoh.client.model.BinaryID;
 import waazdoh.client.model.objects.Binary;
+import waazdoh.cp2p.messaging.MMessageHandler;
 
 public interface BinarySource {
 	void close();
@@ -39,5 +40,9 @@ public interface BinarySource {
 	boolean isReady();
 
 	void startClosing();
+
+	void published(BinaryID id);
+
+	void addMessageHandler(String messagename, MMessageHandler handler);
 
 }

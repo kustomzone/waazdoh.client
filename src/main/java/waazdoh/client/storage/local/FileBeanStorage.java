@@ -10,25 +10,23 @@
  ******************************************************************************/
 package waazdoh.client.storage.local;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Iterator;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
-import org.xml.sax.SAXException;
 
 import waazdoh.client.model.StringIDLocalPath;
 import waazdoh.common.BeanStorage;
 import waazdoh.common.MStringID;
-import waazdoh.common.WData;
 import waazdoh.common.WLogger;
+import waazdoh.common.WObject;
 import waazdoh.common.WPreferences;
-import waazdoh.common.XML;
 
 public final class FileBeanStorage implements BeanStorage {
 	private WLogger log = WLogger.getLogger(this);
@@ -41,31 +39,19 @@ public final class FileBeanStorage implements BeanStorage {
 		file.mkdirs();
 	}
 
-	public WData getBean(final MStringID id) {
+	public WObject getBean(final MStringID id) {
 		try {
 			File f = getFile(id);
 			if (f.exists()) {
-				BufferedReader br = new BufferedReader(new FileReader(f));
-				StringBuilder sb = new StringBuilder();
-				while (true) {
-					String line = br.readLine();
-					if (line == null) {
-						break;
-					}
-					sb.append(line);
-				}
-				br.close();
-				//
-				XML xml = new XML(sb.toString());
-
-				return new WData(xml);
+				String content = new String(Files.readAllBytes(Paths.get(f
+						.getAbsolutePath())));
+				WObject o = new WObject();
+				o.parse(content);
+				return o;
 			} else {
 				return null;
 			}
 		} catch (IOException e) {
-			log.error(e);
-			return null;
-		} catch (SAXException e) {
 			log.error(e);
 			return null;
 		}
@@ -83,7 +69,7 @@ public final class FileBeanStorage implements BeanStorage {
 			fpath.mkdirs();
 		}
 		//
-		return filepath + id + ".xml";
+		return filepath + id + ".yml";
 	}
 
 	@Override
@@ -94,13 +80,13 @@ public final class FileBeanStorage implements BeanStorage {
 		}
 	}
 
-	public void addBean(final MStringID id, WData response) {
+	public void addObject(final MStringID id, WObject response) {
 		try {
 			File f = getFile(id);
 			FileWriter fw;
 			fw = new FileWriter(f);
 			BufferedWriter bw = new BufferedWriter(fw);
-			bw.write(response.toXML().toString());
+			bw.write(response.toText());
 			bw.close();
 		} catch (IOException e) {
 			log.error(e);
@@ -135,7 +121,7 @@ public final class FileBeanStorage implements BeanStorage {
 					public MStringID next() {
 						File f = fileiterator.next();
 						String name = f.getName();
-						return new MStringID(name.replace(".xml", ""));
+						return new MStringID(name.replace(".yml", ""));
 					}
 				};
 			}

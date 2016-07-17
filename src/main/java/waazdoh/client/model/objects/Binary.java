@@ -29,6 +29,7 @@ import waazdoh.common.MStringID;
 import waazdoh.common.UserID;
 import waazdoh.common.WData;
 import waazdoh.common.WLogger;
+import waazdoh.common.WObject;
 import waazdoh.common.WaazdohInfo;
 import waazdoh.common.vo.ObjectVO;
 
@@ -57,8 +58,7 @@ public final class Binary implements HashSource {
 
 	private static int binarycount = 0;
 
-	public Binary(WClient service, String storagepath, String comment,
-			String extension) {
+	public Binary(WClient service, String storagepath, String comment, String extension) {
 		this.client = service;
 		this.storage = storagepath;
 
@@ -148,8 +148,7 @@ public final class Binary implements HashSource {
 		file.seek(index);
 		file.write(nbytes, 0, nbytes.length);
 		//
-		log.debug("added " + nbytes.length + " at " + index
-				+ ". File size now " + file.length());
+		log.debug("added " + nbytes.length + " at " + index + ". File size now " + file.length());
 		resetCRC();
 	}
 
@@ -158,8 +157,7 @@ public final class Binary implements HashSource {
 		file.seek(index);
 		file.write(nbytes, 0, length);
 		//
-		log.debug("added " + length + " at " + index + ". File size now "
-				+ file.length());
+		log.debug("added " + length + " at " + index + ". File size now " + file.length());
 		resetCRC();
 	}
 
@@ -176,8 +174,7 @@ public final class Binary implements HashSource {
 	public synchronized void add(byte[] bytes) throws IOException {
 		used();
 		getAccessFile().write(bytes);
-		log.debug("added " + bytes.length + ". File size now "
-				+ getAccessFile().length());
+		log.debug("added " + bytes.length + ". File size now " + getAccessFile().length());
 
 		resetCRC();
 	}
@@ -200,16 +197,11 @@ public final class Binary implements HashSource {
 		}
 	}
 
-	private void load(WData d) {
+	private void load(WObject d) {
 		WData data;
-		if (d.get(BEAN_TAG) != null) {
-			data = d.get(BEAN_TAG);
-			id = new BinaryID(d.getAttribute("id"));
-		} else {
-			data = d;
-		}
+		id = new BinaryID(d.getAttribute("id"));
 		//
-		this.length = data.getIntValue("length");
+		this.length = d.getIntValue("length");
 		this.storedcrc = new MCRC(d.getLongValue("crc"));
 		this.creatorid = new UserID(d.getValue("creator"));
 		this.version = d.getValue("version");
@@ -219,10 +211,10 @@ public final class Binary implements HashSource {
 
 	private synchronized boolean loadFromService(MStringID pid) {
 		ObjectVO o = client.getObjects().read(pid.toString());
-		if (o != null) {
-			WData b = o.getWData();
+		if (o != null && o.isSuccess()) {
+			WObject b = o.toObject();
 			log.info("loading Binary " + b);
-			load(b.find(BEAN_TAG));
+			load(b);
 			used();
 			return true;
 		} else {
@@ -234,24 +226,24 @@ public final class Binary implements HashSource {
 	public void publish() {
 		save();
 		client.getObjects().publish(getID().toString());
+		client.getBinarySource().published(getID());
 	}
 
 	public void save() {
 		creatorid = client.getUserID();
 
-		WData bean = getBean();
+		WObject bean = getBean();
 		bean.setAttribute("id", getID().toString());
 
-		client.getObjects().write(getID().toString(), bean.toXML().toString());
+		client.getObjects().write(getID().toString(), bean.toText());
 		//
-		client.getBeanStorage().addBean(getID(), bean);
+		client.getBeanStorage().addObject(getID(), bean);
 	}
 
 	@Override
 	public String toString() {
-		return "Binary[" + super.toString() + ":" + getID() + "][no:"
-				+ binarycount + "][" + length() + "][scrc:" + storedcrc
-				+ "][crc:" + crc + "][" + comment + "]";
+		return "Binary[" + super.toString() + ":" + getID() + "][no:" + binarycount + "][" + length() + "][scrc:"
+				+ storedcrc + "][crc:" + crc + "][" + comment + "]";
 	}
 
 	public boolean isOK() {
@@ -261,8 +253,8 @@ public final class Binary implements HashSource {
 		return true;
 	}
 
-	public WData getBean() {
-		WData b = new WData(BEAN_TAG);
+	public WObject getBean() {
+		WObject b = new WObject(BEAN_TAG);
 		//
 		b.addValue("length", "" + length);
 		b.addValue("crc", "" + currentCRC().getValue());
@@ -426,8 +418,7 @@ public final class Binary implements HashSource {
 		return extension;
 	}
 
-	public synchronized void importStream(InputStream stream)
-			throws IOException {
+	public synchronized void importStream(InputStream stream) throws IOException {
 		BufferedInputStream bis = new BufferedInputStream(stream);
 		byte bs[] = new byte[1024];
 		while (true) {

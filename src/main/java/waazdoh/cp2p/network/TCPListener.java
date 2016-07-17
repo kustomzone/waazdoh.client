@@ -10,6 +10,9 @@
  ******************************************************************************/
 package waazdoh.cp2p.network;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -24,10 +27,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.compression.JZlibDecoder;
 import io.netty.handler.codec.compression.JZlibEncoder;
-
-import java.util.LinkedList;
-import java.util.List;
-
 import waazdoh.common.WLogger;
 import waazdoh.common.WPreferences;
 import waazdoh.cp2p.common.WMessenger;
@@ -56,20 +55,21 @@ public final class TCPListener {
 		this.preferences = p;
 	}
 
+	public String toString() {
+		return "TCPListener[" + (bind != null ? ("" + port) : "not listening") + "]";
+	}
+
 	public void start() {
 		if (!isClosed()) {
 			EventLoopGroup bossGroup = new NioEventLoopGroup();
 			EventLoopGroup workerGroup = new NioEventLoopGroup();
 
 			bootstrap = new ServerBootstrap();
-			bootstrap.group(bossGroup, workerGroup)
-					.channel(NioServerSocketChannel.class)
-					.childHandler(new ChannelInitializerExtension())
-					.option(ChannelOption.SO_BACKLOG, 128)
+			bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
+					.childHandler(new ChannelInitializerExtension()).option(ChannelOption.SO_BACKLOG, 128)
 					.childOption(ChannelOption.SO_KEEPALIVE, true);
 			//
-			port = preferences.getInteger(WPreferences.NETWORK_SERVER_PORT,
-					DEFAULT_PORT);
+			port = preferences.getInteger(WPreferences.NETWORK_SERVER_PORT, DEFAULT_PORT);
 			//
 			try {
 				while (!isClosed() && bind == null && port < 65000) {
@@ -91,8 +91,7 @@ public final class TCPListener {
 		}
 	}
 
-	private synchronized void startListening(final ServerBootstrap bootstrap)
-			throws InterruptedException {
+	private synchronized void startListening(final ServerBootstrap bootstrap) throws InterruptedException {
 		Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -137,8 +136,7 @@ public final class TCPListener {
 		closed = true;
 	}
 
-	private final class ChannelInitializerExtension extends
-			ChannelInitializer<SocketChannel> {
+	private final class ChannelInitializerExtension extends ChannelInitializer<SocketChannel> {
 		@Override
 		protected void initChannel(SocketChannel ch) throws Exception {
 			if (!isClosed()) {
@@ -162,15 +160,13 @@ public final class TCPListener {
 
 	class MServerHandler extends SimpleChannelInboundHandler<List<MMessage>> {
 		@Override
-		protected void channelRead0(ChannelHandlerContext ctx, List<MMessage> ms)
-				throws Exception {
+		protected void channelRead0(ChannelHandlerContext ctx, List<MMessage> ms) throws Exception {
 			log.info("messageReceived " + ms);
 			if (!closed) {
 				List<MMessage> response = messenger.handle(ms);
 				if (response != null) {
 					log.debug("sending back response " + response);
-					ctx.writeAndFlush(response).addListener(
-							ChannelFutureListener.CLOSE_ON_FAILURE);
+					ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
 				} else {
 					log.info("Response null for " + ms + ". Closing " + ctx);
 					ctx.close();
@@ -181,8 +177,7 @@ public final class TCPListener {
 		}
 
 		@Override
-		public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
-				throws Exception {
+		public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 			log.info("got exception " + cause);
 			log.error(cause);
 		}

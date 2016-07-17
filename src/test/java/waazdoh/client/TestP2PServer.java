@@ -43,10 +43,12 @@ public class TestP2PServer extends WCTestCase {
 
 	public void testWaitForNode() {
 		final P2PServer s = getServer();
+		getOtherServerNoBind();
+
 		ConditionWaiter.wait(new Condition() {
 			@Override
 			public boolean test() {
-				return s.getNodesIterator().iterator().next() != null;
+				return s.getNodesIterator().iterator().hasNext();
 			}
 		}, getWaitTime());
 		assertNotNull(s.getNodesIterator().iterator().next());
@@ -112,8 +114,7 @@ public class TestP2PServer extends WCTestCase {
 		for (int i = 0; i < WPreferences.NETWORK_MAX_DOWNLOADS_DEFAULT; i++) {
 			assertTrue(s.canDownload());
 			BinaryID id = new BinaryID();
-			Binary b = new Binary(getClient(getRandomUserName(), false),
-					getTempPath(), "", "");
+			Binary b = new Binary(getClient(getRandomUserName(), false), getTempPath(), "", "");
 			b.load(id);
 			s.addDownload(b);
 			downloadid = id;
@@ -152,8 +153,7 @@ public class TestP2PServer extends WCTestCase {
 
 			ConditionWaiter.wait(new Condition() {
 				public boolean test() {
-					return serverb.getNode(servera.getID()) != null
-							&& servera.getNode(serverb.getID()) != null;
+					return serverb.getNode(servera.getID()) != null && servera.getNode(serverb.getID()) != null;
 				}
 			}, getWaitTime());
 
@@ -200,19 +200,17 @@ public class TestP2PServer extends WCTestCase {
 	public void testBroadcast() {
 		createTwoServers();
 
-		servera.getMessenger().addMessageHandler("testmessage",
-				new SimpleMessageHandler() {
+		servera.getMessenger().addMessageHandler("testmessage", new SimpleMessageHandler() {
 
-					@Override
-					public MMessage handle(MMessage childb) {
-						setValue("testbroadcast", "" + childb);
-						return null;
-					}
-				});
+			@Override
+			public MMessage handle(MMessage childb) {
+				setValue("testbroadcast", "" + childb);
+				return null;
+			}
+		});
 
 		log.info("Broadcasting " + serverb + " testmessage");
-		serverb.getMessenger().broadcastMessage(
-				serverb.getMessenger().getMessage("testmessage"));
+		serverb.getMessenger().broadcastMessage(serverb.getMessenger().getMessage("testmessage"));
 		//
 		waitForValue("testbroadcast", getWaitTime());
 		assertValue("testbroadcast");
@@ -226,41 +224,36 @@ public class TestP2PServer extends WCTestCase {
 		final Count c = new Count();
 		final int maxcount = 20;
 
-		servera.getMessenger().addMessageHandler("pingpong",
-				new SimpleMessageHandler() {
+		servera.getMessenger().addMessageHandler("pingpong", new SimpleMessageHandler() {
 
-					@Override
-					public MMessage handle(MMessage childb) {
-						if (c.count++ < maxcount) {
-							return servera.getMessenger()
-									.getMessage("pingpong");
-						} else {
-							return null;
-						}
-					}
-				});
+			@Override
+			public MMessage handle(MMessage childb) {
+				if (c.count++ < maxcount) {
+					return servera.getMessenger().getMessage("pingpong");
+				} else {
+					return null;
+				}
+			}
+		});
 
-		serverb.getMessenger().addMessageHandler("pingpong",
-				new SimpleMessageHandler() {
+		serverb.getMessenger().addMessageHandler("pingpong", new SimpleMessageHandler() {
 
-					@Override
-					public MMessage handle(MMessage childb) {
-						if (c.count++ < maxcount) {
-							return serverb.getMessenger()
-									.getMessage("pingpong");
-						} else {
-							return null;
-						}
-					}
-				});
+			@Override
+			public MMessage handle(MMessage childb) {
+				if (c.count++ < maxcount) {
+					return serverb.getMessenger().getMessage("pingpong");
+				} else {
+					return null;
+				}
+			}
+		});
 
 		log.info("Sending pingpong");
 
 		ConditionWaiter.wait(new Condition() {
 			public boolean test() {
 				log.info("broadcasting pingpong");
-				servera.getMessenger().broadcastMessage(
-						servera.getMessenger().getMessage("pingpong"));
+				servera.getMessenger().broadcastMessage(servera.getMessenger().getMessage("pingpong"));
 
 				return c.count >= maxcount;
 			}
@@ -292,8 +285,7 @@ public class TestP2PServer extends WCTestCase {
 	}
 
 	private P2PServer getOtherServer() {
-		P2PServer s = new P2PServerImpl(new StaticTestPreferences(
-				"otherserver", "otherserver"), true);
+		P2PServer s = new P2PServerImpl(new StaticTestPreferences("otherserver", "otherserver"), true);
 		s.start();
 		log.info("returning " + s);
 		return s;

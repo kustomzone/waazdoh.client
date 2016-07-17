@@ -33,6 +33,7 @@ import waazdoh.cp2p.common.MHost;
 import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.common.WMessenger;
 import waazdoh.cp2p.messaging.MMessage;
+import waazdoh.cp2p.messaging.MMessageHandler;
 import waazdoh.cp2p.messaging.MessageResponseListener;
 import waazdoh.cp2p.network.PassiveNode;
 import waazdoh.cp2p.network.ServerListener;
@@ -74,8 +75,7 @@ public final class P2PServerImpl implements P2PServer {
 
 	private void reboot() {
 		try {
-			log.info("rebooting server "
-					+ (REBOOT_DELAY - System.currentTimeMillis()));
+			log.info("rebooting server " + (REBOOT_DELAY - System.currentTimeMillis()));
 			shutdown();
 			startNetwork();
 		} catch (Exception e) {
@@ -109,8 +109,7 @@ public final class P2PServerImpl implements P2PServer {
 			}
 		});
 
-		getMessenger().addMessageHandler(WhoHasHandler.MESSAGENAME,
-				whohashandler);
+		getMessenger().addMessageHandler(WhoHasHandler.MESSAGENAME, whohashandler);
 	}
 
 	private synchronized void runChecker() {
@@ -151,8 +150,7 @@ public final class P2PServerImpl implements P2PServer {
 		List<WNode> ns = nodes;
 		if (ns != null) {
 			String s = "nodes:" + ns.size() + " downloads:" + downloads.size();
-			s += " " + tcplistener + " messenger:"
-					+ getMessenger().getInfoText();
+			s += " " + tcplistener + " messenger:" + getMessenger().getInfoText();
 			return s;
 		} else {
 			return "closed";
@@ -188,11 +186,17 @@ public final class P2PServerImpl implements P2PServer {
 					sourceListener.nodeAdded(n);
 				}
 			}
+
+			startNodeCheckLoops();
 		}
 	}
 
 	void startNodeCheckLoops() {
-		int loopcount = NODECHECKLOOP_COUNT;
+		int loopcount = NODECHECKLOOP_COUNT - nodechecktg.activeCount();
+		if (loopcount < 1) {
+			loopcount = 1;
+		}
+
 		for (int i = 0; i < loopcount; i++) {
 			Thread t = new Thread(nodechecktg, new Runnable() {
 				@Override
@@ -208,10 +212,12 @@ public final class P2PServerImpl implements P2PServer {
 		}
 	}
 
-	private synchronized void messageNodeCheckLoop()
-			throws InterruptedException {
+	private synchronized void messageNodeCheckLoop() throws InterruptedException {
 		while (isRunning() && nodechecktg.activeCount() <= NODECHECKLOOP_COUNT) {
 			Iterable<WNode> nodeiterator = getNodesIterator();
+			if (!nodeiterator.iterator().hasNext()) {
+				break;
+			}
 			//
 			for (WNode node : nodeiterator) {
 				checkNode(node);
@@ -221,8 +227,7 @@ public final class P2PServerImpl implements P2PServer {
 
 			this.wait(getWaitTime(timeout));
 		}
-		log.info("Node check loop out. ThreadGroup active:"
-				+ this.nodechecktg.activeCount());
+		log.info("Node check loop out. ThreadGroup active:" + this.nodechecktg.activeCount());
 	}
 
 	private void checkNode(WNode node) {
@@ -264,8 +269,7 @@ public final class P2PServerImpl implements P2PServer {
 
 	private void sendPing(WNode node) {
 		MMessage message = getMessenger().getMessage("ping");
-		getMessenger().addResponseListener(message.getID(),
-				new MessageResponseListenerImplementation());
+		getMessenger().addResponseListener(message.getID(), new MessageResponseListenerImplementation());
 
 		node.sendMessage(message);
 		getNodeStatus(node).pingSent();
@@ -295,7 +299,7 @@ public final class P2PServerImpl implements P2PServer {
 		addNodesInServerLists();
 	}
 
-	private void addNodesInServerLists() {
+	private synchronized void addNodesInServerLists() {
 		String slist = p.get(WPreferences.SERVERLIST, "");
 		log.info("got server list " + slist);
 
@@ -303,22 +307,25 @@ public final class P2PServerImpl implements P2PServer {
 			slist = createServerList();
 		}
 
-		StringTokenizer st = new StringTokenizer(slist, ",");
-		while (st.hasMoreTokens()) {
-			String server = st.nextToken();
-			int indexOf = server.indexOf(':');
-			if (indexOf > 0) {
-				String host = server.substring(0, indexOf);
-				int port = Integer.parseInt(server.substring(indexOf + 1));
-				if ("localhost".equals(host) && tcplistener != null
-						&& tcplistener.getPort() == port) {
-					log.info("Not adding node @ " + server);
+		if (slist != null) {
+			StringTokenizer st = new StringTokenizer(slist, ",");
+			while (st.hasMoreTokens()) {
+				String server = st.nextToken();
+				int indexOf = server.indexOf(':');
+				if (indexOf > 0) {
+					String host = server.substring(0, indexOf);
+					int port = Integer.parseInt(server.substring(indexOf + 1));
+					if ("localhost".equals(host) && tcplistener != null && tcplistener.getPort() == port) {
+						log.info("Not adding node @ " + server);
+					} else {
+						addNode(new MHost(host), port);
+					}
 				} else {
-					addNode(new MHost(host), port);
+					log.info("invalid value " + server);
 				}
-			} else {
-				log.info("invalid value " + server);
 			}
+		} else {
+			log.info("Serverlist null. Not adding any nodes.");
 		}
 	}
 
@@ -327,6 +334,10 @@ public final class P2PServerImpl implements P2PServer {
 		slist = "";
 		log.info("Serverlist empty. Adding service domain with default port");
 		String service = p.get(WPreferences.SERVICE_URL, "");
+		if (service.indexOf("localhost") >= 0) {
+			return null;
+		}
+
 		URL u;
 		try {
 			u = new URL(service);
@@ -359,6 +370,7 @@ public final class P2PServerImpl implements P2PServer {
 		//
 		shutdown();
 		nodes = null;
+		nodestatuses.clear();
 
 		log.info("closing done");
 	}
@@ -470,8 +482,7 @@ public final class P2PServerImpl implements P2PServer {
 		synchronized (downloads) {
 			if (downloads.get(bs.getID()) == null) {
 				log.info("adding download " + bs);
-				downloads.put(bs.getID(),
-						new Download(bs, this, getMessenger()));
+				downloads.put(bs.getID(), new Download(bs, this, getMessenger()));
 			}
 		}
 	}
@@ -483,16 +494,14 @@ public final class P2PServerImpl implements P2PServer {
 
 	@Override
 	public boolean canDownload() {
-		return downloads.size() < p.getInteger(
-				WPreferences.NETWORK_MAX_DOWNLOADS,
+		return downloads.size() < p.getInteger(WPreferences.NETWORK_MAX_DOWNLOADS,
 				WPreferences.NETWORK_MAX_DOWNLOADS_DEFAULT);
 	}
 
 	@Override
 	public void clearMemory() {
 		synchronized (listeners) {
-			List<ServerListener> nsourcelisteners = new LinkedList<ServerListener>(
-					listeners);
+			List<ServerListener> nsourcelisteners = new LinkedList<ServerListener>(listeners);
 			for (ServerListener l : nsourcelisteners) {
 				if (l.isDone()) {
 					listeners.remove(l);
@@ -501,8 +510,7 @@ public final class P2PServerImpl implements P2PServer {
 		}
 
 		synchronized (downloads) {
-			Map<MStringID, Download> ndownloads = new HashMap<MStringID, Download>(
-					downloads);
+			Map<MStringID, Download> ndownloads = new HashMap<MStringID, Download>(downloads);
 			for (MStringID did : ndownloads.keySet()) {
 				Download d = getDownload(did);
 				if (d.isDone()) {
@@ -608,15 +616,13 @@ public final class P2PServerImpl implements P2PServer {
 		log.info("Reboot checker out");
 	}
 
-	private final class MessageResponseListenerImplementation implements
-			MessageResponseListener {
+	private final class MessageResponseListenerImplementation implements MessageResponseListener {
 		private long sent = System.currentTimeMillis();
 		private boolean done = false;
 
 		@Override
 		public void messageReceived(MMessage message) {
-			log.info("PING response in " + (System.currentTimeMillis() - sent)
-					+ " ms");
+			log.info("PING response in " + (System.currentTimeMillis() - sent) + " ms");
 			done = true;
 		}
 

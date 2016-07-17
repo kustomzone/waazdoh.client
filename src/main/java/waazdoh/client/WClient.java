@@ -1,6 +1,7 @@
 package waazdoh.client;
 
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -8,10 +9,12 @@ import waazdoh.client.model.User;
 import waazdoh.common.BeanStorage;
 import waazdoh.common.UserID;
 import waazdoh.common.WLogger;
+import waazdoh.common.WObject;
 import waazdoh.common.WPreferences;
 import waazdoh.common.client.ServiceClient;
 import waazdoh.common.service.ObjectsService;
 import waazdoh.common.vo.AppLoginVO;
+import waazdoh.common.vo.StorageAreaVO;
 import waazdoh.common.vo.UserVO;
 
 public class WClient {
@@ -25,9 +28,9 @@ public class WClient {
 	private UserID userid;
 
 	private WLogger logger = WLogger.getLogger(this);
+	private List<Filter> filters = new LinkedList<WClient.Filter>();
 
-	public WClient(WPreferences p, BinarySource binarysource,
-			BeanStorage beanstorage, ServiceClient nservice) {
+	public WClient(WPreferences p, BinarySource binarysource, BeanStorage beanstorage, ServiceClient nservice) {
 		this.preferences = p;
 		this.source = binarysource;
 		this.beanstorage = beanstorage;
@@ -47,8 +50,7 @@ public class WClient {
 	}
 
 	public boolean isLoggedIn() {
-		return this.userid != null
-				&& getService().getAuthenticationToken() != null;
+		return this.userid != null && getService().getAuthenticationToken() != null;
 	}
 
 	public UserID getUserID() {
@@ -72,8 +74,7 @@ public class WClient {
 	}
 
 	public boolean trySavedSession() {
-		return setSession(getPreferences().get(
-				WPreferences.PREFERENCES_SESSION, ""));
+		return setSession(getPreferences().get(WPreferences.PREFERENCES_SESSION, ""));
 	}
 
 	public boolean setSession(final String session) {
@@ -84,8 +85,7 @@ public class WClient {
 				if (user != null && user.isSuccess()) {
 					this.userid = new UserID(user.getUserid());
 					source.setClient(this);
-					getPreferences().set(WPreferences.PREFERENCES_SESSION,
-							session);
+					getPreferences().set(WPreferences.PREFERENCES_SESSION, session);
 					loggedIn();
 					return true;
 				} else {
@@ -122,15 +122,15 @@ public class WClient {
 
 	public AppLoginVO checkAppLogin(String id) {
 		AppLoginVO b = getService().getUsers().checkAppLogin(id);
-		if (b.getSessionid() != null) {
+		if (b != null && b.getSessionid() != null) {
 			setSession(b.getSessionid());
 		}
 		return b;
 	}
 
 	public String readStorageArea(String string) {
-		return getService().getStorageArea().read(
-				getService().getUser().getUsername(), string);
+		return getService().getStorageArea()
+				.read(new StorageAreaVO(getService().getUser().getUsername(), string, null));
 	}
 
 	public List<String> search(String searchitem, int index, int count) {
@@ -156,11 +156,31 @@ public class WClient {
 
 	@Override
 	public String toString() {
-		return "WClient[connected:" + isRunning() + "][bsource:" + source + "]";
+		UserVO user = getService().getUser();
+		String username = user != null ? user.getUsername() : "unknown";
+		return "WClient[" + username + "][connected:" + isRunning() + "][bsource:" + source + "]";
 	}
 
 	public ObjectsService getObjects() {
 		return getService().getObjects();
 	}
 
+	public boolean filter(WObject o) {
+		for (Filter filter : filters) {
+			if (!filter.check(o)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	public void addObjectFilter(Filter f) {
+		filters.add(f);
+	}
+
+	public static interface Filter {
+		boolean check(WObject o);
+
+	}
 }
