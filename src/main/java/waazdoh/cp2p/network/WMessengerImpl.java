@@ -90,15 +90,12 @@ public class WMessengerImpl implements WMessenger {
 	}
 
 	@Override
-	public void addResponseListener(MessageID id,
-			MessageResponseListener messageResponseListener) {
+	public void addResponseListener(MessageID id, MessageResponseListener messageResponseListener) {
 		synchronized (responselisteners) {
-			if (messageResponseListener != null
-					&& responselisteners.get(id) == null) {
+			if (messageResponseListener != null && responselisteners.get(id) == null) {
 				responselisteners.put(id, messageResponseListener);
 			} else {
-				log.debug("not adding responselistener " + id + " -> "
-						+ messageResponseListener);
+				log.debug("not adding responselistener " + id + " -> " + messageResponseListener);
 			}
 		}
 	}
@@ -149,18 +146,15 @@ public class WMessengerImpl implements WMessenger {
 					if (nodeStatus != null) {
 						nodeStatus.messageReceived(message.getName());
 						//
-						log.info("handling message: " + message + " from "
-								+ sentbynode);
+						log.info("handling message: " + message + " from " + sentbynode);
 						message.setLastHandler(networkid);
 						//
-						handle(message, lasthandler != null ? lasthandler
-								: sentbynode);
+						handle(message, lasthandler != null ? lasthandler : sentbynode);
 					} else {
 						log.info("node sentbynode " + sentbynode + " not found");
 					}
 				} else {
-					log.debug("not handling message because networkid is equal with sentby "
-							+ message.getSentBy());
+					log.debug("not handling message because networkid is equal with sentby " + message.getSentBy());
 					ret.add(getMessage("close"));
 				}
 			}
@@ -184,8 +178,7 @@ public class WMessengerImpl implements WMessenger {
 	}
 
 	@Override
-	public void broadcastMessage(MMessage notification,
-			MessageResponseListener messageResponseListener) {
+	public void broadcastMessage(MMessage notification, MessageResponseListener messageResponseListener) {
 		broadcastMessage(notification, messageResponseListener, null);
 	}
 
@@ -195,6 +188,8 @@ public class WMessengerImpl implements WMessenger {
 			MMessage returnmessage = handler.handle(message);
 			if (returnmessage != null) {
 				node.sendMessage(returnmessage);
+				outputbytecount += message.getByteCount();
+
 				addResponseListener(returnmessage);
 			}
 		} else {
@@ -257,6 +252,7 @@ public class WMessengerImpl implements WMessenger {
 		log.info("redirecting message to " + tonode);
 		if (tonode != null) {
 			node.addInfoTo(message);
+			outputbytecount += message.getByteCount();
 			tonode.sendMessage(message);
 		} else {
 			log.error("message received in wrong node " + message);
@@ -307,40 +303,34 @@ public class WMessengerImpl implements WMessenger {
 		return sb.toString();
 	}
 
-	public void broadcastMessage(MMessage notification,
-			MessageResponseListener messageResponseListener,
+	public void broadcastMessage(MMessage notification, MessageResponseListener messageResponseListener,
 			Set<MNodeID> exceptions) {
 		if (!isClosed()) {
 			if (notification.getSentCount() <= MAX_SENTCOUNT) {
 				sendToNodes(notification, messageResponseListener, exceptions);
 			} else {
-				log.info("not sending m" + "essage " + notification
-						+ " due sentcount " + notification.getSentCount());
+				log.info("not sending m" + "essage " + notification + " due sentcount " + notification.getSentCount());
 			}
 		} else {
 			log.info("CLOSED. Not broadcasting.");
 		}
 	}
 
-	private void sendToNodes(MMessage notification,
-			MessageResponseListener messageResponseListener,
-			Set<MNodeID> exceptions) {
-		notification.addAttribute("sentcount", notification.getSentCount() + 1);
+	private void sendToNodes(MMessage m, MessageResponseListener messageResponseListener, Set<MNodeID> exceptions) {
+		m.addAttribute("sentcount", m.getSentCount() + 1);
 
 		Iterable<WNode> nodes = server.getNodesIterator();
 		for (WNode node : nodes) {
 			if (node.isConnected()) {
 				if (exceptions == null || !exceptions.contains(node.getID())) {
-					node.sendMessage(notification);
-					addResponseListener(notification.getID(),
-							messageResponseListener);
+					outputbytecount += m.getByteCount();
+					node.sendMessage(m);
+					addResponseListener(m.getID(), messageResponseListener);
 				} else {
-					log.debug("Not broadcasting to " + node
-							+ " because node is in exceptions list");
+					log.debug("Not broadcasting to " + node + " because node is in exceptions list");
 				}
 			} else {
-				log.info("not broadcasting to " + node
-						+ " node because it's not yet connected");
+				log.info("not broadcasting to " + node + " node because it's not yet connected");
 			}
 		}
 	}
