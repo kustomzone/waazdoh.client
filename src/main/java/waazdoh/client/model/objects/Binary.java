@@ -58,8 +58,7 @@ public final class Binary implements HashSource {
 
 	private static int binarycount = 0;
 
-	public Binary(WClient service, String storagepath, String comment,
-			String extension) {
+	public Binary(WClient service, String storagepath, String comment, String extension) {
 		this.client = service;
 		this.storage = storagepath;
 
@@ -149,8 +148,7 @@ public final class Binary implements HashSource {
 		file.seek(index);
 		file.write(nbytes, 0, nbytes.length);
 		//
-		log.debug("added " + nbytes.length + " at " + index
-				+ ". File size now " + file.length());
+		log.debug("added " + nbytes.length + " at " + index + ". File size now " + file.length());
 		resetCRC();
 	}
 
@@ -159,8 +157,7 @@ public final class Binary implements HashSource {
 		file.seek(index);
 		file.write(nbytes, 0, length);
 		//
-		log.debug("added " + length + " at " + index + ". File size now "
-				+ file.length());
+		log.debug("added " + length + " at " + index + ". File size now " + file.length());
 		resetCRC();
 	}
 
@@ -177,8 +174,7 @@ public final class Binary implements HashSource {
 	public synchronized void add(byte[] bytes) throws IOException {
 		used();
 		getAccessFile().write(bytes);
-		log.debug("added " + bytes.length + ". File size now "
-				+ getAccessFile().length());
+		log.debug("added " + bytes.length + ". File size now " + getAccessFile().length());
 
 		resetCRC();
 	}
@@ -215,7 +211,7 @@ public final class Binary implements HashSource {
 
 	private synchronized boolean loadFromService(MStringID pid) {
 		ObjectVO o = client.getObjects().read(pid.toString());
-		if (o != null) {
+		if (o != null && o.isSuccess()) {
 			WObject b = o.toObject();
 			log.info("loading Binary " + b);
 			load(b);
@@ -246,9 +242,8 @@ public final class Binary implements HashSource {
 
 	@Override
 	public String toString() {
-		return "Binary[" + super.toString() + ":" + getID() + "][no:"
-				+ binarycount + "][" + length() + "][scrc:" + storedcrc
-				+ "][crc:" + crc + "][" + comment + "]";
+		return "Binary[" + super.toString() + ":" + getID() + "][no:" + binarycount + "][" + length() + "][scrc:"
+				+ storedcrc + "][crc:" + crc + "][" + comment + "]";
 	}
 
 	public boolean isOK() {
@@ -423,8 +418,7 @@ public final class Binary implements HashSource {
 		return extension;
 	}
 
-	public synchronized void importStream(InputStream stream)
-			throws IOException {
+	public synchronized void importStream(InputStream stream) throws IOException {
 		BufferedInputStream bis = new BufferedInputStream(stream);
 		byte bs[] = new byte[1024];
 		while (true) {
