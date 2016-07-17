@@ -14,12 +14,8 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.local.LocalAddress;
 
 import java.net.ConnectException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -85,7 +81,8 @@ public final class TCPNode implements WNode {
 		}
 
 		if (channel != null) {
-			channel.writeAndFlush(smessages).addListener(ChannelFutureListener.CLOSE_ON_FAILURE); //
+			channel.writeAndFlush(smessages).addListener(
+					ChannelFutureListener.CLOSE_ON_FAILURE); //
 			int bytecount = 0;
 			for (MMessage mMessage : smessages) {
 				bytecount += mMessage.getByteCount();
@@ -106,8 +103,10 @@ public final class TCPNode implements WNode {
 
 	public synchronized boolean checkConnection() {
 		// if closed and connectionwaiter is triggered, create new connection
-		if (!closed && !offline && channel == null && isConnectionWaiterTriggered()) {
-			log.info("creating connection " + this + " trigger " + connectionwaiter);
+		if (!closed && !offline && channel == null
+				&& isConnectionWaiterTriggered()) {
+			log.info("creating connection " + this + " trigger "
+					+ connectionwaiter);
 			TCPNode.connectionfactory.connect(this, host, port);
 			connectionwaiter = new MTimedFlag(10000);
 			touch();
@@ -122,8 +121,10 @@ public final class TCPNode implements WNode {
 
 	@Override
 	public String toString() {
-		return "TCPNode[" + host + ":" + port + "][" + (System.currentTimeMillis() - touch) + "][closed:" + closed
-				+ ",id:" + getID() + ", channel:" + channel + "][localid:" + localid + "]";
+		return "TCPNode[" + host + ":" + port + "]["
+				+ (System.currentTimeMillis() - touch) + "][closed:" + closed
+				+ ",id:" + getID() + ", channel:" + channel + "][localid:"
+				+ localid + "]";
 	}
 
 	private void touch() {
@@ -156,9 +157,11 @@ public final class TCPNode implements WNode {
 
 	public void logChannel() {
 		if (channel != null) {
-			log.info("channel " + host + ":" + port + " channel " + channel + " connected:" + channel.isOpen()
-					+ " writable:" + channel.isWritable() + " open:" + channel.isOpen() + " local:"
-					+ channel.localAddress() + " remote:" + channel.remoteAddress());
+			log.info("channel " + host + ":" + port + " channel " + channel
+					+ " connected:" + channel.isOpen() + " writable:"
+					+ channel.isWritable() + " open:" + channel.isOpen()
+					+ " local:" + channel.localAddress() + " remote:"
+					+ channel.remoteAddress());
 		} else {
 			log.info("channel is null");
 		}
@@ -191,7 +194,8 @@ public final class TCPNode implements WNode {
 		trigger();
 	}
 
-	public synchronized void channelException(ChannelHandlerContext ctx, Throwable e) {
+	public synchronized void channelException(ChannelHandlerContext ctx,
+			Throwable e) {
 		if (!(e.getCause() instanceof ConnectException)) {
 			log.info("Exception with " + host + ":" + port + " e:" + e);
 			log.error(e);
@@ -239,7 +243,8 @@ public final class TCPNode implements WNode {
 
 				cc.close().addListener(new ChannelFutureListener() {
 					@Override
-					public void operationComplete(ChannelFuture arg0) throws Exception {
+					public void operationComplete(ChannelFuture arg0)
+							throws Exception {
 						log.info("channel closed " + cc);
 					}
 				});
@@ -254,25 +259,11 @@ public final class TCPNode implements WNode {
 	}
 
 	public void channelActive(Channel c) {
+		log.info("channelActive " + c);
 		touch = System.currentTimeMillis();
 		isactive = true;
 		touch();
 		channel = c;
-
-		try {
-			InetSocketAddress local = (InetSocketAddress) c.localAddress();
-			InetSocketAddress remote = (InetSocketAddress) c.remoteAddress();
-			String remoteaddress = remote.getAddress().getHostAddress();
-			String localaddress = local.getAddress().getHostAddress();
-			log.info("channelActive " + c + " local:" + localaddress + " remote:" + remoteaddress);
-			if (remoteaddress.equals(localaddress)) {
-				log.info("Connected to self. Closing channel");
-				close();
-			}
-		} catch (Exception e) {
-			log.error(e);
-		}
-
 	}
 
 	public void channelUnregistered(Channel c) {

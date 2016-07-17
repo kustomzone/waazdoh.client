@@ -30,7 +30,8 @@ import waazdoh.cp2p.messaging.MessageResponseListener;
 import waazdoh.cp2p.network.ServerListener;
 import waazdoh.cp2p.network.WNode;
 
-public final class Download implements Runnable, MessageResponseListener, ServerListener {
+public final class Download implements Runnable, MessageResponseListener,
+		ServerListener {
 	private static final String MESSAGENAME_WHOHAS = "whohas";
 	private static final String MESSAGENAME_STREAM = "stream";
 	private static final int GIVEUP_TIMEOUT_MSEC = 1000 * 60 * 4;
@@ -91,7 +92,8 @@ public final class Download implements Runnable, MessageResponseListener, Server
 		this.starttime = System.currentTimeMillis();
 		flag = new MTimedFlag(P2PServer.DOWNLOAD_RESET_DELAY);
 		while (!isReady() && !messenger.isClosed() && !giveupflag.isTriggered()) {
-			log.info("reset download ready:" + isReady() + " giveupflag:" + giveupflag);
+			log.info("reset download ready:" + isReady() + " giveupflag:"
+					+ giveupflag);
 			flag.reset();
 			resetSentStarts();
 			sendWhoHasMessage();
@@ -101,8 +103,9 @@ public final class Download implements Runnable, MessageResponseListener, Server
 		//
 		server.removeDownload(getID());
 		updateSpeedInfo();
-		log.info("Download DONE " + isReady() + " " + speedinfo + " source:" + server.isRunning() + " ready:"
-				+ isReady() + " giveup: " + giveupflag);
+		log.info("Download DONE " + isReady() + " " + speedinfo + " source:"
+				+ server.isRunning() + " ready:" + isReady() + " giveup: "
+				+ giveupflag);
 		//
 		this.server.reportDownload(getID(), isReady());
 	}
@@ -119,7 +122,8 @@ public final class Download implements Runnable, MessageResponseListener, Server
 
 	public void updateSpeedInfo() {
 		this.endtime = System.currentTimeMillis();
-		this.speedinfo = "Has downloaded " + countbytes + " bytes in " + (endtime - starttime) + " msecs" + "("
+		this.speedinfo = "Has downloaded " + countbytes + " bytes in "
+				+ (endtime - starttime) + " msecs" + "("
 				+ (1000.0f * bin.length() / (endtime - starttime)) + " B/s)";
 	}
 
@@ -127,7 +131,8 @@ public final class Download implements Runnable, MessageResponseListener, Server
 		if (!sentstarts.isEmpty()) {
 			return false;
 		} else if (this.countbytes < bin.length()) {
-			log.info("isready length fail " + countbytes + " binary.length " + bin.length());
+			log.info("isready length fail " + countbytes + " binary.length "
+					+ bin.length());
 			return false;
 		} else {
 			log.info("isready length ok " + countbytes + " " + bin.length());
@@ -153,7 +158,8 @@ public final class Download implements Runnable, MessageResponseListener, Server
 					whoHasMessage.addResponseListener(this);
 					n.sendMessage(whoHasMessage);
 				} else {
-					log.info("Got null WhoHasMessage. is ready?(" + isReady() + ") isDone?(" + isDone() + ")");
+					log.info("Got null WhoHasMessage. is ready?(" + isReady()
+							+ ") isDone?(" + isDone() + ")");
 				}
 			} else {
 				sendWhoHasMessage();
@@ -198,9 +204,7 @@ public final class Download implements Runnable, MessageResponseListener, Server
 	}
 
 	private void handleResponse(MMessage b) {
-		if (isReady()) {
-			log.info("ignoring message " + b.getName() + ". Download ready");
-		} else if (b.getName().equals(MESSAGENAME_STREAM)) {
+		if (b.getName().equals(MESSAGENAME_STREAM) && !isReady()) {
 			MStringID sid = b.getIDAttribute("streamid");
 			if (sid != null && getID().equals(sid)) {
 				handleCheckedMessage(b);
@@ -208,7 +212,7 @@ public final class Download implements Runnable, MessageResponseListener, Server
 				log.error("StreamID " + sid + " while waiting " + bin);
 			}
 		} else {
-			log.info("unknown download message " + b);
+			log.info("unknown message " + b);
 		}
 	}
 
@@ -298,7 +302,8 @@ public final class Download implements Runnable, MessageResponseListener, Server
 			int randompart = (int) (Math.random() * missingparts.size());
 			DownloadPart missingpart = missingparts.get(randompart);
 
-			DownloadPart s = new DownloadPart(missingpart.start, missingpart.end);
+			DownloadPart s = new DownloadPart(missingpart.start,
+					missingpart.end);
 			sentstarts.put(missingpart.start, s);
 			//
 			WData p = needed.add("piece");
