@@ -88,7 +88,7 @@ public final class NodeConnectionFactory {
 		@Override
 		public void channelActive(ChannelHandlerContext ctx) throws Exception {
 			TCPNode node = getNode(ctx);
-			if (node != null) {
+			if (node != null && !node.isClosed()) {
 				super.channelActive(ctx);
 				node.channelActive(ctx.channel());
 			} else {
@@ -108,7 +108,7 @@ public final class NodeConnectionFactory {
 		public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
 			super.channelRegistered(ctx);
 			TCPNode node = getNode(ctx);
-			if (node != null) {
+			if (node != null && !node.isClosed()) {
 				node.channelRegistered(ctx.channel());
 			}
 		}
@@ -121,7 +121,10 @@ public final class NodeConnectionFactory {
 		@Override
 		protected void channelRead0(ChannelHandlerContext ctx, List<MMessage> msgs) throws Exception {
 			log.info("messageReceived size " + msgs.size());
-			getNode(ctx).messagesReceived(ctx.channel(), msgs);
+			TCPNode node = getNode(ctx);
+			if (!node.isClosed()) {
+				node.messagesReceived(ctx.channel(), msgs);
+			}
 		}
 
 	}

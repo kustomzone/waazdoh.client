@@ -11,6 +11,8 @@ public interface WNode {
 
 	void close();
 
+	void startClosing();
+
 	void sendMessage(MMessage message);
 
 	boolean isConnected();

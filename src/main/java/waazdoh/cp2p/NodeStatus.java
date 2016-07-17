@@ -1,10 +1,10 @@
 package waazdoh.cp2p;
 
 public class NodeStatus {
-	public static final long MAX_DIE_TIME = 30100;
 	public static final int WARNING_TRESHOLD = 5;
 	public static final long MAX_PINGDELAY = 10000;
 	public static final long MIN_PINGDELAY = 200;
+	public static final long MAX_DIE_TIME = 6 * MAX_PINGDELAY;
 
 	private long lastping = System.currentTimeMillis();
 	private long currentpingdelay;
@@ -56,8 +56,7 @@ public class NodeStatus {
 	}
 
 	public boolean shouldDie() {
-		return (System.currentTimeMillis() - touch) > MAX_DIE_TIME
-				|| warning > WARNING_TRESHOLD;
+		return (System.currentTimeMillis() - touch) > MAX_DIE_TIME || warning > WARNING_TRESHOLD;
 	}
 
 	public int getReceivedMessages() {

@@ -151,12 +151,24 @@ public final class P2PServerImpl implements P2PServer {
 	public String getInfoText() {
 		List<WNode> ns = nodes;
 		if (ns != null) {
-			String s = "nodes:" + ns.size() + " downloads:" + downloads.size();
+
+			String s = "nodes:" + getActiveNodeCount() + "/" + ns.size() + " downloads:" + downloads.size();
 			s += " " + tcplistener + " messenger:" + getMessenger().getInfoText();
 			return s;
 		} else {
 			return "closed";
 		}
+	}
+
+	private synchronized int getActiveNodeCount() {
+		int count = 0;
+		List<WNode> ns = nodes;
+		for (WNode wNode : ns) {
+			if (wNode.isConnected()) {
+				count++;
+			}
+		}
+		return count;
 	}
 
 	@Override
@@ -195,9 +207,6 @@ public final class P2PServerImpl implements P2PServer {
 
 	void startNodeCheckLoops() {
 		int loopcount = NODECHECKLOOP_COUNT - nodechecktg.activeCount();
-		if (loopcount < 1) {
-			loopcount = 1;
-		}
 
 		for (int i = 0; i < loopcount; i++) {
 			Thread t = new Thread(nodechecktg, new Runnable() {
@@ -233,21 +242,26 @@ public final class P2PServerImpl implements P2PServer {
 	}
 
 	private void checkNode(WNode node) {
-		NodeStatus nodestatus = getNodeStatus(node);
+		if (isConnected()) {
+			NodeStatus nodestatus = getNodeStatus(node);
 
-		if (node.isConnected() && nodestatus.checkPing()) {
-			sendPing(node);
-		}
-		//
-		if (node.getID() != null && node.getID().equals(getMessenger().getID())) {
-			log.info("Having myself as remote node. Removing.");
-			node.close();
-			removeNode(node);
-		} else if (getNodeStatus(node).shouldDie() || node.isClosed()) {
-			log.info("Removing node " + node);
-			node.close();
-			removeNode(node);
-			nodestatuses.remove(node);
+			log.info("checknode " + node);
+			log.info("checknode isconnected " + node.isConnected() + " " + node);
+
+			if (node.isConnected() && nodestatus.checkPing()) {
+				sendPing(node);
+			}
+			//
+			if (node.getID() != null && node.getID().equals(getMessenger().getID())) {
+				log.info("Having myself as remote node. Removing.");
+				node.close();
+				removeNode(node);
+			} else if (getNodeStatus(node).shouldDie() || node.isClosed()) {
+				log.info("Removing node " + node);
+				node.close();
+				removeNode(node);
+				nodestatuses.remove(node);
+			}
 		}
 	}
 
@@ -290,17 +304,17 @@ public final class P2PServerImpl implements P2PServer {
 		}
 	}
 
-	private synchronized void addDefaultNodes() {
+	private void addDefaultNodes() {
 		ConditionWaiter.wait(new ConditionWaiter.Condition() {
 			@Override
 			public boolean test() {
 				String slist = p.get(WPreferences.SERVERLIST, "");
-				return slist != null && slist.length() > 0;
+				return slist != null && slist.length() > 0 || closed;
 			}
 		}, 2000);
 
 		addNodesInServerLists();
-//		addLocalNetworkNodes();
+		addLocalNetworkNodes();
 	}
 
 	private void addLocalNetworkNodes() {
@@ -312,14 +326,20 @@ public final class P2PServerImpl implements P2PServer {
 				for (int i = 1; i < 255; i++) {
 					String networkip = network + i;
 					addNode(new MHost(networkip), TCPListener.DEFAULT_PORT);
-					synchronized (nodes) {
-						nodes.wait(LOCAL_NETWORK_SCANTIME / 255);
-					}
+					doWait(LOCAL_NETWORK_SCANTIME / 255);
 				}
-			} catch (UnknownHostException | InterruptedException e) {
+			} catch (UnknownHostException e) {
 				log.error(e);
 			}
 		}, "addLocalNetworkNodes").start();
+	}
+
+	private synchronized void doWait(int i) {
+		try {
+			this.wait(i);
+		} catch (InterruptedException e) {
+			log.error(e);
+		}
 	}
 
 	private synchronized void addNodesInServerLists() {
@@ -403,6 +423,10 @@ public final class P2PServerImpl implements P2PServer {
 		log.info("starting closing");
 		closed = true;
 
+		synchronized (this) {
+			notifyAll();
+		}
+
 		if (tcplistener != null) {
 			tcplistener.startClosing();
 		}
@@ -410,6 +434,14 @@ public final class P2PServerImpl implements P2PServer {
 		synchronized (downloads) {
 			for (Download d : downloads.values()) {
 				d.stop();
+			}
+		}
+
+		synchronized (this) {
+			if (nodes != null) {
+				for (WNode node : nodes) {
+					node.startClosing();
+				}
 			}
 		}
 	}
@@ -517,7 +549,7 @@ public final class P2PServerImpl implements P2PServer {
 
 	@Override
 	public boolean canDownload() {
-		return downloads.size() < p.getInteger(WPreferences.NETWORK_MAX_DOWNLOADS,
+		return !closed && downloads.size() < p.getInteger(WPreferences.NETWORK_MAX_DOWNLOADS,
 				WPreferences.NETWORK_MAX_DOWNLOADS_DEFAULT);
 	}
 

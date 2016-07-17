@@ -81,8 +81,7 @@ public final class TCPNode implements WNode {
 		}
 
 		if (channel != null) {
-			channel.writeAndFlush(smessages).addListener(
-					ChannelFutureListener.CLOSE_ON_FAILURE); //
+			channel.writeAndFlush(smessages).addListener(ChannelFutureListener.CLOSE_ON_FAILURE); //
 			int bytecount = 0;
 			for (MMessage mMessage : smessages) {
 				bytecount += mMessage.getByteCount();
@@ -103,10 +102,8 @@ public final class TCPNode implements WNode {
 
 	public synchronized boolean checkConnection() {
 		// if closed and connectionwaiter is triggered, create new connection
-		if (!closed && !offline && channel == null
-				&& isConnectionWaiterTriggered()) {
-			log.info("creating connection " + this + " trigger "
-					+ connectionwaiter);
+		if (!closed && !offline && channel == null && isConnectionWaiterTriggered()) {
+			log.info("creating connection " + this + " trigger " + connectionwaiter);
 			TCPNode.connectionfactory.connect(this, host, port);
 			connectionwaiter = new MTimedFlag(10000);
 			touch();
@@ -121,10 +118,8 @@ public final class TCPNode implements WNode {
 
 	@Override
 	public String toString() {
-		return "TCPNode[" + host + ":" + port + "]["
-				+ (System.currentTimeMillis() - touch) + "][closed:" + closed
-				+ ",id:" + getID() + ", channel:" + channel + "][localid:"
-				+ localid + "]";
+		return "TCPNode[" + host + ":" + port + "][" + (System.currentTimeMillis() - touch) + "][closed:" + closed
+				+ ",id:" + getID() + ", channel:" + channel + "][localid:" + localid + "]";
 	}
 
 	private void touch() {
@@ -137,6 +132,12 @@ public final class TCPNode implements WNode {
 		log.info("closing " + this);
 		closed = true;
 		closeChannel();
+	}
+
+	@Override
+	public void startClosing() {
+		log.info("start closing");
+		closed = true;
 	}
 
 	@Override
@@ -157,11 +158,9 @@ public final class TCPNode implements WNode {
 
 	public void logChannel() {
 		if (channel != null) {
-			log.info("channel " + host + ":" + port + " channel " + channel
-					+ " connected:" + channel.isOpen() + " writable:"
-					+ channel.isWritable() + " open:" + channel.isOpen()
-					+ " local:" + channel.localAddress() + " remote:"
-					+ channel.remoteAddress());
+			log.info("channel " + host + ":" + port + " channel " + channel + " connected:" + channel.isOpen()
+					+ " writable:" + channel.isWritable() + " open:" + channel.isOpen() + " local:"
+					+ channel.localAddress() + " remote:" + channel.remoteAddress());
 		} else {
 			log.info("channel is null");
 		}
@@ -194,8 +193,7 @@ public final class TCPNode implements WNode {
 		trigger();
 	}
 
-	public synchronized void channelException(ChannelHandlerContext ctx,
-			Throwable e) {
+	public synchronized void channelException(ChannelHandlerContext ctx, Throwable e) {
 		if (!(e.getCause() instanceof ConnectException)) {
 			log.info("Exception with " + host + ":" + port + " e:" + e);
 			log.error(e);
@@ -243,8 +241,7 @@ public final class TCPNode implements WNode {
 
 				cc.close().addListener(new ChannelFutureListener() {
 					@Override
-					public void operationComplete(ChannelFuture arg0)
-							throws Exception {
+					public void operationComplete(ChannelFuture arg0) throws Exception {
 						log.info("channel closed " + cc);
 					}
 				});

@@ -108,6 +108,11 @@ public final class PassiveNode implements WNode {
 	}
 
 	@Override
+	public void startClosing() {
+		closed = true;
+	}
+
+	@Override
 	public void close() {
 		log.info("close");
 		this.closed = true;
