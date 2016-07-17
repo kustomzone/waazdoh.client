@@ -5,7 +5,7 @@
 
 	<target name="client.check.uptodate">
 		<uptodate property="client.notrequired" targetfile="target/build.trig">
-			<srcfiles dir="src/ " />
+			<srcfiles dir="src/" />
 			<srcfiles dir="./" includes="*.xml" excludes="target" />
 		</uptodate>
 	</target>

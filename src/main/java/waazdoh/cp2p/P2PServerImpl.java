@@ -10,8 +10,10 @@
  ******************************************************************************/
 package waazdoh.cp2p;
 
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -33,7 +35,6 @@ import waazdoh.cp2p.common.MHost;
 import waazdoh.cp2p.common.MNodeID;
 import waazdoh.cp2p.common.WMessenger;
 import waazdoh.cp2p.messaging.MMessage;
-import waazdoh.cp2p.messaging.MMessageHandler;
 import waazdoh.cp2p.messaging.MessageResponseListener;
 import waazdoh.cp2p.network.PassiveNode;
 import waazdoh.cp2p.network.ServerListener;
@@ -46,6 +47,7 @@ public final class P2PServerImpl implements P2PServer {
 	private static final int MINIMUM_TIMEOUT = 10;
 	static final int NODECHECKLOOP_COUNT = 3;
 	private static final long REBOOT_DELAY = 120000;
+	private static final int LOCAL_NETWORK_SCANTIME = 120000;
 	//
 	private WLogger log = WLogger.getLogger(this);
 	private final Map<MStringID, Download> downloads = new HashMap<MStringID, Download>();
@@ -268,6 +270,7 @@ public final class P2PServerImpl implements P2PServer {
 	}
 
 	private void sendPing(WNode node) {
+		log.info("Sending ping to node " + node);
 		MMessage message = getMessenger().getMessage("ping");
 		getMessenger().addResponseListener(message.getID(), new MessageResponseListenerImplementation());
 
@@ -297,6 +300,26 @@ public final class P2PServerImpl implements P2PServer {
 		}, 2000);
 
 		addNodesInServerLists();
+//		addLocalNetworkNodes();
+	}
+
+	private void addLocalNetworkNodes() {
+		new Thread(() -> {
+			try {
+				String local = InetAddress.getLocalHost().getHostAddress();
+				String network = local.substring(0, local.lastIndexOf(".") + 1);
+				log.info("local address " + local + " network " + network);
+				for (int i = 1; i < 255; i++) {
+					String networkip = network + i;
+					addNode(new MHost(networkip), TCPListener.DEFAULT_PORT);
+					synchronized (nodes) {
+						nodes.wait(LOCAL_NETWORK_SCANTIME / 255);
+					}
+				}
+			} catch (UnknownHostException | InterruptedException e) {
+				log.error(e);
+			}
+		}, "addLocalNetworkNodes").start();
 	}
 
 	private synchronized void addNodesInServerLists() {
