@@ -163,9 +163,11 @@ public final class P2PServerImpl implements P2PServer {
 	private synchronized int getActiveNodeCount() {
 		int count = 0;
 		List<WNode> ns = nodes;
-		for (WNode wNode : ns) {
-			if (wNode.isConnected()) {
-				count++;
+		if (ns != null) {
+			for (WNode wNode : ns) {
+				if (wNode.isConnected()) {
+					count++;
+				}
 			}
 		}
 		return count;
@@ -256,6 +258,7 @@ public final class P2PServerImpl implements P2PServer {
 				log.info("Having myself as remote node. Removing.");
 				node.close();
 				removeNode(node);
+				nodestatuses.remove(node);
 			} else if (getNodeStatus(node).shouldDie() || node.isClosed()) {
 				log.info("Removing node " + node);
 				node.close();
@@ -324,8 +327,13 @@ public final class P2PServerImpl implements P2PServer {
 				String network = local.substring(0, local.lastIndexOf(".") + 1);
 				log.info("local address " + local + " network " + network);
 				for (int i = 1; i < 255; i++) {
+					if (!isRunning()) {
+						break;
+					}
+
 					String networkip = network + i;
-					addNode(new MHost(networkip), TCPListener.DEFAULT_PORT);
+					addNode(new MHost(networkip),
+							p.getInteger(WPreferences.NETWORK_SERVER_DEFAULT_PORT, TCPListener.DEFAULT_PORT));
 					doWait(LOCAL_NETWORK_SCANTIME / 255);
 				}
 			} catch (UnknownHostException e) {
@@ -386,7 +394,7 @@ public final class P2PServerImpl implements P2PServer {
 			u = new URL(service);
 			String host = u.getHost();
 			log.info("host " + host);
-			slist = host + ":" + TCPListener.DEFAULT_PORT;
+			slist = host + ":" + p.getInteger(WPreferences.NETWORK_SERVER_DEFAULT_PORT, TCPListener.DEFAULT_PORT);
 			log.info("new list " + slist);
 		} catch (MalformedURLException e) {
 			log.error(e);

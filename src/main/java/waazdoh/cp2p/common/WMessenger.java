@@ -20,6 +20,7 @@ import waazdoh.cp2p.messaging.MessageResponseListener;
 
 public interface WMessenger {
 	String MESSAGENAME_PUBLISHED = "published";
+	String MESSAGENAME_ERROR_SELF_AS_NODE = "errorself";
 
 	MNodeID getID();
 

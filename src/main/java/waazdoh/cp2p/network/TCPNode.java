@@ -220,6 +220,8 @@ public final class TCPNode implements WNode {
 
 			if (this.source.getID().equals(nid)) {
 				log.info("Connected to self  " + nid);
+				MMessage ret = source.getMessage(WMessenger.MESSAGENAME_ERROR_SELF_AS_NODE);
+				sendMessage(ret);
 				close();
 			} else {
 				id = nid;
