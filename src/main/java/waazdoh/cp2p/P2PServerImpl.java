@@ -247,9 +247,9 @@ public final class P2PServerImpl implements P2PServer {
 	}
 
 	private void checkNode(WNode node) {
-		if (isConnected()) {
-			NodeStatus nodestatus = getNodeStatus(node);
+		NodeStatus nodestatus = getNodeStatus(node);
 
+		if (nodestatus != null) {
 			log.debug("checknode " + node);
 			log.debug("checknode isconnected " + node.isConnected() + " " + node);
 
@@ -261,18 +261,17 @@ public final class P2PServerImpl implements P2PServer {
 				log.info("Having myself as remote node. Removing.");
 				node.close();
 				removeNode(node);
-				nodestatuses.remove(node);
 			} else if (getNodeStatus(node).shouldDie() || node.isClosed()) {
 				log.info("Removing node " + node);
 				node.close();
 				removeNode(node);
-				nodestatuses.remove(node);
 			}
 		}
 	}
 
 	private synchronized void removeNode(WNode node) {
 		nodes.remove(node);
+		nodestatuses.remove(node);
 	}
 
 	private long getWaitTime(long ntimeout) {
