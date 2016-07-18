@@ -46,8 +46,9 @@ import waazdoh.cp2p.network.WNode;
 public final class P2PServerImpl implements P2PServer {
 	private static final int MINIMUM_TIMEOUT = 10;
 	static final int NODECHECKLOOP_COUNT = 3;
-	private static final long REBOOT_DELAY = 120000;
-	private static final int LOCAL_NETWORK_SCANTIME = 120000;
+	private static final long REBOOT_DELAY = 241000;
+	private static final int LOCAL_NETWORK_SCANTIME = 5 * 60 * 1000;
+	private static final long MAX_WAIT_SERVERLISTHANDLED = 30000;
 	//
 	private WLogger log = WLogger.getLogger(this);
 	private final Map<MStringID, Download> downloads = new HashMap<MStringID, Download>();
@@ -67,6 +68,8 @@ public final class P2PServerImpl implements P2PServer {
 	private final WMessenger messenger;
 	private boolean dobind;
 	private Thread rebootchecker;
+	private boolean addinglocalnodes;
+	private long lasttimeserverlisthandled;
 
 	public P2PServerImpl(WPreferences p, boolean bind2) {
 		this.p = p;
@@ -247,8 +250,8 @@ public final class P2PServerImpl implements P2PServer {
 		if (isConnected()) {
 			NodeStatus nodestatus = getNodeStatus(node);
 
-			log.info("checknode " + node);
-			log.info("checknode isconnected " + node.isConnected() + " " + node);
+			log.debug("checknode " + node);
+			log.debug("checknode isconnected " + node.isConnected() + " " + node);
 
 			if (node.isConnected() && nodestatus.checkPing()) {
 				sendPing(node);
@@ -298,7 +301,7 @@ public final class P2PServerImpl implements P2PServer {
 	@Override
 	public synchronized Iterable<WNode> getNodesIterator() {
 		if (nodes != null) {
-			if (nodes.isEmpty()) {
+			if (getActiveNodeCount() == 0) {
 				addDefaultNodes();
 			}
 			return new LinkedList<WNode>(nodes);
@@ -321,25 +324,36 @@ public final class P2PServerImpl implements P2PServer {
 	}
 
 	private void addLocalNetworkNodes() {
-		new Thread(() -> {
-			try {
-				String local = InetAddress.getLocalHost().getHostAddress();
-				String network = local.substring(0, local.lastIndexOf(".") + 1);
-				log.info("local address " + local + " network " + network);
-				for (int i = 1; i < 255; i++) {
-					if (!isRunning()) {
-						break;
-					}
+		if (!addinglocalnodes) {
+			addinglocalnodes = true;
+			new Thread(() -> {
+				try {
+					String local = InetAddress.getLocalHost().getHostAddress();
+					String network = local.substring(0, local.lastIndexOf(".") + 1);
+					log.info("local address " + local + " network " + network);
+					int index127 = network.indexOf("127.0.");
+					if (index127 != 0) {
+						for (int i = 1; i < 255; i++) {
+							if (!isRunning()) {
+								break;
+							}
 
-					String networkip = network + i;
-					addNode(new MHost(networkip),
-							p.getInteger(WPreferences.NETWORK_SERVER_DEFAULT_PORT, TCPListener.DEFAULT_PORT));
-					doWait(LOCAL_NETWORK_SCANTIME / 255);
+							String networkip = network + i;
+							addNode(new MHost(networkip),
+									p.getInteger(WPreferences.NETWORK_SERVER_DEFAULT_PORT, TCPListener.DEFAULT_PORT));
+							doWait(LOCAL_NETWORK_SCANTIME / 255);
+						}
+
+						doWait(LOCAL_NETWORK_SCANTIME * 2);
+					} else
+						doWait(LOCAL_NETWORK_SCANTIME / 10);
+				} catch (UnknownHostException e) {
+					log.error(e);
+				} finally {
+					addinglocalnodes = false;
 				}
-			} catch (UnknownHostException e) {
-				log.error(e);
-			}
-		}, "addLocalNetworkNodes").start();
+			}, "addLocalNetworkNodes").start();
+		}
 	}
 
 	private synchronized void doWait(int i) {
@@ -351,32 +365,36 @@ public final class P2PServerImpl implements P2PServer {
 	}
 
 	private synchronized void addNodesInServerLists() {
-		String slist = p.get(WPreferences.SERVERLIST, "");
-		log.info("got server list " + slist);
+		if (System.currentTimeMillis() - lasttimeserverlisthandled > MAX_WAIT_SERVERLISTHANDLED) {
+			lasttimeserverlisthandled = System.currentTimeMillis();
 
-		if (slist == null || slist.length() == 0) {
-			slist = createServerList();
-		}
+			String slist = p.get(WPreferences.SERVERLIST, "");
+			log.info("got server list " + slist);
 
-		if (slist != null) {
-			StringTokenizer st = new StringTokenizer(slist, ",");
-			while (st.hasMoreTokens()) {
-				String server = st.nextToken();
-				int indexOf = server.indexOf(':');
-				if (indexOf > 0) {
-					String host = server.substring(0, indexOf);
-					int port = Integer.parseInt(server.substring(indexOf + 1));
-					if ("localhost".equals(host) && tcplistener != null && tcplistener.getPort() == port) {
-						log.info("Not adding node @ " + server);
-					} else {
-						addNode(new MHost(host), port);
-					}
-				} else {
-					log.info("invalid value " + server);
-				}
+			if (slist == null || slist.length() == 0) {
+				slist = createServerList();
 			}
-		} else {
-			log.info("Serverlist null. Not adding any nodes.");
+
+			if (slist != null) {
+				StringTokenizer st = new StringTokenizer(slist, ",");
+				while (st.hasMoreTokens()) {
+					String server = st.nextToken();
+					int indexOf = server.indexOf(':');
+					if (indexOf > 0) {
+						String host = server.substring(0, indexOf);
+						int port = Integer.parseInt(server.substring(indexOf + 1));
+						if ("localhost".equals(host) && tcplistener != null && tcplistener.getPort() == port) {
+							log.info("Not adding node @ " + server);
+						} else {
+							addNode(new MHost(host), port);
+						}
+					} else {
+						log.info("invalid value " + server);
+					}
+				}
+			} else {
+				log.info("Serverlist null. Not adding any nodes.");
+			}
 		}
 	}
 
@@ -431,27 +449,29 @@ public final class P2PServerImpl implements P2PServer {
 		log.info("starting closing");
 		closed = true;
 
-		synchronized (this) {
-			notifyAll();
-		}
-
-		if (tcplistener != null) {
-			tcplistener.startClosing();
-		}
-
-		synchronized (downloads) {
-			for (Download d : downloads.values()) {
-				d.stop();
+		new Thread(() -> {
+			synchronized (this) {
+				notifyAll();
 			}
-		}
 
-		synchronized (this) {
-			if (nodes != null) {
-				for (WNode node : nodes) {
-					node.startClosing();
+			if (tcplistener != null) {
+				tcplistener.startClosing();
+			}
+
+			synchronized (downloads) {
+				for (Download d : downloads.values()) {
+					d.stop();
 				}
 			}
-		}
+
+			synchronized (this) {
+				if (nodes != null) {
+					for (WNode node : nodes) {
+						node.startClosing();
+					}
+				}
+			}
+		}, "startClosing " + this).start();
 	}
 
 	private synchronized void shutdown() {
@@ -503,7 +523,7 @@ public final class P2PServerImpl implements P2PServer {
 			}
 		}
 
-		log.info("node not found (" + nid + ")  in nodes " + nodes);
+		log.info("node not found (" + nid + ")");
 
 		return null;
 	}
@@ -614,7 +634,7 @@ public final class P2PServerImpl implements P2PServer {
 			for (WNode node : ns) {
 				if (node.isConnected() && getNodeStatus(node) != null
 						&& getNodeStatus(node).getReceivedMessages() > 0) {
-					log.info("node connected " + node);
+					log.debug("node connected " + node);
 					return true;
 				}
 			}

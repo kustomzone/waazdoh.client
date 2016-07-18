@@ -2,7 +2,7 @@ package waazdoh.cp2p;
 
 public class NodeStatus {
 	public static final int WARNING_TRESHOLD = 5;
-	public static final long MAX_PINGDELAY = 10000;
+	public static final long MAX_PINGDELAY = 5000;
 	public static final long MIN_PINGDELAY = 200;
 	public static final long MAX_DIE_TIME = 6 * MAX_PINGDELAY;
 
