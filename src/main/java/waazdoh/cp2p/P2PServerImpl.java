@@ -12,8 +12,12 @@ package waazdoh.cp2p;
 
 import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -68,7 +72,8 @@ public final class P2PServerImpl implements P2PServer {
 	private final WMessenger messenger;
 	private boolean dobind;
 	private Thread rebootchecker;
-	private boolean addinglocalnodes;
+	private ThreadGroup addinglocalnodes = new ThreadGroup("addinglocalnodes");
+
 	private long lasttimeserverlisthandled;
 
 	public P2PServerImpl(WPreferences p, boolean bind2) {
@@ -323,35 +328,46 @@ public final class P2PServerImpl implements P2PServer {
 	}
 
 	private void addLocalNetworkNodes() {
-		if (!addinglocalnodes) {
-			addinglocalnodes = true;
-			new Thread(() -> {
-				try {
-					String local = InetAddress.getLocalHost().getHostAddress();
-					String network = local.substring(0, local.lastIndexOf(".") + 1);
-					log.info("local address " + local + " network " + network);
-					int index127 = network.indexOf("127.0.");
-					if (index127 != 0) {
-						for (int i = 1; i < 255; i++) {
-							if (!isRunning()) {
-								break;
-							}
-
-							String networkip = network + i;
-							addNode(new MHost(networkip),
-									p.getInteger(WPreferences.NETWORK_SERVER_DEFAULT_PORT, TCPListener.DEFAULT_PORT));
-							doWait(LOCAL_NETWORK_SCANTIME / 255);
-						}
-
-						doWait(LOCAL_NETWORK_SCANTIME * 2);
-					} else
-						doWait(LOCAL_NETWORK_SCANTIME / 10);
-				} catch (UnknownHostException e) {
-					log.error(e);
-				} finally {
-					addinglocalnodes = false;
+		if (addinglocalnodes.activeCount() == 0) {
+			Enumeration<NetworkInterface> nets;
+			try {
+				nets = NetworkInterface.getNetworkInterfaces();
+				for (NetworkInterface netint : Collections.list(nets)) {
+					Enumeration<InetAddress> addresses = netint.getInetAddresses();
+					while (addresses.hasMoreElements()) {
+						InetAddress a = addresses.nextElement();
+						new Thread(addinglocalnodes, () -> {
+							adadLocalNodes(a);
+						}, "addLocalNetworkNodes_" + netint).start();
+					}
 				}
-			}, "addLocalNetworkNodes").start();
+			} catch (SocketException e1) {
+				log.error(e1);
+			}
+		}
+	}
+
+	private void adadLocalNodes(InetAddress a) {
+		String local = a.getHostAddress();
+		String network = local.substring(0, local.lastIndexOf(".") + 1);
+		log.info("local address " + local + " network " + network);
+		int index127 = network.indexOf("127.0.");
+		// TODO ipv4 only :(
+		if (index127 != 0 && new StringTokenizer(local, ".").countTokens() == 3) {
+			for (int i = 1; i < 255; i++) {
+				if (!isRunning()) {
+					break;
+				}
+
+				String networkip = network + i;
+				addNode(new MHost(networkip),
+						p.getInteger(WPreferences.NETWORK_SERVER_DEFAULT_PORT, TCPListener.DEFAULT_PORT));
+				doWait(LOCAL_NETWORK_SCANTIME / 255);
+			}
+
+			doWait(LOCAL_NETWORK_SCANTIME * 2);
+		} else {
+			doWait(LOCAL_NETWORK_SCANTIME / 10);
 		}
 	}
 
