@@ -106,7 +106,8 @@ public final class P2PServerImpl implements P2PServer {
 	}
 
 	private void addHandlers() {
-		WhoHasHandler whohashandler = new WhoHasHandler(binarysource, this);
+		WhoHasHandler whohashandler = new WhoHasHandler(binarysource, this,
+				this.p.getBoolean(P2PServer.DOWNLOAD_EVERYTHING, false));
 		whohashandler.addListener(new WhoHasListener() {
 			@Override
 			public void binaryRequested(BinaryID streamid, Integer count) {
@@ -327,7 +328,7 @@ public final class P2PServerImpl implements P2PServer {
 		addLocalNetworkNodes();
 	}
 
-	private void addLocalNetworkNodes() {
+	private synchronized void addLocalNetworkNodes() {
 		if (addinglocalnodes.activeCount() == 0) {
 			Enumeration<NetworkInterface> nets;
 			try {

@@ -48,9 +48,10 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 	private boolean downloadeverything;
 	private P2PServer server;
 
-	public WhoHasHandler(BinarySource source, P2PServer server) {
+	public WhoHasHandler(BinarySource source, P2PServer server, boolean downloadeverything) {
 		this.source = source;
 		this.server = server;
+		this.downloadeverything = downloadeverything;
 	}
 
 	@Override
