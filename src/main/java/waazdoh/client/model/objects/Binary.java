@@ -452,4 +452,9 @@ public final class Binary implements HashSource {
 	public File getFile() {
 		return new File(getBinaryPath());
 	}
+
+	public void delete() {
+		log.info("deleting " + getBinaryPath());
+		getFile().renameTo(new File(getBinaryPath() + "-" + System.currentTimeMillis() + ".deleted"));
+	}
 }
