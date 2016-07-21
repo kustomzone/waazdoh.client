@@ -5,6 +5,7 @@ import waazdoh.client.WClient;
 import waazdoh.client.model.BinaryID;
 import waazdoh.common.MStringID;
 import waazdoh.common.WLogger;
+import waazdoh.cp2p.P2PServer;
 import waazdoh.cp2p.common.WMessenger;
 import waazdoh.cp2p.messaging.MMessage;
 import waazdoh.cp2p.messaging.MMessageHandler;
@@ -12,12 +13,19 @@ import waazdoh.cp2p.messaging.MMessageHandler;
 public class AppLauncher {
 	private WClient client;
 	private WLogger log = WLogger.getLogger(this);
+	private String prefix;
+
+	public AppLauncher(String string) {
+		this.prefix = string;
+	}
 
 	private void start() {
 		Login login = new Login();
 		String username = "downloader";
-		client = login.login("downloadeverything", username);
+		client = login.login("downloadeverything-" + prefix, username);
 		client.getBinarySource().addMessageHandler(WMessenger.MESSAGENAME_PUBLISHED, new PublishedHandler());
+
+		client.getPreferences().set(P2PServer.DOWNLOAD_EVERYTHING, true);
 
 		new Thread(() -> {
 			try {
@@ -40,7 +48,7 @@ public class AppLauncher {
 	}
 
 	public static void main(String[] args) {
-		AppLauncher d = new AppLauncher();
+		AppLauncher d = new AppLauncher(args[0]);
 		d.start();
 	}
 

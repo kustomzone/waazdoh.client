@@ -7,10 +7,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import junit.framework.TestCase;
-
 import org.xml.sax.SAXException;
 
+import junit.framework.TestCase;
 import waazdoh.client.storage.local.FileBeanStorage;
 import waazdoh.client.utils.ConditionWaiter;
 import waazdoh.client.utils.ThreadChecker;
@@ -42,19 +41,7 @@ public class WCTestCase extends TestCase {
 	protected void tearDown() throws Exception {
 		log.info("************************* CLOSING " + this + " " + this.getName() + " ********");
 
-		new ThreadChecker(new ThreadChecker.IChecker() {
-
-			@Override
-			public boolean check() {
-
-				for (P2PServer s : servers) {
-					if (s.isRunning()) {
-						return true;
-					}
-				}
-				return false;
-			}
-		});
+		// startThreadChecker();
 
 		Set<P2PServer> ss = this.servers;
 		for (P2PServer p2pServer : ss) {
@@ -72,7 +59,7 @@ public class WCTestCase extends TestCase {
 			for (Thread t : sts.keySet()) {
 				StackTraceElement[] st = sts.get(t);
 				for (StackTraceElement stackTraceElement : st) {
-					log.info("Thread " + t + " ST:" + stackTraceElement);
+					// log.info("Thread " + t + " ST:" + stackTraceElement);
 
 					if (("" + st).indexOf("netty") > 0) {
 						nettyfound = true;
@@ -90,6 +77,22 @@ public class WCTestCase extends TestCase {
 		} while (nettyfound);
 
 		log.info("************************* TEARDOWN DONE *****");
+	}
+
+	private void startThreadChecker() {
+		new ThreadChecker(new ThreadChecker.IChecker() {
+
+			@Override
+			public boolean check() {
+
+				for (P2PServer s : servers) {
+					if (s.isRunning()) {
+						return true;
+					}
+				}
+				return false;
+			}
+		});
 	};
 
 	WPreferences getPreferences(String username) {

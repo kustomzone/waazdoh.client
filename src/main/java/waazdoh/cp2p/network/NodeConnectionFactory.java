@@ -63,8 +63,7 @@ public final class NodeConnectionFactory {
 					pipeline.addLast("messagedecoder", new MessageDecoder());
 					pipeline.addLast("channels", new NodeHandler());
 
-					ch.writeAndFlush("<init>" + System.currentTimeMillis()
-							+ "</init>");
+					ch.writeAndFlush("<init>" + System.currentTimeMillis() + "</init>");
 				}
 			});
 		}
@@ -74,8 +73,7 @@ public final class NodeConnectionFactory {
 	public Channel connect(TCPNode node, MHost host, int port) {
 		log.info("creating connection to " + host + " port:" + port);
 		Bootstrap bs = getBootstrap();
-		ChannelFuture future = bs.connect(new InetSocketAddress(
-				host.toString(), port));
+		ChannelFuture future = bs.connect(new InetSocketAddress(host.toString(), port));
 		nodes.put(future.channel(), node);
 		Channel c = future.channel();
 		log.info("node " + node + " with channel " + c);
@@ -90,7 +88,7 @@ public final class NodeConnectionFactory {
 		@Override
 		public void channelActive(ChannelHandlerContext ctx) throws Exception {
 			TCPNode node = getNode(ctx);
-			if (node != null) {
+			if (node != null && !node.isClosed()) {
 				super.channelActive(ctx);
 				node.channelActive(ctx.channel());
 			} else {
@@ -101,30 +99,32 @@ public final class NodeConnectionFactory {
 		@Override
 		public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 			super.channelInactive(ctx);
-			getNode(ctx).channelInactive(ctx.channel());
+			if (getNode(ctx) != null) {
+				getNode(ctx).channelInactive(ctx.channel());
+			}
 		}
 
 		@Override
-		public void channelRegistered(ChannelHandlerContext ctx)
-				throws Exception {
+		public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
 			super.channelRegistered(ctx);
 			TCPNode node = getNode(ctx);
-			if (node != null) {
+			if (node != null && !node.isClosed()) {
 				node.channelRegistered(ctx.channel());
 			}
 		}
 
 		@Override
-		public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
-				throws Exception {
+		public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 			getNode(ctx).channelException(ctx, cause);
 		}
 
 		@Override
-		protected void channelRead0(ChannelHandlerContext ctx, List<MMessage> msgs)
-				throws Exception {
+		protected void channelRead0(ChannelHandlerContext ctx, List<MMessage> msgs) throws Exception {
 			log.info("messageReceived size " + msgs.size());
-			getNode(ctx).messagesReceived(ctx.channel(), msgs);
+			TCPNode node = getNode(ctx);
+			if (!node.isClosed()) {
+				node.messagesReceived(ctx.channel(), msgs);
+			}
 		}
 
 	}

@@ -72,14 +72,6 @@ public class TestP2PServer extends WCTestCase {
 
 		assertTrue(n.isClosed());
 		assertNull(n.getID());
-		// node gets removed
-		ConditionWaiter.wait(new Condition() {
-			public boolean test() {
-				return s.getNodeStatus(n) == null;
-			}
-		}, getWaitTime());
-
-		assertNull(s.getNodeStatus(n));
 	}
 
 	public void testNodeListener() {

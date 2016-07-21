@@ -107,6 +107,10 @@ public final class Download implements Runnable, MessageResponseListener,
 				+ server.isRunning() + " ready:" + isReady() + " giveup: "
 				+ giveupflag);
 		//
+		if(!isReady()) {
+			bin.delete();
+		}
+		
 		this.server.reportDownload(getID(), isReady());
 	}
 

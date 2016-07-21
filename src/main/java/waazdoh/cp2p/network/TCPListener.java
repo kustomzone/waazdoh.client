@@ -161,17 +161,18 @@ public final class TCPListener {
 	class MServerHandler extends SimpleChannelInboundHandler<List<MMessage>> {
 		@Override
 		protected void channelRead0(ChannelHandlerContext ctx, List<MMessage> ms) throws Exception {
-			log.info("messageReceived " + ms);
+			log.debug("messageReceived " + ms);
 			if (!closed) {
 				List<MMessage> response = messenger.handle(ms);
 				if (response != null) {
-					log.debug("sending back response " + response);
+					log.info("sending back response " + response);
 					ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
 				} else {
 					log.info("Response null for " + ms + ". Closing " + ctx);
 					ctx.close();
 				}
 			} else {
+				log.info("Closed. Closing context.");
 				ctx.close();
 			}
 		}

@@ -83,5 +83,4 @@ public interface P2PServer {
 	String getInfoText();
 
 	void setBinarySource(BinarySource storage);
-
 }
