@@ -354,7 +354,9 @@ public final class P2PServerImpl implements P2PServer {
 		log.info("local address " + local + " network " + network);
 		int index127 = network.indexOf("127.0.");
 		// TODO ipv4 only :(
-		if (index127 != 0 && new StringTokenizer(local, ".").countTokens() == 3) {
+		StringTokenizer stringTokenizer = new StringTokenizer(local, ".");
+		int countTokens = stringTokenizer.countTokens();
+		if (index127 != 0 && countTokens <= 4 && countTokens > 2) {
 			for (int i = 1; i < 255; i++) {
 				if (!isRunning()) {
 					break;
