@@ -16,7 +16,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 
 import java.net.ConnectException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import waazdoh.common.MStringID;
@@ -95,7 +95,7 @@ public final class TCPNode implements WNode {
 
 	@Override
 	public void sendMessage(MMessage message) {
-		List<MMessage> ms = new LinkedList<MMessage>();
+		List<MMessage> ms = new ArrayList<MMessage>();
 		ms.add(message);
 		writeMessages(ms);
 	}
@@ -147,7 +147,7 @@ public final class TCPNode implements WNode {
 
 	@Override
 	public List<MMessage> getOutgoingMessages() {
-		return new LinkedList<MMessage>();
+		return new ArrayList<MMessage>();
 	}
 
 	@Override

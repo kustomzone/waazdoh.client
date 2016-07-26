@@ -12,7 +12,7 @@ package waazdoh.client.storage.local;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import waazdoh.client.WClient;
@@ -24,7 +24,7 @@ import waazdoh.common.WLogger;
 import waazdoh.common.WPreferences;
 
 public final class LocalBinaryStorage implements BinaryStorage {
-	private List<Binary> streams = new LinkedList<Binary>();
+	private List<Binary> streams = new ArrayList<Binary>();
 	//
 	private WLogger log = WLogger.getLogger(this);
 	private boolean running = true;
@@ -74,7 +74,7 @@ public final class LocalBinaryStorage implements BinaryStorage {
 	private Binary findBinary(MStringID streamid) {
 		synchronized (streams) {
 			Binary fs = null;
-			Iterator<Binary> i = new LinkedList<Binary>(streams).iterator();
+			Iterator<Binary> i = new ArrayList<Binary>(streams).iterator();
 			while (fs == null && i.hasNext()) {
 				Binary test = i.next();
 				BinaryID testid = test.getID();
@@ -132,7 +132,7 @@ public final class LocalBinaryStorage implements BinaryStorage {
 	public void clearMemory(int suggestedmemorytreshold) {
 		synchronized (streams) {
 			List<Binary> bis = this.streams;
-			List<Binary> nbis = new LinkedList<Binary>();
+			List<Binary> nbis = new ArrayList<Binary>();
 
 			for (Binary binary : bis) {
 				if (binary.isUsed(suggestedmemorytreshold)) {

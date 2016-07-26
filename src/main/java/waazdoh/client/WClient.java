@@ -1,7 +1,7 @@
 package waazdoh.client;
 
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -28,7 +28,7 @@ public class WClient {
 	private UserID userid;
 
 	private WLogger logger = WLogger.getLogger(this);
-	private List<Filter> filters = new LinkedList<WClient.Filter>();
+	private List<Filter> filters = new ArrayList<WClient.Filter>();
 
 	public WClient(WPreferences p, BinarySource binarysource, BeanStorage beanstorage, ServiceClient nservice) {
 		this.preferences = p;

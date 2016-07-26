@@ -17,7 +17,7 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.xml.sax.SAXException;
@@ -53,7 +53,7 @@ public final class MessageDecoder extends ByteToMessageDecoder {
 
 	private List<MMessage> parse(DataInputStream dis) throws IOException {
 		//
-		List<MMessage> ret = new LinkedList<MMessage>();
+		List<MMessage> ret = new ArrayList<MMessage>();
 		int messagecount = dis.readInt();
 		log.debug("messagecount : " + messagecount);
 		for (int i = 0; i < messagecount; i++) {

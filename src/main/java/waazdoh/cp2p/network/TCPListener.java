@@ -10,7 +10,7 @@
  ******************************************************************************/
 package waazdoh.cp2p.network;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.netty.bootstrap.ServerBootstrap;
@@ -148,7 +148,7 @@ public final class TCPListener {
 				pipe.addLast("messagedecoder", new MessageDecoder());
 				pipe.addLast("server", new MServerHandler());
 				//
-				List<MMessage> mlist = new LinkedList<MMessage>();
+				List<MMessage> mlist = new ArrayList<MMessage>();
 				mlist.add(messenger.getMessage("hello"));
 				ch.writeAndFlush(mlist);
 			} else {

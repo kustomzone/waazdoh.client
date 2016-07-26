@@ -10,7 +10,7 @@
  ******************************************************************************/
 package waazdoh.client;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import waazdoh.common.HashSource;
@@ -39,7 +39,7 @@ public final class ServiceObject implements HashSource {
 	private MStringID copyof;
 	private WObject storedbean = new WObject();
 
-	private List<ServiceObjectListener> listeners = new LinkedList<ServiceObjectListener>();
+	private List<ServiceObjectListener> listeners = new ArrayList<ServiceObjectListener>();
 
 	private String version;
 
@@ -180,7 +180,7 @@ public final class ServiceObject implements HashSource {
 		modifytime = System.currentTimeMillis();
 		log.info("modified " + id);
 		//
-		List<ServiceObjectListener> ls = new LinkedList<ServiceObjectListener>(listeners);
+		List<ServiceObjectListener> ls = new ArrayList<ServiceObjectListener>(listeners);
 		for (ServiceObjectListener trackListener : ls) {
 			trackListener.modified();
 		}

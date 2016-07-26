@@ -10,7 +10,7 @@
  ******************************************************************************/
 package waazdoh.cp2p.network;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import waazdoh.common.WLogger;
@@ -27,7 +27,7 @@ public final class PassiveNode implements WNode {
 
 	private int outputbytecount;
 
-	private List<MMessage> outgoingmessages = new LinkedList<MMessage>();
+	private List<MMessage> outgoingmessages = new ArrayList<MMessage>();
 
 	private boolean closed;
 
@@ -94,8 +94,8 @@ public final class PassiveNode implements WNode {
 	public List<MMessage> getOutgoingMessages() {
 		synchronized (outgoingmessages) {
 			if (!outgoingmessages.isEmpty()) {
-				List<MMessage> ret = new LinkedList<MMessage>(outgoingmessages);
-				outgoingmessages = new LinkedList<MMessage>();
+				List<MMessage> ret = new ArrayList<MMessage>(outgoingmessages);
+				outgoingmessages = new ArrayList<MMessage>();
 				return ret;
 			} else {
 				return outgoingmessages;

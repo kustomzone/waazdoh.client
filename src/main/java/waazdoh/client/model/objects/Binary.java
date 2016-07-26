@@ -17,7 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import waazdoh.client.WClient;
@@ -394,7 +394,7 @@ public final class Binary implements HashSource {
 
 	private List<BinaryListener> getListeners() {
 		if (listeners == null) {
-			listeners = new LinkedList<BinaryListener>();
+			listeners = new ArrayList<BinaryListener>();
 		}
 		return listeners;
 	}

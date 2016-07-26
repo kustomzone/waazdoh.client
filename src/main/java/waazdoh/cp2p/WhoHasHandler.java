@@ -13,7 +13,7 @@ package waazdoh.cp2p;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,7 +43,7 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 	//
 	private Map<ObjectID, MNodeID> whohas = new HashMap<ObjectID, MNodeID>();
 	private Map<MStringID, Integer> responsecount = new HashMap<MStringID, Integer>();
-	private List<WhoHasListener> listeners = new LinkedList<WhoHasListener>();
+	private List<WhoHasListener> listeners = new ArrayList<WhoHasListener>();
 
 	private boolean downloadeverything;
 	private P2PServer server;

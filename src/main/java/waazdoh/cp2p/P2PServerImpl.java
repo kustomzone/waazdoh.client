@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,7 +57,7 @@ public final class P2PServerImpl implements P2PServer {
 	private WLogger log = WLogger.getLogger(this);
 	private final Map<MStringID, Download> downloads = new HashMap<MStringID, Download>();
 	//
-	private List<WNode> nodes = new LinkedList<WNode>();
+	private List<WNode> nodes = new ArrayList<WNode>();
 	private Set<ServerListener> listeners = new HashSet<ServerListener>();
 	//
 	private boolean closed = false;
@@ -309,7 +309,7 @@ public final class P2PServerImpl implements P2PServer {
 			if (getActiveNodeCount() == 0) {
 				addDefaultNodes();
 			}
-			return new LinkedList<WNode>(nodes);
+			return new ArrayList<WNode>(nodes);
 		} else {
 			return null;
 		}
@@ -501,8 +501,8 @@ public final class P2PServerImpl implements P2PServer {
 		if (nodes != null) {
 			notifyAll();
 			log.info("closing nodes again");
-			List<WNode> ns = new LinkedList<>(nodes);
-			nodes = new LinkedList<WNode>();
+			List<WNode> ns = new ArrayList<>(nodes);
+			nodes = new ArrayList<WNode>();
 
 			//
 			for (WNode node : ns) {
@@ -524,7 +524,7 @@ public final class P2PServerImpl implements P2PServer {
 	private void shutdownNodes() {
 		log.info("closing nodes");
 		if (nodes != null) {
-			List<WNode> ns = new LinkedList<WNode>(nodes);
+			List<WNode> ns = new ArrayList<WNode>(nodes);
 			for (WNode n : ns) {
 				n.close();
 			}
@@ -602,7 +602,7 @@ public final class P2PServerImpl implements P2PServer {
 	@Override
 	public void clearMemory() {
 		synchronized (listeners) {
-			List<ServerListener> nsourcelisteners = new LinkedList<ServerListener>(listeners);
+			List<ServerListener> nsourcelisteners = new ArrayList<ServerListener>(listeners);
 			for (ServerListener l : nsourcelisteners) {
 				if (l.isDone()) {
 					listeners.remove(l);
@@ -648,7 +648,7 @@ public final class P2PServerImpl implements P2PServer {
 	@Override
 	public boolean isConnected() {
 		if (nodes != null) {
-			List<WNode> ns = new LinkedList<WNode>(this.nodes);
+			List<WNode> ns = new ArrayList<WNode>(this.nodes);
 			for (WNode node : ns) {
 				if (node.isConnected() && getNodeStatus(node) != null
 						&& getNodeStatus(node).getReceivedMessages() > 0) {

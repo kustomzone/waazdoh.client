@@ -2,7 +2,7 @@ package waazdoh.cp2p.network;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -129,7 +129,7 @@ public class WMessengerImpl implements WMessenger {
 			lastmessagereceived = System.currentTimeMillis();
 			//
 			List<MMessage> ret;
-			ret = new LinkedList<MMessage>();
+			ret = new ArrayList<MMessage>();
 			//
 			WNode sentbynode = null; // should be same node for every message
 			WNode lasthandler = null;
@@ -174,7 +174,7 @@ public class WMessengerImpl implements WMessenger {
 			return ret;
 		} else {
 			log.info("Closed. Not handling message, returning empty");
-			return new LinkedList<MMessage>();
+			return new ArrayList<MMessage>();
 		}
 	}
 

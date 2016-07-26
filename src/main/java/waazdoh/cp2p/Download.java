@@ -13,7 +13,7 @@ package waazdoh.cp2p;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +44,7 @@ public final class Download implements Runnable, MessageResponseListener,
 	private long endtime;
 	private long starttime;
 	private Map<Integer, DownloadPart> sentstarts = new HashMap<Integer, DownloadPart>();
-	private List<DownloadPart> missingparts = new LinkedList<DownloadPart>();
+	private List<DownloadPart> missingparts = new ArrayList<DownloadPart>();
 
 	private boolean hasBeenReady;
 	private String speedinfo;
@@ -268,7 +268,7 @@ public final class Download implements Runnable, MessageResponseListener,
 	private synchronized void removeMissingPart(int start, int length) {
 		log.debug("missingparts " + missingparts);
 
-		List<DownloadPart> nlist = new LinkedList<DownloadPart>(missingparts);
+		List<DownloadPart> nlist = new ArrayList<DownloadPart>(missingparts);
 		for (int i = 0; i < missingparts.size(); i++) {
 			DownloadPart p = missingparts.get(i);
 			if (start <= p.start && start + length >= p.end) {
