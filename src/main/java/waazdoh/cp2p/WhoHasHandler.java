@@ -57,15 +57,15 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 	@Override
 	public MMessage handle(final MMessage childb) {
 		final BinaryID streamid = new BinaryID(childb.getAttribute("streamid"));
-		if (source.get(streamid) != null) {
+		Binary binary = source.get(streamid);
+		if (binary != null && binary.isReady()) {
 			return handleMessageWhenStreamFound(childb, streamid);
 		} else {
 			return handleNotFoundStream(childb, streamid);
 		}
 	}
 
-	private MMessage handleNotFoundStream(final MMessage childb,
-			final BinaryID streamid) {
+	private MMessage handleNotFoundStream(final MMessage childb, final BinaryID streamid) {
 		if (downloadeverything) {
 			source.getOrDownload(streamid);
 		}
@@ -85,8 +85,7 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 				count++;
 				responsecount.put(streamid, count);
 
-				if (downloadeverything
-						|| count > P2PServer.RESPONSECOUNT_DOWNLOADTRIGGER) {
+				if (downloadeverything || count > P2PServer.RESPONSECOUNT_DOWNLOADTRIGGER) {
 					fireBinaryRequested(streamid, count);
 				}
 			}
@@ -100,8 +99,7 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 		if (knownwhohas == null) {
 			Set<MNodeID> exceptions = new HashSet<MNodeID>();
 			exceptions.add(childb.getSentBy());
-			getMessenger().broadcastMessage(childb, responselistener,
-					exceptions);
+			getMessenger().broadcastMessage(childb, responselistener, exceptions);
 		} else {
 			childb.addResponseListener(responselistener);
 			WNode knownnode = server.getNode(knownwhohas);
@@ -111,8 +109,7 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 		return null;
 	}
 
-	private MMessage handleMessageWhenStreamFound(final MMessage childb,
-			final BinaryID streamid) {
+	private MMessage handleMessageWhenStreamFound(final MMessage childb, final BinaryID streamid) {
 		MMessage m;
 		m = getMessenger().newResponseMessage(childb, "stream");
 		m.addIDAttribute("streamid", streamid);
@@ -120,8 +117,7 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 		WData needed = childb.get("needed");
 		List<WData> neededpieces = needed.getChildren();
 		int bytes = 0;
-		while (bytes < P2PServer.WHOHAS_RESPONSE_MAX_PIECE_SIZE
-				&& !neededpieces.isEmpty()) {
+		while (bytes < P2PServer.WHOHAS_RESPONSE_MAX_PIECE_SIZE && !neededpieces.isEmpty()) {
 			log.info("processing pieces wanted " + neededpieces);
 
 			int pieceindex = (int) (Math.random() * neededpieces.size());
@@ -145,8 +141,7 @@ public final class WhoHasHandler extends SimpleMessageHandler {
 			byte bs[] = new byte[end - start + 1];
 			bytes += bs.length;
 
-			log.info("preparing piece " + start + " -> " + end + " bin:" + bin
-					+ " bs:" + bs.length);
+			log.info("preparing piece " + start + " -> " + end + " bin:" + bin + " bs:" + bs.length);
 			try {
 				bin.read(start, bs);
 				m.addAttachment("bytes", bs);

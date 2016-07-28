@@ -86,8 +86,7 @@ public final class LocalBinaryStorage implements BinaryStorage {
 		}
 	}
 
-	public synchronized Binary loadPersistentStream(BinaryID streamid)
-			throws IOException {
+	public synchronized Binary loadPersistentStream(BinaryID streamid) throws IOException {
 		synchronized (streams) {
 			Binary bin;
 			bin = new Binary(client, getLocalPath(), "default", "default");
@@ -96,6 +95,8 @@ public final class LocalBinaryStorage implements BinaryStorage {
 			if (bin.isOK() && bin.checkCRC()) {
 				return bin;
 			} else {
+				// file should be removed?
+				bin.delete();
 				return null;
 			}
 		}
