@@ -65,7 +65,7 @@ public final class TCPNode implements WNode {
 				int bytecount = writeMessages(smessages);
 				return bytecount;
 			} else {
-				log.info("not writing zero messages");
+				log.debug("not writing zero messages");
 				return 0;
 			}
 		} else {
@@ -158,11 +158,11 @@ public final class TCPNode implements WNode {
 
 	public void logChannel() {
 		if (channel != null) {
-			log.info("channel " + host + ":" + port + " channel " + channel + " connected:" + channel.isOpen()
+			log.debug("channel " + host + ":" + port + " channel " + channel + " connected:" + channel.isOpen()
 					+ " writable:" + channel.isWritable() + " open:" + channel.isOpen() + " local:"
 					+ channel.localAddress() + " remote:" + channel.remoteAddress());
 		} else {
-			log.info("channel is null");
+			log.debug("channel is null");
 		}
 	}
 
@@ -237,7 +237,7 @@ public final class TCPNode implements WNode {
 		final Channel cc = this.channel;
 		if (cc != null) {
 			synchronized (this) {
-				log.info("closing channel " + cc);
+				log.debug("closing channel " + cc);
 
 				cc.disconnect();
 
@@ -258,7 +258,7 @@ public final class TCPNode implements WNode {
 	}
 
 	public void channelActive(Channel c) {
-		log.info("channelActive " + c);
+		log.debug("channelActive " + c);
 		touch = System.currentTimeMillis();
 		isactive = true;
 		touch();
@@ -270,12 +270,12 @@ public final class TCPNode implements WNode {
 	}
 
 	public void channelRegistered(Channel c) {
-		log.info("channelRegistered " + c);
+		log.debug("channelRegistered " + c);
 		channel = c;
 	}
 
 	public void channelInactive(Channel ctx) {
-		log.info("channel inactive " + ctx);
+		log.debug("channel inactive " + ctx);
 		isactive = false;
 	}
 

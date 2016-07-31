@@ -295,7 +295,7 @@ public final class P2PServerImpl implements P2PServer {
 	}
 
 	private void sendPing(WNode node) {
-		log.info("Sending ping to node " + node);
+		log.debug("Sending ping to node " + node);
 		MMessage message = getMessenger().getMessage("ping");
 		getMessenger().addResponseListener(message.getID(), new MessageResponseListenerImplementation());
 
@@ -338,7 +338,7 @@ public final class P2PServerImpl implements P2PServer {
 					while (addresses.hasMoreElements()) {
 						InetAddress a = addresses.nextElement();
 						new Thread(addinglocalnodes, () -> {
-							adadLocalNodes(a);
+							addLocalNodes(a);
 						}, "addLocalNetworkNodes_" + netint).start();
 					}
 				}
@@ -348,10 +348,10 @@ public final class P2PServerImpl implements P2PServer {
 		}
 	}
 
-	private void adadLocalNodes(InetAddress a) {
+	private void addLocalNodes(InetAddress a) {
 		String local = a.getHostAddress();
 		String network = local.substring(0, local.lastIndexOf(".") + 1);
-		log.info("local address " + local + " network " + network);
+		log.debug("local address " + local + " network " + network);
 		int index127 = network.indexOf("127.0.");
 		// TODO ipv4 only :(
 		StringTokenizer stringTokenizer = new StringTokenizer(local, ".");
@@ -541,7 +541,7 @@ public final class P2PServerImpl implements P2PServer {
 			}
 		}
 
-		log.info("node not found (" + nid + ")");
+		log.debug("node not found (" + nid + ")");
 
 		return null;
 	}
