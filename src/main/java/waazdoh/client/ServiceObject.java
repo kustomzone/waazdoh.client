@@ -72,7 +72,20 @@ public final class ServiceObject implements HashSource {
 				}
 			}
 			id = new ObjectID(oid, this);
-			return parseObject(wo);
+			boolean parsingok = parseObject(wo);
+			if (parsingok) {
+				if (id.equals(oid)) {
+					return true;
+				} else {
+					StringBuffer sb = new StringBuffer();
+					sb.append("ERROR: Loaded object id not equal to requested. Some part of object propable failed to parse. Requested:" + oid + " Result:" + id);
+					sb.append("\nObject got " + wo.toText());
+					sb.append("\nObject created " + data.getObject().toText());
+					return true;
+				}
+			} else {
+				return false;
+			}
 		} else {
 			return false;
 		}
