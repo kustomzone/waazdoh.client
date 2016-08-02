@@ -198,10 +198,10 @@ public final class P2PServerImpl implements P2PServer {
 	}
 
 	public synchronized void addNode(WNode n) {
-		log.info("adding node " + n);
+		log.debug("adding node " + n);
 		if (nodes != null) {
 			nodes.add(n);
-			log.info("node added " + n);
+			log.debug("node added " + n);
 
 			NodeStatus status = new NodeStatus();
 			nodestatuses.put(n, status);
@@ -723,7 +723,7 @@ public final class P2PServerImpl implements P2PServer {
 
 		@Override
 		public void messageReceived(MMessage message) {
-			log.info("PING response in " + (System.currentTimeMillis() - sent) + " ms");
+			log.debug("PING response in " + (System.currentTimeMillis() - sent) + " ms");
 			done = true;
 		}
 

@@ -54,7 +54,7 @@ public final class NodeConnectionFactory {
 			_bootstrap.handler(new ChannelInitializer<SocketChannel>() {
 				@Override
 				public void initChannel(SocketChannel ch) throws Exception {
-					log.info("init client channel " + ch);
+					log.debug("init client channel " + ch);
 
 					ChannelPipeline pipeline = ch.pipeline();
 					pipeline.addLast("zipencoder", new JZlibEncoder());
@@ -71,12 +71,12 @@ public final class NodeConnectionFactory {
 	}
 
 	public Channel connect(TCPNode node, MHost host, int port) {
-		log.info("creating connection to " + host + " port:" + port);
+		log.debug("creating connection to " + host + " port:" + port);
 		Bootstrap bs = getBootstrap();
 		ChannelFuture future = bs.connect(new InetSocketAddress(host.toString(), port));
 		nodes.put(future.channel(), node);
 		Channel c = future.channel();
-		log.info("node " + node + " with channel " + c);
+		log.debug("node " + node + " with channel " + c);
 		return c;
 	}
 
@@ -120,7 +120,7 @@ public final class NodeConnectionFactory {
 
 		@Override
 		protected void channelRead0(ChannelHandlerContext ctx, List<MMessage> msgs) throws Exception {
-			log.info("messageReceived size " + msgs.size());
+			log.debug("messageReceived size " + msgs.size());
 			TCPNode node = getNode(ctx);
 			if (!node.isClosed()) {
 				node.messagesReceived(ctx.channel(), msgs);
