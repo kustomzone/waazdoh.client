@@ -78,7 +78,9 @@ public final class ServiceObject implements HashSource {
 					return true;
 				} else {
 					StringBuffer sb = new StringBuffer();
-					sb.append("ERROR: Loaded object id not equal to requested. Some part of object propable failed to parse. Requested:" + oid + " Result:" + id);
+					sb.append(
+							"ERROR: Loaded object id not equal to requested. Some part of object propable failed to parse. Requested:"
+									+ oid + " Result:" + id);
 					sb.append("\nObject got " + wo.toText());
 					sb.append("\nObject created " + data.getObject().toText());
 					return true;
@@ -140,6 +142,7 @@ public final class ServiceObject implements HashSource {
 
 	public boolean publish() {
 		save();
+		
 		String sid = id.toString();
 		if (lastpublishedid == null || !lastpublishedid.equals(sid)) {
 			long st = System.currentTimeMillis();
@@ -167,7 +170,6 @@ public final class ServiceObject implements HashSource {
 
 		WObject current = data.getObject();
 		String sid = id.toString();
-		current.setAttribute("id", sid);
 		if (!storedbean.equals(current)) {
 
 			log.info("" + id + " stored " + storedbean.toText());
@@ -175,10 +177,9 @@ public final class ServiceObject implements HashSource {
 			log.info("" + id + " stored " + storedbean.getContentHash());
 			log.info("" + id + " current " + current.getContentHash());
 
-			modified();
 			sid = id.toString();
 			WObject storing = data.getObject();
-			storing.setAttribute("id", sid);
+			storing.setAttribute("id", id.getBase());
 			log.info("" + id + " storing " + storing.toText());
 			//
 			storedbean = storing;
@@ -191,7 +192,6 @@ public final class ServiceObject implements HashSource {
 
 	public void modified() {
 		modifytime = System.currentTimeMillis();
-		log.info("modified " + id);
 		//
 		List<ServiceObjectListener> ls = new ArrayList<ServiceObjectListener>(listeners);
 		for (ServiceObjectListener trackListener : ls) {
