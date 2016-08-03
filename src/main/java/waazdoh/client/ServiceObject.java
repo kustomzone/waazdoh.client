@@ -26,7 +26,6 @@ public final class ServiceObject implements HashSource {
 	private UserID creatorid;
 
 	private ObjectID id;
-	private long modifytime = System.currentTimeMillis();
 	private long creationtime = System.currentTimeMillis();
 
 	private WClient env;
@@ -98,7 +97,6 @@ public final class ServiceObject implements HashSource {
 
 		creatorid = o.getUserAttribute("creator");
 		creationtime = o.getLongValue("creationtime");
-		modifytime = o.getLongValue("modified");
 		version = o.getValue("version");
 		copyof = o.getIDValue("copyof");
 		//
@@ -115,8 +113,8 @@ public final class ServiceObject implements HashSource {
 
 	public WObject getBean() {
 		WObject bt = new WObject(tagname);
+		bt.addValue("id", id.getBase());
 		bt.addValue("creationtime", getCreationtime());
-		bt.addValue("modified", getModifytime());
 		bt.addValue("creator", creatorid.toString());
 		bt.addValue("version", version);
 		bt.addValue("license", "GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html");
@@ -132,17 +130,13 @@ public final class ServiceObject implements HashSource {
 		return "ServiceObject[" + tagname + "][" + id + "]";
 	}
 
-	public long getModifytime() {
-		return modifytime;
-	}
-
 	public long getCreationtime() {
 		return creationtime;
 	}
 
 	public boolean publish() {
 		save();
-		
+
 		String sid = id.toString();
 		if (lastpublishedid == null || !lastpublishedid.equals(sid)) {
 			long st = System.currentTimeMillis();
@@ -179,7 +173,6 @@ public final class ServiceObject implements HashSource {
 
 			sid = id.toString();
 			WObject storing = data.getObject();
-			storing.setAttribute("id", id.getBase());
 			log.info("" + id + " storing " + storing.toText());
 			//
 			storedbean = storing;
@@ -191,8 +184,6 @@ public final class ServiceObject implements HashSource {
 	}
 
 	public void modified() {
-		modifytime = System.currentTimeMillis();
-		//
 		List<ServiceObjectListener> ls = new ArrayList<ServiceObjectListener>(listeners);
 		for (ServiceObjectListener trackListener : ls) {
 			trackListener.modified();

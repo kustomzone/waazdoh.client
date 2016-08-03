@@ -348,7 +348,7 @@ public final class Binary implements HashSource {
 		return super.hashCode();
 	}
 
-	public void setReady() {
+	public synchronized void setReady() {
 		log.info("setting binary ready");
 
 		used();
@@ -363,7 +363,7 @@ public final class Binary implements HashSource {
 		}
 	}
 
-	private void closeFile() throws IOException {
+	private synchronized void closeFile() throws IOException {
 		if (access != null) {
 			log.info("closing file " + access);
 			this.access.close();
