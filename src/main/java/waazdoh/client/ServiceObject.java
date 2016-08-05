@@ -61,6 +61,9 @@ public final class ServiceObject implements HashSource {
 	public boolean load(MStringID oid) {
 		if (oid != null) {
 			WObject wo = env.getBeanStorage().getBean(oid);
+			storedbean = wo;
+			lastpublishedid = oid.toString();
+
 			if (wo == null) {
 				ObjectVO response = env.getService().getObjects().read(oid.toString());
 				if (response != null && response.isSuccess() && env.filter(response.toObject())) {
